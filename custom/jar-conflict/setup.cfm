@@ -25,7 +25,10 @@
         extract( "zip", getTempDirectory() & "poi.zip", dir );
     }
     files = directoryList( dir, true );
-    systemOutput( files );
+    for ( file in files ){
+        if ( listLast( file, "." ) eq "jar" )
+            systemOutput( file, true );
+    }
 
     contextLibDir = ExpandPath('{lucee-config}') & "/lib";
 

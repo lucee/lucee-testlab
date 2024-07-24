@@ -18,15 +18,15 @@
     systemOutput( poiJarPaths, true );
 
     systemOutput( "context/lib jar files", true );
-    
+
     contextLibDir = ExpandPath('{lucee-config}') & "/lib";
     files = directoryList( contextLibDir, true );
     systemOutput( files );
 
-    
+
     // test case for https://luceeserver.atlassian.net/browse/LDEV-4998
     // Bad type on operand stack Exception calling poi
-    // due to loading jars already loaded via context/lib
+    // due to loading jars already loaded via context/lib??
 
     function loadWorkBook(){
         var workBook = CreateObject(
@@ -37,10 +37,14 @@
     }
 
     loadWorkBook();
+    loadWorkBook();
 
     arr = [];
     arraySet( arr,1, 100, true);
 
-    arrayEach( arr, loadWorkBook, true);
-    
+    arrayEach( arr, function(){
+        loadWorkBook();
+        loadWorkBook()
+    }, true);
+
 </cfscript>
