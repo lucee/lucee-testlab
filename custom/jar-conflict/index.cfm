@@ -28,9 +28,19 @@
     // Bad type on operand stack Exception calling poi
     // due to loading jars already loaded via context/lib
 
-    workBook = CreateObject(
-        "java",
-        "org.apache.poi.hssf.usermodel.HSSFWorkbook",
-        poiJarPaths
-    ).Init();
+    function loadWorkBook(){
+        var workBook = CreateObject(
+            "java",
+            "org.apache.poi.hssf.usermodel.HSSFWorkbook",
+            poiJarPaths
+        ).Init();
+    }
+
+    loadWorkBook();
+
+    arr = [];
+    arraySet( arr,1, 100, true);
+
+    arrayEach( arr, loadWorkBook, true);
+    
 </cfscript>
