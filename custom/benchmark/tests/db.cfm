@@ -3,12 +3,12 @@
 		test: {value: createUUID(), sqltype="varchar" }
 	};
 
-	query params=params result="result" {
+	query params=params result="result" datasource="mysql" {
 		echo( "INSERT INTO benchmark( test ) VALUES ( :test )" );
 	}
 	params.id = { value: result.generatedKey, sqltype="numeric" };
 
-	query name="q" params=params {
+	query name="q" params=params datasource="mysql" {
 		echo( "select id, test from benchmark where test = :test and id = :id " );
 	}
 
