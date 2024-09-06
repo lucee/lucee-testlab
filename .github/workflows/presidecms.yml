@@ -44,6 +44,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: webroot
+        include-hidden-files: true
         path: ${{ github.workspace }}
 
   run-preside-tests:
@@ -93,6 +94,7 @@ jobs:
       - name: fix testbox
         run: |
             mkdir -p tests/testbox/system/stubs
+            ls -lRa tests
       - name: Run Preside CMS Test Suite
         uses: lucee/script-runner@main
         with:
