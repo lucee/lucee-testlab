@@ -24,10 +24,11 @@
 	systemOutput( "", true );
 	systemOutput( "S3", true );
 	s3exists( bucketName="extension-download", objectName="test", accessKeyId="test", secretAccessKey="test" ); // will throw
-
-	systemOutput( "", true );
-	systemOutput( "Argon", true );
-	generateArgon2Hash( "lucee" );
+	if (structKeyExists(getFunctionList(), "generateArgon2Hash")){
+		systemOutput( "", true );
+		systemOutput( "Argon", true );
+		generateArgon2Hash( "lucee" );
+	}
 
 	adminPassword = "admin";
 	/*
