@@ -10,4 +10,8 @@ component {
             , "json-date"
         ];
     }
+
+    function onRequestStart(){
+        inspectTemplates();
+    }
 }
