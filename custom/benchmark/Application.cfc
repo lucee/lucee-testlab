@@ -8,6 +8,7 @@ component {
             , "db"
             , "qoq-hsqldb"
             , "json-date"
+            , "date-format"
         ];
     }
 
