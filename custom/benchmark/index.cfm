@@ -1,5 +1,7 @@
 <cfscript>
 	runs = server.system.environment.BENCHMARK_CYCLES ?: 25000;
+
+	setting requesttimeout=runs;
 	warmup = []
 
 	results = {
@@ -25,6 +27,7 @@
 			template = "/tests/#type#.cfm";
 			runError = "";
 			arr = [];
+			s = 0;
 			ArraySet( arr, 1, runs, 0 );
 			try {
 				systemOutput( "Warmup #type#, inspect: [#inspect#]", true );
@@ -48,6 +51,7 @@
 				}, true );
 			} catch ( e ){
 				systemOutput( e, true );
+				echo(e);
 				_logger( e.message );
 				runError = e.message;
 				errorCount++;
@@ -68,6 +72,9 @@
 		}
 	}
 
+	_logger( message="" );
+	_logger( message="-------test run complete------" );
+
 	_memStat = reportMem( "", _memBefore, "before", "HEAP" );
 
 	for ( r in _memStat.report )
@@ -75,11 +82,17 @@
 
 	results.memory=_memStat;
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts/";
-	directoryCreate( dir );
-	fileWrite( dir & server.lucee.version & "-" & server.java.version & "-results.json", results.toJson() );
+	if (!directoryExists( dir ))
+		directoryCreate( dir );
+	reportFile = dir & server.lucee.version & "-" & server.java.version & "-results.json";
+	_logger( message="Writing report to #reportFile#" );
+	
+	fileWrite( reportFile, results.toJson() );
+
+	_logger( message="-------dump logs------" );
 
 	logs = {};
-	loop list="exception.log" item="logFile"{
+	loop list="exception.log,application.log" item="logFile"{
 		log = expandPath( '{lucee-server}/logs/#logFile#' );
 		if ( fileExists( log ) ){
 			systemOutput( "", true );
@@ -92,12 +105,16 @@
 		}
 	}
 
+	_logger( message="-------finished dumping logs------" );
+
 	if ( errorCount > 0 )
 		_logger( message="#errorCount# benchmark(s) failed", throw=true );
 
 	function _logger( string message="", boolean throw=false ){
 		systemOutput( arguments.message, true );
-		if ( !FileExists( server.system.environment.GITHUB_STEP_SUMMARY ) ){
+		if ( !len( server.system.environment.GITHUB_STEP_SUMMARY?:"" ))
+			return;
+		if ( !FileExists( server.system.environment.GITHUB_STEP_SUMMARY  ) ){
 			fileWrite( server.system.environment.GITHUB_STEP_SUMMARY, "#### #server.lucee.version# ");
 			fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, server.system.environment.toJson());
 		}

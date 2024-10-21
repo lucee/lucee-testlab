@@ -4,6 +4,7 @@ component {
 		class: 'com.mysql.cj.jdbc.Driver'
 		, bundleName: 'com.mysql.cj'
 		, connectionString: 'jdbc:mysql://127.0.0.1:3306/lucee_fallback?useSSL=false'
+		, bundleVersion: "9.0.0"
 		, username: "lucee_fallback"
 		, password: "lucee_fallback"
 	}; // fallback
@@ -13,12 +14,14 @@ component {
 			class: 'com.mysql.cj.jdbc.Driver'
 			, bundleName: 'com.mysql.cj'
 			, connectionString: 'jdbc:mysql://127.0.0.1:3306/lucee?useSSL=false'
+			, bundleVersion: "9.0.0"
 			, username: "lucee"
 			, password: "lucee"
 		}
 	};
 
 	function onApplicationStart(){
+		inspectTemplates();
 		query datasource="mysql" {
 			echo("drop table if exists benchmark")
 		}
