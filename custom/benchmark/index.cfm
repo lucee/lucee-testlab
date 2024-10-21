@@ -27,7 +27,7 @@
 			template = "/tests/#type#.cfm";
 			runError = "";
 			arr = [];
-			s = 0;
+			//s = 0;
 			ArraySet( arr, 1, runs, 0 );
 			try {
 				systemOutput( "Warmup #type#, inspect: [#inspect#]", true );
