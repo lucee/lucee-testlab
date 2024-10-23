@@ -9,6 +9,7 @@ component {
             , "qoq-hsqldb"
             , "json-date"
             , "date-format"
+            , "set-cookie"
         ];
     }
 
