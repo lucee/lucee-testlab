@@ -10,6 +10,9 @@ component {
             , "json-date"
             , "date-format"
             , "set-cookie"
+            , "query-manipulation"
+            , "request"
+            , "loops"
         ];
     }
 
