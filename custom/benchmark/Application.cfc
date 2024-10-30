@@ -13,6 +13,7 @@ component {
             , "query-manipulation"
             , "request"
             , "loops"
+            , "primes"
         ];
     }
 
