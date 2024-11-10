@@ -4,7 +4,7 @@
 		headline = "Lucee #server.lucee.version# / Java #server.java.version#";
 
 		if ( structKeyExists( server.system.environment, "GITHUB_STEP_SUMMARY" ) ){
-			fileWrite( server.system.environment.GITHUB_STEP_SUMMARY, "##" & headline & chr(10) );
+			fileWrite( server.system.environment.GITHUB_STEP_SUMMARY, "## " & headline & chr(10) );
 			//fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, report );
 		} else {
 			systemOutput( headline, true );
