@@ -21,7 +21,7 @@
 //		#(failure?':x:':':heavy_check_mark:')#
 		systemOutput( report, true );
 
-		var exeTime = "Test Execution time: #DecimalFormat( result.getTotalDuration() /1000 )# s";
+		exeTime = "Test Execution time: #DecimalFormat( result.getTotalDuration() /1000 )# s";
 		if ( structKeyExists( server.system.environment, "GITHUB_STEP_SUMMARY" ) ){
 			fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, 
 				chr(10) & exeTime);
