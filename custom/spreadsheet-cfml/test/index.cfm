@@ -21,6 +21,12 @@
 //		#(failure?':x:':':heavy_check_mark:')#
 		systemOutput( report, true );
 
+		var exeTime = "Test Execution time: #DecimalFormat( result.getTotalDuration() /1000 )# s";
+		if ( structKeyExists( server.system.environment, "GITHUB_STEP_SUMMARY" ) ){
+			fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, 
+				chr(10) & exeTime);
+		}
+
 		if ( failure ) {
 			error = "TestBox could not successfully execute all testcases: #result.getTotalFail()# tests failed; #result.getTotalError()# tests errored.";
 			if ( structKeyExists( server.system.environment, "GITHUB_STEP_SUMMARY" ) ){
