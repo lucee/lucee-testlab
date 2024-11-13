@@ -17,6 +17,7 @@
 
 	_memBefore = reportMem( "", {}, "before", "HEAP" );
 	errorCount = 0;
+	units = "micro";
 
 	sleep( 2000 ); // initial time to settle
 
@@ -40,14 +41,14 @@
 				sleep( 2000 ); // time to settle
 
 				systemOutput( "Running #type# [#numberFormat( runs )#] times, inspect: [#inspect#]", true );
-				s = getTickCount();
+				s = getTickCount(units);
 			
 				ArrayEach( arr, function( item, idx, _arr ){
 					var start = getTickCount();
 					_internalRequest(
 						template: template
 					);
-					arguments._arr[ arguments.idx ] = getTickCount() - start;
+					arguments._arr[ arguments.idx ] = getTickCount(units) - start;
 				}, true );
 			} catch ( e ){
 				systemOutput( e, true );
@@ -57,9 +58,9 @@
 				errorCount++;
 			}
 
-			time = getTickCount()-s;
+			time = getTickCount(units)-s;
 
-			_logger( "Running #type# [#numberFormat( runs )#] times, inspect: [#inspect#] took #numberFormat( time )# ms, or #numberFormat(runs/(time/1000))# per second" );
+			_logger( "Running #type# [#numberFormat( runs )#] times, inspect: [#inspect#] took #numberFormat( time )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
 			ArrayAppend( results.data, {
 				time: time,
 				inspect: inspect,
