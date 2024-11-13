@@ -1,5 +1,5 @@
 <cfscript>
-	runs = server.system.environment.BENCHMARK_CYCLES ?: 25000;
+	runs = server.system.environment.BENCHMARK_CYCLES ?: 2500;
 
 	setting requesttimeout=runs;
 	warmup = []

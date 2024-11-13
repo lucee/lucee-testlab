@@ -2,7 +2,7 @@
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts";
 	files = directoryList( dir );
 
-	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,_min,_max,_avg,error" );
+	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,throughput_test,_min,_max,_avg,error" );
 	for ( f in files ){
 		systemOutput ( f, true );
 		json = deserializeJson( fileRead( f ) );
@@ -24,6 +24,52 @@
 		}
 	}
 
+	// now take the hello world baseline and subtract that from the other tests, so to highlight the code, excluding the request overhead
+
+	function getBaseline(q_bench){
+		```
+		<cfquery name="local.q" dbtype="query" returnType="struct" columnkey="version">
+			select	version, time
+			from	arguments.q_bench
+			where	type = 'hello-world'
+					and inspect = 'never'
+		</cfquery>
+		```
+		return q;
+	}
+	baseline = getBaseline( q );
+	dump(baseline);
+	
+	
+
+	loop query=q {
+		if ( !structKeyExists(baseline, q.version) )
+			test_throughput=q.time;
+		else
+			test_throughput=q.time-baseline[q.version].time; 
+		if (q.type eq "hello-world" and q.inspect eq "never")
+			test_throughput=q.time; // no baseline for the baseline is there!
+		if (test_throughput > 0)
+			test_throughput = int( q.runs / ( test_throughput / 1000 ) );
+		/*else
+			test_throughput = -1;
+		*/
+		querySetCell(q, "throughput_test", test_throughput , q.currentrow );
+	}
+
+
+	```
+	<cfquery name="q2" dbtype="query">
+		select	version, type, inspect, time, throughput, throughput_test, runs
+		from	q
+		where	type in( 'hello-world', 'json')
+				-- and inspect = 'once'
+		order by version, type
+	</cfquery>
+	```
+
+	dump(q2);
+
 	runs = q.runs;
 
 	_logger( "## Summary Report" );
@@ -35,6 +81,7 @@
 	}
 
 	function _logger( string message="", boolean throw=false ){
+		// dump(message); return;
 		//systemOutput( arguments.message, true );
 		if ( !FileExists( server.system.environment.GITHUB_STEP_SUMMARY ) ){
 			fileWrite( server.system.environment.GITHUB_STEP_SUMMARY, "#### #server.lucee.version# ");
@@ -68,18 +115,18 @@
 		```
 		<cfquery name="local.q" dbtype="query">
 			select	version, java, time, memory,
-					throughput, _min, _avg, _max, error
+					throughput, throughput_test, _min, _avg, _max, error
 			from	arguments.q_src
 			where	type = <cfqueryparam value="#arguments.type#">
 					and inspect = <cfqueryparam value="#arguments.inspect#">
-			order	by throughput desc 
+			order	by throughput_test, throughput desc 
 		</cfquery>
 		```
 
 		var hdr = [];
 		var div = [];
 		loop list=q.columnlist item="local.col" {
-			arrayAppend( hdr, replace( col, "_", "") );
+			arrayAppend( hdr, replace( col, "_", " ") );
 			if ( col eq "memory" or col eq "time" or col eq "throughput" or left( col, 1 ) eq "_" )
 				arrayAppend( div, "---:" );
 			else
@@ -94,7 +141,7 @@
 		var row = [];
 		loop query=q {
 			loop list=q.columnlist item="local.col" {
-				if ( col eq "memory" or col eq "time" or col eq "throughput" )
+				if ( col eq "memory" or col eq "time" or col contains "throughput" )
 					arrayAppend( row, numberFormat( q [ col ] ) );
 				else 
 					arrayAppend( row, q [ col ] );
