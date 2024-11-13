@@ -60,14 +60,14 @@
 
 			time = getTickCount(units)-s;
 
-			_logger( "Running #type# [#numberFormat( runs )#] times, inspect: [#inspect#] took #numberFormat( time )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
+			_logger( "Running #type# [#numberFormat( runs )#] times, inspect: [#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
 			ArrayAppend( results.data, {
-				time: time,
+				time: time/1000,
 				inspect: inspect,
 				type: type,
-				_min: int( arrayMin( arr ) ),
-				_max: int( arrayMax( arr ) ),
-				_avg: int( arrayAvg( arr ) ),
+				_min: decimalFormat( arrayMin( arr )/ 1000 ),
+				_max: decimalFormat( arrayMax( arr )/ 1000 ),
+				_avg: decimalFormat( arrayAvg( arr )/ 1000 ),
 				error: runError
 			});
 		}
