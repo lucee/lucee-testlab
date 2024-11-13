@@ -44,7 +44,7 @@
 				s = getTickCount(units);
 			
 				ArrayEach( arr, function( item, idx, _arr ){
-					var start = getTickCount();
+					var start = getTickCount(units);
 					_internalRequest(
 						template: template
 					);
