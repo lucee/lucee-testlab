@@ -14,6 +14,7 @@ component {
             , "request"
             , "loops"
             , "primes"
+            , "toString"
         ];
     }
 
