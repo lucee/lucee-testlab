@@ -26,7 +26,7 @@
 			directoryCreate( dir );
 		reporter = testRunner.buildReporter( "json" );
 		reportFile = dir & server.lucee.version & "-" & server.java.version & "-results.json";
-		systemOutput( message="Writing testbox stats to #reportFile#", true );
+		systemOutput( "Writing testbox stats to #reportFile#", true );
 
 		report = reporter.runReport( results=result, testbox=testRunner, justReturn=true );
 		report = deserializeJSON(report);
