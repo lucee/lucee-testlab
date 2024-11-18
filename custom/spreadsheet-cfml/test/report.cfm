@@ -33,6 +33,8 @@
 	}
 	// dump(runs);
 
+	if ( IsEmpty( runs ) ) throw "No json report files found?";
+
 	_logger( "## Summary Report" );
 
 	reportRuns( runs );

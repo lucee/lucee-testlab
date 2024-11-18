@@ -121,10 +121,10 @@ jobs:
               key: lucee-downloads
         - uses: actions/download-artifact@v4
           with:
-              path: ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts/test
+              path: ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts
               merge-multiple: true
         - name: Display structure of downloaded files
-          run: ls -R ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts/test
+          run: ls -R ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts
         - name: Generate Report
           uses: lucee/script-runner@main
           with:
@@ -135,5 +135,5 @@ jobs:
           if: always()
           with:
             name: all-results
-            path: ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts/test
+            path: ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts
 
