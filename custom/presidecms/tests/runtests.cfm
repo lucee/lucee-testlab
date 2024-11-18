@@ -320,6 +320,7 @@
 			return ArrayToList( dbDesc, ", " );
 		}
 
+		testRunner = New testbox.system.TestBox();
 		dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts/";
 		if (!directoryExists( dir ))
 			directoryCreate( dir );
