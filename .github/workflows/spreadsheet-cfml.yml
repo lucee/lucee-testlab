@@ -92,7 +92,7 @@ jobs:
      - uses: actions/upload-artifact@v4
        if: always()
        with:
-         name: results-${{ strategy.job-index }}
+         name: results-${{ matrix.luceeVersion }}-${{ matrix.javaVersion }}
          path: ${{ github.workspace }}/test/artifacts
 
   report:
@@ -121,10 +121,10 @@ jobs:
               key: lucee-downloads
         - uses: actions/download-artifact@v4
           with:
-              path: ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts
+              path: ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts/test
               merge-multiple: true
         - name: Display structure of downloaded files
-          run: ls -R ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts
+          run: ls -R ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts/test
         - name: Generate Report
           uses: lucee/script-runner@main
           with:

@@ -101,20 +101,50 @@
 			arrayAppend( hdr2, run.java );
 			arrayAppend( div, "---:" ); // right align as they are all numeric
 		}
+
+		// diff column, first run vs last run
+		arrayAppend( hdr, "diff" );
+		arrayAppend( hdr2, "" );
+		arrayAppend( div, "---:" ); // right align as they are all numeric
+
 		_logger( "" );
 		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
 		_logger( "|" & arrayToList( hdr2, "|" ) & "|" );
 		_logger( "|" & arrayToList( div, "|" ) & "|" );
 
-		var row = [];
+		// now sort the tests by the difference in time between the first run and last run
+
+		var suiteSpecs = [];
+		var suiteSpecsDiff = {};
+
 		loop collection=runs[1].stats key="title" value="test" {
+			var diff = runs[arrayLen(runs)].stats[test.suiteSpec].time-runs[1].stats[test.suiteSpec].time;
+			ArrayAppend( suiteSpecs, {
+				suiteSpec: test.suiteSpec,
+				diff: diff
+			});
+			suiteSpecsDiff[test.suiteSpec] = diff;
+		}
+
+		arraySort(
+			suiteSpecs,
+			function (e1, e2){
+				if (e1.diff gt e2.diff) return -1;
+				else if (e1.diff lt e2.diff) return 1;
+				return 0;
+			}
+		); // sort by performance regression
+
+		var row = [];
+		loop array=suiteSpecs item="test" {
 			ArrayAppend( row, test.suiteSpec );
 			loop array=runs item="local.run" {
 				if ( structKeyExists( run.stats, test.suiteSpec ) )
 					arrayAppend( row, numberFormat( run.stats[test.suiteSpec].time ) );
 				else
-				arrayAppend( row, "");
+					arrayAppend( row, "");
 			}
+			arrayAppend( row, numberFormat( test.diff ) );
 			_logger( "|" & arrayToList( row, "|" ) & "|" );
 			row = [];
 		}
