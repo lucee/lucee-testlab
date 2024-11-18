@@ -8,19 +8,21 @@
 	for ( f in files ){
 		systemOutput ( f, true );
 		json = deserializeJson( fileRead( f ) );
-
-		suiteStats = json.bundleStats[1].suitestats;
-
 		q = queryNew( "time,suite,spec,suiteSpec" );
-		for ( s in suiteStats ){
-			for ( p in s.specStats ){
-				row = queryAddRow( q );
-			  //  querySetCell(q, "java", json.javaVersion, row);
-			  //  querySetCell(q, "version", json.CFMLEngineVersion, row);
-				querySetCell(q, "spec", p.name, row);
-				querySetCell(q, "suite", s.name, row);
-				querySetCell(q, "suiteSpec", s.name & ", " & p.name, row);
-				querySetCell(q, "time", p.totalDuration, row);
+
+		for ( i=1; i <= len(json.bundleStats); i++ ){
+			bundle = json.bundleStats[i];
+			for (j = 1; j <= len(bundle.suiteStats); j++){
+				s = bundle.suiteStats[ j ];
+				for ( p in s.specStats ){
+					row = queryAddRow( q );
+				//  querySetCell(q, "java", json.javaVersion, row);
+				//  querySetCell(q, "version", json.CFMLEngineVersion, row);
+					querySetCell(q, "spec", p.name, row);
+					querySetCell(q, "suite", s.name, row);
+					querySetCell(q, "suiteSpec", s.name & ", " & p.name, row);
+					querySetCell(q, "time", p.totalDuration, row);
+				}
 			}
 		}
 
@@ -30,8 +32,7 @@
 			"totalDuration": json.totalDuration,
 			"stats": queryToStruct(q, "suiteSpec")
 		});
-	}
-	// dump(runs);
+	};
 
 	if ( IsEmpty( runs ) ) throw "No json report files found?";
 
