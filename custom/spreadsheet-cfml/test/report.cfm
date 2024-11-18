@@ -147,7 +147,7 @@
 
 		var row = [];
 		loop array=suiteSpecs item="test" {
-			ArrayAppend( row, test.suiteSpec );
+			ArrayAppend( row, wrap(test.suiteSpec, 70) );
 			loop array=sortedRuns item="local.run" {
 				if ( structKeyExists( run.stats, test.suiteSpec ) )
 					arrayAppend( row, numberFormat( run.stats[test.suiteSpec].time ) );

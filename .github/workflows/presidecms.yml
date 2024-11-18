@@ -53,7 +53,7 @@ jobs:
     needs: [ setup-presidecms ]
     strategy:
       fail-fast: false
-      #max-parallel: 1
+      max-parallel: 1
       matrix:
         luceeVersion: [ 5.4/snapshot/jar, 6.0/snapshot/jar, 6.1/snapshot/jar, 6.1.0/snapshot/jar, 6.2/snapshot/jar ]
         javaVersion: [ 11, 21 ]
