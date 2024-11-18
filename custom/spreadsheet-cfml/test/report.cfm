@@ -95,16 +95,25 @@
 
 	function reportTests( runs ) localmode=true {
 
-		var hdr = [ "Suite / Spec" ];
+		var sortedRuns = duplicate(runs);
 
+		arraySort(
+			sortedRuns,
+			function (e1, e2){
+				return compare(e1.version & e1.java, e2.version & e2.java);
+			}
+		); // sort runs by oldest version to newest version
+
+
+		var hdr = [ "Suite / Spec" ];
 		var div = [ "---" ];
-		loop array=runs item="local.run" {
+		loop array=sortedRuns item="local.run" {
 			arrayAppend( hdr, run.version & " " & listFirst(run.java,".") );
 			arrayAppend( div, "---:" ); // right align as they are all numeric
 		}
 
 		// diff column, first run vs last run
-		arrayAppend( hdr, "diff" );
+		arrayAppend( hdr, "Difference" );
 		arrayAppend( div, "---:" ); // right align as they are all numeric
 
 		_logger( "" );
@@ -115,17 +124,12 @@
 
 		var suiteSpecs = [];
 		var suiteSpecsDiff = {};
-
-		var sortedRuns = duplicate(runs);
-
-		arraySort(
-			sortedRuns,
-			function (e1, e2){
-				return compare(e1.version & e1.java, e2.version & e2.java)
-			}
-		); // sort runs by oldest version to newest version
+		
+		dump(sortedRuns[arrayLen(runs)].version);
+		dump(sortedRuns[1].version);
 
 		loop collection=runs[1].stats key="title" value="test" {
+			// difference between the test time for the newest version minus oldest version
 			var diff = sortedRuns[arrayLen(runs)].stats[test.suiteSpec].time - sortedRuns[1].stats[test.suiteSpec].time;
 			ArrayAppend( suiteSpecs, {
 				suiteSpec: test.suiteSpec,
