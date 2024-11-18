@@ -1,1 +1,5 @@
 /custom/benchmark/artifacts
+/custom/spreadsheet-cfml/test/artifacts
+
+
+getColumnCount, Can get the maximum number of columns in the first sheet

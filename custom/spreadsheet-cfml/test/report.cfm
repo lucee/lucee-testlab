@@ -95,24 +95,20 @@
 
 	function reportTests( runs ) localmode=true {
 
-		var hdr = [ "Test" ];
-		var hdr2 = [ "" ];
+		var hdr = [ "Suite / Spec" ];
 
 		var div = [ "---" ];
 		loop array=runs item="local.run" {
-			arrayAppend( hdr, run.version );
-			arrayAppend( hdr2, run.java );
+			arrayAppend( hdr, run.version & " " & listFirst(run.java,".") );
 			arrayAppend( div, "---:" ); // right align as they are all numeric
 		}
 
 		// diff column, first run vs last run
 		arrayAppend( hdr, "diff" );
-		arrayAppend( hdr2, "" );
 		arrayAppend( div, "---:" ); // right align as they are all numeric
 
 		_logger( "" );
 		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
-		_logger( "|" & arrayToList( hdr2, "|" ) & "|" );
 		_logger( "|" & arrayToList( div, "|" ) & "|" );
 
 		// now sort the tests by the difference in time between the first run and last run
