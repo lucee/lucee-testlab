@@ -1,6 +1,7 @@
 <cfscript>
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts";
-	files = directoryList( dir );
+	systemOutput ( dir, true );
+	files = directoryList( path=dir, filter="*.json" );
 
 	runs = [];
 
