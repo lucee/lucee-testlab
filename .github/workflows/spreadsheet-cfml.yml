@@ -123,6 +123,7 @@ jobs:
           with:
               path: ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts
               merge-multiple: true
+              pattern: results-*
         - name: Display structure of downloaded files
           run: ls -R ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts
         - name: Generate Report
