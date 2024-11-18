@@ -50,7 +50,7 @@ jobs:
     needs: [ setup-spreadsheet-cfml ]
     strategy:
       fail-fast: false
-      max-parallel: 1
+      #max-parallel: 1
       matrix:
         luceeVersion: [ 5.4/snapshot/jar, 6.0/snapshot/jar, 6.1/snapshot/jar, 6.1.0/snapshot/jar, 6.2/snapshot/jar ]
         javaVersion: [ 11, 21 ]
@@ -92,7 +92,7 @@ jobs:
      - uses: actions/upload-artifact@v4
        if: always()
        with:
-         name: results-${{ matrix.luceeVersion }}-${{ matrix.javaVersion }}
+         name: results-${{ strategy.job-index }}
          path: ${{ github.workspace }}/test/artifacts
 
   report:
@@ -131,5 +131,9 @@ jobs:
               webroot: ${{ github.workspace }}/custom/spreadsheet-cfml/test
               execute: /report.cfm
               luceeVersionQuery: 6/stable/light
-
+        - uses: actions/upload-artifact@v4
+          if: always()
+          with:
+            name: all-results
+            path: ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts/test
 
