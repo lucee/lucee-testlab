@@ -124,9 +124,6 @@
 
 		var suiteSpecs = [];
 		var suiteSpecsDiff = {};
-		
-		dump(sortedRuns[arrayLen(runs)].version);
-		dump(sortedRuns[1].version);
 
 		loop collection=runs[1].stats key="title" value="test" {
 			// difference between the test time for the newest version minus oldest version
