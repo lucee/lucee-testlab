@@ -93,7 +93,7 @@ jobs:
        if: always()
        with:
          name: results-${{ strategy.job-index }}
-         path: ${{ github.workspace }}/custom/spreadsheet-cfml/test/artifacts
+         path: ${{ github.workspace }}/test/artifacts
 
   report:
       runs-on: ubuntu-latest
