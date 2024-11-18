@@ -113,7 +113,7 @@
 		}
 
 		// diff column, first run vs last run
-		arrayAppend( hdr, "Difference" );
+		arrayAppend( hdr, "Difference (oldest vs newest)" );
 		arrayAppend( div, "---:" ); // right align as they are all numeric
 
 		_logger( "" );
