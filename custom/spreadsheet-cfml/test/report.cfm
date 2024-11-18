@@ -147,7 +147,8 @@
 
 		var row = [];
 		loop array=suiteSpecs item="test" {
-			ArrayAppend( row, wrap(test.suiteSpec, 70) );
+			// force long names to wrap without breaking markdown
+			ArrayAppend( row, REReplace( wrap(test.suiteSpec, 70), "\n", " ", "ALL") );
 			loop array=sortedRuns item="local.run" {
 				if ( structKeyExists( run.stats, test.suiteSpec ) )
 					arrayAppend( row, numberFormat( run.stats[test.suiteSpec].time ) );
