@@ -21,6 +21,19 @@
 //		#(failure?':x:':':heavy_check_mark:')#
 		systemOutput( report, true );
 
+		dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts/";
+		if (!directoryExists( dir ))
+			directoryCreate( dir );
+		reporter = testRunner.buildReporter( "json" );
+		reportFile = dir & server.lucee.version & "-" & server.java.version & "-results.json";
+		systemOutput( "Writing testbox stats to #reportFile#", true );
+
+		report = reporter.runReport( results=result, testbox=testRunner, justReturn=true );
+		report = deserializeJSON(report);
+		report["javaVersion"] = server.java.version;
+		
+		fileWrite( reportFile, serializeJson(report) );
+
 		exeTime = "Test Execution time: #DecimalFormat( result.getTotalDuration() /1000 )# s";
 		if ( structKeyExists( server.system.environment, "GITHUB_STEP_SUMMARY" ) ){
 			fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, 

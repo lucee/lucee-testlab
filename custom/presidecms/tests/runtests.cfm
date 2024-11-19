@@ -320,6 +320,21 @@
 			return ArrayToList( dbDesc, ", " );
 		}
 
+		testRunner = New testbox.system.TestBox();
+		dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts/";
+		if (!directoryExists( dir ))
+			directoryCreate( dir );
+		reporter = testRunner.buildReporter( "json" );
+		reportFile = dir & server.lucee.version & "-" & server.java.version & "-results.json";
+		systemOutput( "Writing testbox stats to #reportFile#", true );
+
+		report = reporter.runReport( results=result, testbox=testRunner, justReturn=true );
+		report = deserializeJSON(report);
+		report["javaVersion"] = server.java.version;
+		
+		fileWrite( reportFile, serializeJson(report) );
+
+
 		results = [];
 		results_md = ["## Preside CMS, Lucee #server.lucee.version# / Java #server.java.version#", ""];
 
