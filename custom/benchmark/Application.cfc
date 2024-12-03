@@ -15,6 +15,7 @@ component {
             , "loops"
             , "primes"
             , "toString"
+            , "xml"
         ];
     }
 
