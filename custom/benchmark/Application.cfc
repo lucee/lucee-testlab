@@ -16,6 +16,8 @@ component {
             , "primes"
             , "toString"
             , "xml"
+            , "member-java"
+            , "member-cfml"
         ];
     }
 
