@@ -1,5 +1,5 @@
 <cfscript>
-	runs = server.system.environment.BENCHMARK_CYCLES ?: 10000;
+	runs = server.system.environment.BENCHMARK_CYCLES ?: 25000;
 
 	setting requesttimeout=runs;
 	warmup = []
@@ -13,7 +13,7 @@
 		}
 	};
 
-	ArraySet( warmup, 1, 5001, 0 ); // -XX:Tier4InvocationThreshold=N (default 5000) let's get to C2 compilation!
+	ArraySet( warmup, 1, 25, 0 );
 
 	_memBefore = reportMem( "", {}, "before", "HEAP" );
 	errorCount = 0;
@@ -21,7 +21,7 @@
 
 	sleep( 2000 ); // initial time to settle
 
-	loop list="never" item="inspect" { // once,
+	loop list="once,never" item="inspect" {
 		configImport( {"inspectTemplate": inspect }, "server", "admin" );
 
 		loop list="#application.testSuite.toList()#" item="type" {
