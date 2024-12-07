@@ -89,6 +89,9 @@ jobs:
           execute: /test/index.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
           compile: ${{ env.compile }}
+       env:
+          LUCEE_ALLOW_REFLECTION: true
+          LUCEE_PRECISE_MATH: false
      - uses: actions/upload-artifact@v4
        if: always()
        with:
