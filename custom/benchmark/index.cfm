@@ -19,7 +19,12 @@
 	errorCount = 0;
 	units = "micro";
 
-	sleep( 2000 ); // initial time to settle
+	appSettings = getApplicationSettings();
+	systemOutput("Precise Math: " & (appSettings.preciseMath ?: "not supported"), true);
+
+	systemOutput("Sleeping for 5s, allow server to startup and settle", true);
+	systemOutput("", true);
+	sleep( 5000 ); // initial time to settle
 
 	loop list="once,never" item="inspect" {
 		configImport( {"inspectTemplate": inspect }, "server", "admin" );
@@ -49,7 +54,7 @@
 						template: template
 					);
 					arguments._arr[ arguments.idx ] = getTickCount(units) - start;
-				}, true );
+				}, true);
 			} catch ( e ){
 				systemOutput( e, true );
 				echo(e);
