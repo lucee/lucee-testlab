@@ -55,16 +55,13 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        luceeVersion: [ 5.4/snapshot/jar, 6.0/snapshot/jar, 6.1/snapshot/jar, 6.1.0/snapshot/jar, 6.2/snapshot/jar ]
-        javaVersion: [ 11, 21 ]
-        exclude: 
-            - luceeVersion: 5.4/snapshot/jar
-              javaVersion: 21
-            - luceeVersion: 6.0/snapshot/jar
-              javaVersion: 21
+        luceeVersion: [ 6.2/snapshot/jar ]
+        javaVersion: [ 21 ]
+        keySize: [ 1000, 5000, 7500, 10000, 25000, 50000]
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
         compile: ${{ github.event.inputs.compile }}
+        LUCEE_CACHE_VARIABLEKEYS: ${{ matrix.keySize }}
     steps:
       - name: Restore pre-prepared webroot
         uses: actions/download-artifact@v4
