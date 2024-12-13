@@ -57,7 +57,7 @@ jobs:
       matrix:
         luceeVersion: [ 6.2/snapshot/jar ]
         javaVersion: [ 21 ]
-        keySize: [ 1000, 5000, 7500, 10000, 25000, 50000]
+        keySize: [ 767,1535,3071,6143,12287 ]
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
         compile: ${{ github.event.inputs.compile }}
