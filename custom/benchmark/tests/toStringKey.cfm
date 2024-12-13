@@ -1,10 +1,7 @@
 <cfscript>
-    samples = {
-        key: createObject("java", "lucee.runtime.type.KeyImpl").init("zac")
-    }
-    for (s in samples){
-        loop times=1000000 {
-            echo(samples[s].toString());
-        }
+    key =createObject("java", "lucee.runtime.type.KeyImpl").init("am_I_slow");
+    
+    loop times=100 {
+        key.toString();
     }
 </cfscript>
