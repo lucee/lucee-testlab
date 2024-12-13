@@ -5,8 +5,8 @@ component {
         application.testSuite = [
             "hello-world"
             , "json"
-            , "db"
-            , "qoq-hsqldb"
+            //, "db"
+            //, "qoq-hsqldb"
             , "json-date"
             , "date-format"
             , "set-cookie"
@@ -15,9 +15,14 @@ component {
             , "loops"
             , "primes"
             , "toString"
-            , "xml"
+            , "toStringKey"
+           , "xml"
             , "member-java"
             , "member-cfml"
+        ];
+
+        application.testSuite = [
+            "toStringKey"
         ];
     }
 
