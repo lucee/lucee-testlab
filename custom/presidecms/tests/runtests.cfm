@@ -325,7 +325,8 @@
 		if (!directoryExists( dir ))
 			directoryCreate( dir );
 		reporter = testRunner.buildReporter( "json" );
-		reportFile = dir & server.lucee.version & "-" & server.java.version & "-results.json";
+		// add getTickCount() due to https://github.com/actions/download-artifact/issues/298
+		reportFile = dir & server.lucee.version & "-" & server.java.version & "-#getTickCount()#-results.json";
 		systemOutput( "Writing testbox stats to #reportFile#", true );
 
 		report = reporter.runReport( results=result, testbox=testRunner, justReturn=true );
