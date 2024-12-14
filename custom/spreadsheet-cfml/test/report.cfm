@@ -30,6 +30,7 @@
 			"java": json.javaVersion,
 			"version": json.CFMLEngineVersion,
 			"totalDuration": json.totalDuration,
+			"startTime": json.startTime,
 			"stats": queryToStruct(q, "suiteSpec")
 		});
 	};
@@ -98,13 +99,29 @@
 
 		var sortedRuns = duplicate(runs);
 
-		arraySort(
-			sortedRuns,
-			function (e1, e2){
-				return compare(e1.version & e1.java, e2.version & e2.java);
-			}
-		); // sort runs by oldest version to newest version
+		// check if the version and java is all the same, then sort by starttime
+		var runKeys = {};
+		loop array=sortedRuns index="r" item="i" {
+			runKeys[ i.version & i.java ] = true;
+		}
 
+		if ( structCount( runKeys ) eq 1 ){
+			// all the same version and java, sort runs by start time
+			arraySort(
+				sortedRuns,
+				function (e1, e2){
+					return compare( e1.startTime, e2.startTime );
+				}
+			); 
+		} else {
+			// sort runs by oldest version to newest version
+			arraySort(
+				sortedRuns,
+				function (e1, e2){
+					return compare( e1.version & e1.java, e2.version & e2.java );
+				}
+			); 
+		}
 
 		var hdr = [ "Suite / Spec" ];
 		var div = [ "---" ];
