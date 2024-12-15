@@ -19,6 +19,9 @@ component {
             , "member-java"
             , "member-cfml"
         ];
+        application.testSuite = [
+            "fileReadBinary"
+        ];
     }
 
     function onRequestStart(){
