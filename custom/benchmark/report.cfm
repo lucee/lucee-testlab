@@ -96,6 +96,8 @@
 			loop list=q.columnlist item="local.col" {
 				if ( col eq "memory" or col eq "time" or col eq "throughput" )
 					arrayAppend( row, numberFormat( q [ col ] ) );
+				else if ( col eq "error" )
+					arrayAppend( row, htmleditformat( REReplace( q [ col ], "\n", " ", "ALL") ) );
 				else 
 					arrayAppend( row, q [ col ] );
 			}
