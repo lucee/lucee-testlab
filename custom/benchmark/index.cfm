@@ -21,7 +21,7 @@
 
 	appSettings = getApplicationSettings();
 	systemOutput("Precise Math: " & (appSettings.preciseMath ?: "not supported"), true);
-	max_threads = createObject("java", "java.lang.Runtime").getRuntime().availableProcessors();
+	max_threads = int(createObject("java", "java.lang.Runtime").getRuntime().availableProcessors() * 1.5);
 	systemOutput("Using [#max_threads#] parallel threads, i.e. java.lang.Runtime.availableProcessors()", true);
 	systemOutput("Sleeping for 5s, allow server to startup and settle", true);
 	systemOutput("", true);
