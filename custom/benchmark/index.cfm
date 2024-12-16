@@ -21,8 +21,9 @@
 
 	appSettings = getApplicationSettings();
 	systemOutput("Precise Math: " & (appSettings.preciseMath ?: "not supported"), true);
-	max_threads = int(createObject("java", "java.lang.Runtime").getRuntime().availableProcessors() * 2);
-	systemOutput("Using [#max_threads#] parallel threads, i.e. java.lang.Runtime.availableProcessors()", true);
+	max_threads = 0; // use lucee default
+	// max_threads = int(createObject("java", "java.lang.Runtime").getRuntime().availableProcessors() * 2);
+	// systemOutput("Using [#max_threads#] parallel threads", true);
 	systemOutput("Sleeping for 5s, allow server to startup and settle", true);
 	systemOutput("", true);
 	sleep( 5000 ); // initial time to settle
