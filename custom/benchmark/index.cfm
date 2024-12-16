@@ -21,7 +21,8 @@
 
 	appSettings = getApplicationSettings();
 	systemOutput("Precise Math: " & (appSettings.preciseMath ?: "not supported"), true);
-
+	max_threads = createObject("java", "java.lang.Runtime").getRuntime().availableProcessors();
+	systemOutput("Using [#max_threads#] parallel threads, i.e. java.lang.Runtime.availableProcessors()", true);
 	systemOutput("Sleeping for 5s, allow server to startup and settle", true);
 	systemOutput("", true);
 	sleep( 5000 ); // initial time to settle
@@ -41,7 +42,7 @@
 					_internalRequest(
 						template: template
 					);
-				}, true );
+				}, true, max_threads );
 				systemOutput( "Sleeping 2s first, after warmup", true );
 				sleep( 2000 ); // time to settle
 
@@ -54,7 +55,7 @@
 						template: template
 					);
 					arguments._arr[ arguments.idx ] = getTickCount(units) - start;
-				}, true);
+				}, true, max_threads );
 			} catch ( e ){
 				systemOutput( e, true );
 				echo(e);
