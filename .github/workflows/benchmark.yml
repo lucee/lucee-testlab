@@ -12,12 +12,18 @@ jobs:
       max-parallel: 1
       matrix:
         luceeVersion: [ 5.4/snapshot/light, 6.0/snapshot/light, 6.1/snapshot/light, 6.2/snapshot/light ]
-        javaVersion: [ 11, 21 ]
+        javaVersion: [ 11, 21, 23 ]
         exclude:
             - luceeVersion: 5.4/snapshot/light
               javaVersion: 21
+            - luceeVersion: 5.4/snapshot/light
+              javaVersion: 23
             - luceeVersion: 6.0/snapshot/light
               javaVersion: 21
+            - luceeVersion: 6.0/snapshot/light
+              javaVersion: 23
+            - luceeVersion: 6.1/snapshot/light
+              javaVersion: 23
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
         compile: ${{ github.event.inputs.compile }}
