@@ -21,7 +21,7 @@
 
 	appSettings = getApplicationSettings();
 	systemOutput("Precise Math: " & (appSettings.preciseMath ?: "not supported"), true);
-	max_threads = 0; // use lucee default
+	// max_threads = 0; // use lucee default
 	// max_threads = int(createObject("java", "java.lang.Runtime").getRuntime().availableProcessors() * 2);
 	// systemOutput("Using [#max_threads#] parallel threads", true);
 	systemOutput("Sleeping for 5s, allow server to startup and settle", true);
@@ -43,7 +43,7 @@
 					_internalRequest(
 						template: template
 					);
-				}, true, max_threads );
+				}, true);
 				systemOutput( "Sleeping 2s first, after warmup", true );
 				sleep( 2000 ); // time to settle
 
@@ -56,7 +56,7 @@
 						template: template
 					);
 					arguments._arr[ arguments.idx ] = getTickCount(units) - start;
-				}, true, max_threads );
+				}, true);
 			} catch ( e ){
 				systemOutput( e, true );
 				echo(e);
