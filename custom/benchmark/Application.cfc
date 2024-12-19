@@ -22,7 +22,8 @@ component {
         application.testSuite = [
             "fileReadBinary",
             "qrcode",
-            "qrcode-createObject"
+            "qrcode-createObject",
+            "directoryList"
         ];
     }
 
