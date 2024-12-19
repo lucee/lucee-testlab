@@ -23,7 +23,8 @@ component {
             "fileReadBinary",
             "qrcode",
             "qrcode-createObject",
-            "directoryList"
+            "directoryList",
+            "qrcode-createObject-emptyInit"
         ];
     }
 
