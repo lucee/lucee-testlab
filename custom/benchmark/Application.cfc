@@ -18,11 +18,11 @@ component {
             , "xml"
             , "member-java"
             , "member-cfml"
-            , "qrcode",
+            , "qrcode"
             , "qrcode-createObject"
-            , "resource",
+            , "resource"
             , "resource-util"
-            , "directoryList",
+            , "directoryList"
             , "qrcode-createObject-emptyInit"
         ];
     }
