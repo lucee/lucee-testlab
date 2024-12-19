@@ -18,16 +18,12 @@ component {
             , "xml"
             , "member-java"
             , "member-cfml"
-        ];
-        application.testSuite = [
-            //"fileReadBinary",
-            //"qrcode"
-            //,
-            "qrcode-createObject",
-            "resource",
-            "resource-util"
-            //"directoryList",
-            //"qrcode-createObject-emptyInit"
+            , "qrcode",
+            , "qrcode-createObject"
+            , "resource",
+            , "resource-util"
+            , "directoryList",
+            , "qrcode-createObject-emptyInit"
         ];
     }
 
