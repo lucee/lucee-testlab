@@ -20,11 +20,14 @@ component {
             , "member-cfml"
         ];
         application.testSuite = [
-            "fileReadBinary",
-            "qrcode",
+            //"fileReadBinary",
+            //"qrcode"
+            //,
             "qrcode-createObject",
-            "directoryList",
-            "qrcode-createObject-emptyInit"
+            "resource",
+            "resource-util"
+            //"directoryList",
+            //"qrcode-createObject-emptyInit"
         ];
     }
 
