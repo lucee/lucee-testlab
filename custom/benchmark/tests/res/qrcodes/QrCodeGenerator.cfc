@@ -32,7 +32,10 @@ component {
 // PRIVATE HELPERS
 	private void function _setupLibPath() {
 		var dir      = GetDirectoryFromPath( GetCurrentTemplatePath() ) & "/lib";
-		var jarFiles = DirectoryList( dir, true, "path" );
+		// type="dir" was missing in the original code, so lucee would expand them path,
+		// which meant the jars were listed twice, but then lucee subsequently  ignores them,
+		// but there's overhead to check each path etc
+		var jarFiles = DirectoryList( path=dir, recurse=true, listinfo="path", type="dir" );
 		// systemOutput( jarFiles, true ); reduces errors with older versions
 		_setLibPath( jarFiles );
 	}
