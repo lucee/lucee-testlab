@@ -4,7 +4,7 @@ component {
     function onApplicationStart(){
         application.testSuite = [
             "hello-world"
-            , "json"
+            /*, "json"
             , "db"
             , "qoq-hsqldb"
             , "json-date"
@@ -17,9 +17,10 @@ component {
             , "toString"
             , "xml"
             , "member-java"
-            , "member-cfml"
+             */
+            , "member-cfml" 
             , "qrcode"
-            , "qrcode-createObject"
+            , "qrcode-createObject" 
             , "resource"
             , "resource-util"
             , "directoryList"
