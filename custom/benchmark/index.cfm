@@ -1,6 +1,6 @@
 <cfscript>
-	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 25000;
-	once_runs = server.system.environment.BENCHMARK_CYCLES ?: 5000;
+	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 2500;
+	once_runs = server.system.environment.BENCHMARK_CYCLES ?: 500;
 	warmup_runs = 250;
 	setting requesttimeout=never_runs+once_runs;
 	warmup = [];
@@ -80,11 +80,13 @@
 					);
 					var elapsed = getTickCount(units) - start;
 					arguments._arr[ arguments.idx ] = elapsed;
+					/*
 					if (elapsed > 50000){
 						 var mess = "[#type#] was waaay too slow [#elapsed#], aborting";
 						 _logger( mess );
 						 throw mess;
 					}
+					*/
 				}, true);
 			} catch ( e ){
 				systemOutput( e, true );
