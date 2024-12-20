@@ -52,13 +52,23 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        luceeVersion: [ 5.4/snapshot/jar, 6.0/snapshot/jar, 6.1/snapshot/jar, 6.1.0/snapshot/jar, 6.2/snapshot/jar ]
-        javaVersion: [ 11, 21 ]
-        exclude: 
-            - luceeVersion: 5.4/snapshot/jar
+        luceeVersion: [ 6.2/snapshot/light, 6.2.0.166/rc/light, 6.1/snapshot/light, 6.0/snapshot/light, 5.4/snapshot/light ]
+        javaVersion: [ 11, 21, 23 ]
+        exclude:
+            - luceeVersion: 5.4/snapshot/light
               javaVersion: 21
-            - luceeVersion: 6.0/snapshot/jar
+            - luceeVersion: 5.4/snapshot/light
+              javaVersion: 23
+            - luceeVersion: 6.0/snapshot/light
               javaVersion: 21
+            - luceeVersion: 6.0/snapshot/light
+              javaVersion: 23
+            - luceeVersion: 6.1/snapshot/light
+              javaVersion: 23
+            - luceeVersion: 6.2.0.166/rc/light
+              javaVersion: 11
+            - luceeVersion: 6.2.0.166/rc/light
+              javaVersion: 23
     env:
       compile: ${{ github.event.inputs.compile }}
     steps:
