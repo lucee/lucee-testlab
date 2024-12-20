@@ -101,7 +101,7 @@
 				_max: decimalFormat( arrayMax( arr )/ 1000 ),
 				_avg: decimalFormat( arrayAvg( arr )/ 1000 ),
 				error: runError,
-				runs: arrayLen(runs)
+				runs: arrayLen( arr )
 			});
 		}
 	}
