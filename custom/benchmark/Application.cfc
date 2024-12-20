@@ -25,6 +25,7 @@ component {
             , "resource-util"
             , "directoryList"
             , "qrcode-createObject-emptyInit"
+            , "properties"
         ];
     }
 
