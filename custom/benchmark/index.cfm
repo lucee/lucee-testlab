@@ -72,21 +72,24 @@
 
 				systemOutput( "Running #type# [#numberFormat( runs )#] times, inspect: [#inspect#]", true );
 				s = getTickCount(units);
+
+				runAborted = false;
+				maxElapsedThreshold = 10 * 1000; //10s
 			
 				ArrayEach( arr, function( item, idx, _arr ){
+					if (runAborted) return;
 					var start = getTickCount(units);
 					_internalRequest(
 						template: template
 					);
 					var elapsed = getTickCount(units) - start;
 					arguments._arr[ arguments.idx ] = elapsed;
-					/*
-					if (elapsed > 50000){
+					if (!runAborted && elapsed > maxElapsedThreshold){
+						runAborted = true;
 						 var mess = "[#type#] was waaay too slow [#elapsed#], aborting";
 						 _logger( mess );
 						 throw mess;
 					}
-					*/
 				}, true);
 			} catch ( e ){
 				systemOutput( e, true );
