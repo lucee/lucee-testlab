@@ -74,7 +74,7 @@
 				s = getTickCount(units);
 
 				runAborted = false;
-				maxElapsedThreshold = 10 * 1000; //10s
+				maxElapsedThreshold = 10 * 1000 * 1000; //10s see units!
 			
 				ArrayEach( arr, function( item, idx, _arr ){
 					if (runAborted) return;
