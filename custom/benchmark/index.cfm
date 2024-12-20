@@ -2,7 +2,7 @@
 	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 25000;
 	once_runs = server.system.environment.BENCHMARK_CYCLES ?: 5000;
 	warmup_runs = 250;
-	setting requesttimeout=runs;
+	setting requesttimeout=never_runs+once_runs;
 	warmup = [];
 
 	results = {
@@ -78,7 +78,9 @@
 					_internalRequest(
 						template: template
 					);
-					arguments._arr[ arguments.idx ] = getTickCount(units) - start;
+					var elapsed = getTickCount(units) - start;
+					arguments._arr[ arguments.idx ] = elapsed;
+					if (elapsed > 500) throw "Test took was too slow [#elapsed#], aborting";
 				}, true);
 			} catch ( e ){
 				systemOutput( e, true );
@@ -99,7 +101,7 @@
 				_max: decimalFormat( arrayMax( arr )/ 1000 ),
 				_avg: decimalFormat( arrayAvg( arr )/ 1000 ),
 				error: runError,
-				runs: runs
+				runs: arrayLen(runs)
 			});
 		}
 	}
