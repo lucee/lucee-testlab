@@ -5,9 +5,12 @@
         string: "lucee",
         number: 123,
         boolean: true,
-        short: createObject("java","java.lang.Short").init(1)
+        short: createObject("java","java.lang.Short").init(1),
+        key: createObject("java", "lucee.runtime.type.KeyImpl").init("zzzzz")
     }
     for (s in samples){
-        echo(samples[s].toString());
+        loop times=1000 {
+            samples[s].toString();
+        }
     }
 </cfscript>

@@ -18,7 +18,7 @@
 
 		for ( r in json.data ){
 			StructAppend( r, json.run );
-			r.throughput = int( json.run.runs / ( r.time / 1000 ) );
+			r.throughput = int( r.runs / ( r.time / 1000 ) );
 			row = queryAddRow( q );
 			QuerySetRow( q, row, r );
 		}
