@@ -17,7 +17,8 @@
 	} else {
 		suites = application.testSuite.toList();
 	}
-	longestSuiteName = [];
+	
+	longestName =  [];
 	arrayEach( suites, ArrayEach( warmup, function( item ){
 			arrayAppend( longestName, len( item ) );
 		})
