@@ -15,7 +15,7 @@
 				arrayAppend( suites, listFirst( listLast( suite, "/\" ), "." ) );
 		}
 	} else {
-		suites = application.testSuite.toList();
+		suites = application.testSuite;
 	}
 	
 	longestName =  [];
