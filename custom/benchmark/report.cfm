@@ -28,7 +28,7 @@
 
 	_logger( "## Summary Report" );
 
-	loop list="once,never" item="inspect" {
+	loop list="never,once" item="inspect" {
 		loop list="#application.testSuite.toList()#" item="type" {
 			dumpTable( q, type, inspect, replace(type,"-", " ", "all") & " - " & UCase( inspect ) );
 		}

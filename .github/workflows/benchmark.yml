@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        luceeVersion: [ 6.2/snapshot/light, 6.2.0.166/rc/light, 5.4/snapshot/light ] # 5.4/snapshot/light, 6.0/snapshot/light, 6.1/snapshot/light
+        luceeVersion: [ 6.2/snapshot/zero, 6.2.0.166/rc/zero, 5.4/snapshot/light ] # 5.4/snapshot/light, 6.0/snapshot/light, 6.1/snapshot/light
         javaVersion: [ 11, 21, 23 ]
         exclude:
             - luceeVersion: 5.4/snapshot/light
@@ -111,7 +111,7 @@ jobs:
         with:
             webroot: ${{ github.workspace }}/custom/benchmark
             execute: /report.cfm
-            luceeVersionQuery: 6/stable/light
+            luceeVersionQuery: 6/stable/zero
             extensions:  D46B46A9-A0E3-44E1-D972A04AC3A8DC10 #cfchart
 
 

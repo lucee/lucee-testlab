@@ -1,5 +1,5 @@
 <cfscript>
-	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 2500;
+	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 5000;
 	once_runs = server.system.environment.BENCHMARK_CYCLES ?: 500;
 	warmup_runs = 250;
 	setting requesttimeout=never_runs+once_runs;
@@ -86,7 +86,7 @@
 					arguments._arr[ arguments.idx ] = elapsed;
 					if (!runAborted && elapsed > maxElapsedThreshold){
 						runAborted = true;
-						 var mess = "[#type#] was waaay too slow [#elapsed#], aborting";
+						 var mess = "[#type#] was waaay too slow [#elapsed/1000#], aborting";
 						 _logger( mess );
 						 throw mess;
 					}

@@ -9,7 +9,7 @@
         key: createObject("java", "lucee.runtime.type.KeyImpl").init("zzzzz")
     }
     for (s in samples){
-        loop times=1000 {
+        loop times=100 {
             samples[s].toString();
         }
     }
