@@ -2,7 +2,7 @@
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts";
 	files = directoryList( dir );
 
-	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,_min,_max,_avg,error" );
+	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,_min,_max,_avg,error,raw" );
 	for ( f in files ){
 		systemOutput ( f, true );
 		json = deserializeJson( fileRead( f ) );
