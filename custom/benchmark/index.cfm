@@ -19,10 +19,9 @@
 	}
 	
 	longestName =  [];
-	arrayEach( suites, ArrayEach( warmup, function( item ){
-			arrayAppend( longestName, len( item ) );
-		})
-	);
+	arrayEach( suites, function( item ){
+		arrayAppend( longestName, len( item ) );
+	});
 	longestSuiteName = arrayMax( longestName );
 	suites = suites.toList();
 
