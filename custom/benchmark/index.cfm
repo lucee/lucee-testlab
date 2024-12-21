@@ -1,6 +1,6 @@
 <cfscript>
 	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 25000;
-	once_runs = server.system.environment.BENCHMARK_CYCLES ?: 500;
+	once_runs = server.system.environment.BENCHMARK_CYCLES ?: 1005; // to trigger level 4 compilation
 	warmup_runs = 250;
 	setting requesttimeout=never_runs+once_runs;
 	warmup = [];
