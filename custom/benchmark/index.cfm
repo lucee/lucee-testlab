@@ -44,10 +44,10 @@
 	// max_threads = int(createObject("java", "java.lang.Runtime").getRuntime().availableProcessors() * 2);
 	// systemOutput("Using [#max_threads#] parallel threads", true);
 	systemOutput("Sleeping for 5s, allow server to startup and settle", true);
-	systemOutput("", true);
 	sleep( 5000 ); // initial time to settle
 
 	loop list="once,never" item="inspect" {
+		systemOutput("", true);
 		configImport( {"inspectTemplate": inspect }, "server", "admin" );
 		if (inspect eq "never")
 			runs = never_runs;
@@ -70,11 +70,11 @@
 				systemOutput( "Sleeping 2s first, after warmup", true );
 				sleep( 2000 ); // time to settle
 
-				systemOutput( "Running #type# [#numberFormat( runs )#] times, inspect: [#inspect#]", true );
+				systemOutput( "Running #type# [#numberFormat( runs )#-#inspect#]", true );
 				s = getTickCount(units);
 
 				runAborted = false;
-				maxElapsedThreshold = 10 * 1000 * 1000; //10s see units!
+				maxElapsedThreshold = 1 * 1000 * 1000; // in micro seconds, see units!
 			
 				ArrayEach( arr, function( item, idx, _arr ){
 					if (runAborted) return;
