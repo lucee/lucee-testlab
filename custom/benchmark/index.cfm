@@ -12,7 +12,7 @@
 		suites = [];
 		for ( suite in availableSuites ){
 			if ( suite contains filter )
-				arrayAppend( suites, listLast( listLast( suite, "/\" ), "." ) );
+				arrayAppend( suites, listFirst( listLast( suite, "/\" ), "." ) );
 		}
 	} else {
 		suites = application.testSuite.toList();
