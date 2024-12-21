@@ -1,5 +1,5 @@
 <cfscript>
-	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 5000;
+	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 10000;
 	once_runs = server.system.environment.BENCHMARK_CYCLES ?: 500;
 	warmup_runs = 250;
 	setting requesttimeout=never_runs+once_runs;
