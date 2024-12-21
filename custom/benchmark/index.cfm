@@ -1,5 +1,5 @@
 <cfscript>
-	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 10000;
+	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 25000;
 	once_runs = server.system.environment.BENCHMARK_CYCLES ?: 500;
 	warmup_runs = 250;
 	setting requesttimeout=never_runs+once_runs;
@@ -101,7 +101,7 @@
 
 			time = getTickCount(units)-s;
 
-			_logger( "Running #type# [#numberFormat( runs )#] times, inspect: [#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
+			_logger( "Running #type# [#numberFormat( runs )#-#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
 			ArrayAppend( results.data, {
 				time: time/1000,
 				inspect: inspect,
