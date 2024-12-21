@@ -14,7 +14,7 @@
 			if ( isNumeric( json.memory.usage[ m ] ) )
 				memory += json.memory.usage[ m ];
 		}
-		json.run.memory = int( memory / 1024 );
+		json.run.memory = int( memory / 1024 / 1024 );
 
 		for ( r in json.data ){
 			StructAppend( r, json.run );
@@ -68,7 +68,7 @@
 		```
 		<cfquery name="local.q" dbtype="query">
 			select	version, java, time, memory,
-					throughput, _min, _avg, _max, error
+					throughput, _min, _avg, _med, _max, error
 			from	arguments.q_src
 			where	type = <cfqueryparam value="#arguments.type#">
 					and inspect = <cfqueryparam value="#arguments.inspect#">

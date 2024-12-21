@@ -1,9 +1,29 @@
 <cfscript>
-	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 25000;
-	once_runs = server.system.environment.BENCHMARK_CYCLES ?: 500
+	never_runs = int( ( server.system.environment.BENCHMARK_CYCLES ?: 25 ) * 1000);
+	once_runs = int( ( server.system.environment.BENCHMARK_ONCE_CYCLES ?: 0.5) * 1000)
 	warmup_runs = 1000; // ensure level 4 compilation
 	setting requesttimeout=never_runs+once_runs;
 	warmup = [];
+
+	filter = server.system.environment.BENCHMARK_FILTER ?: "";
+	if ( len( trim( filter ) ) ){
+		testDir = GetDirectoryFromPath( GetCurrentTemplatePath() ) & "/tests";
+		availableSuites = DirectoryList( testDir, true, "path" )
+		suites = [];
+		for ( suite in availableSuites ){
+			if ( suite contains filter )
+				arrayAppend( suites, listLast( listLast( suite, "/\" ), "." ) );
+		}
+	} else {
+		suites = application.testSuite.toList();
+	}
+	longestSuiteName = [];
+	arrayEach( suites, ArrayEach( warmup, function( item ){
+			arrayAppend( longestName, len( item ) );
+		})
+	);
+	longestSuiteName = arrayMax( longestName );
+	suites = suites.toList();
 
 	results = {
 		data = [],
@@ -44,6 +64,7 @@
 	// max_threads = int(createObject("java", "java.lang.Runtime").getRuntime().availableProcessors() * 2);
 	// systemOutput("Using [#max_threads#] parallel threads", true);
 	systemOutput("Sleeping for 5s, allow server to startup and settle", true);
+	systemOutput( getCpuUsage() );
 	sleep( 5000 ); // initial time to settle
 
 	loop list="once,never" item="inspect" {
@@ -54,14 +75,15 @@
 		else
 			runs = once_runs;
 
-		loop list="#application.testSuite.toList()#" item="type" {
+		loop list="#suites#" item="type" {
 			template = "/tests/#type#.cfm";
+			suiteName = LJustify( type, longestSuiteName ); // lines up output
 			runError = "";
 			arr = [];
 			s = 0;
 			ArraySet( arr, 1, runs, 0 );
 			try {
-				systemOutput( "Warmup #type#, inspect: [#inspect#]", true );
+				systemOutput( "Warmup #suiteName#, inspect: [#inspect#]", true );
 				ArrayEach( warmup, function( item ){
 					_internalRequest(
 						template: template
@@ -69,8 +91,8 @@
 				}, true);
 				systemOutput( "Sleeping 2s first, after warmup", true );
 				sleep( 2000 ); // time to settle
-
-				systemOutput( "Running #type# [#numberFormat( runs )#-#inspect#]", true );
+				
+				systemOutput( "Running #suiteName# [#numberFormat( runs/1000 )#k-#inspect#]", true );
 				s = getTickCount(units);
 
 				runAborted = false;
@@ -86,7 +108,7 @@
 					arguments._arr[ arguments.idx ] = elapsed;
 					if (!runAborted && elapsed > maxElapsedThreshold){
 						runAborted = true;
-						 var mess = "[#type#] was waaay too slow [#elapsed/1000#], aborting";
+						 var mess = "[#suiteName#] was waaay too slow [#elapsed/1000#], aborting";
 						 _logger( mess );
 						 throw mess;
 					}
@@ -106,22 +128,30 @@
 				time: time/1000,
 				inspect: inspect,
 				type: type,
-				_min: decimalFormat( arrayMin( arr )/ 1000 ),
-				_max: decimalFormat( arrayMax( arr )/ 1000 ),
-				_avg: decimalFormat( arrayAvg( arr )/ 1000 ),
+				_min: decimalFormat( arrayMin( arr ) / 1000 ),
+				_max: decimalFormat( arrayMax( arr ) / 1000 ),
+				_avg: decimalFormat( arrayAvg( arr ) / 1000 ),
+				_med: decimalFormat( arrayMedian( arr ) / 1000 ),
 				error: runError,
-				runs: arrayLen( arr )
+				runs: arrayLen( arr ),
+				raw: arr
 			});
 		}
 	}
 
 	_logger( message="" );
 	_logger( message="-------test run complete------" );
-
-	_memStat = reportMem( "", _memBefore, "before", "HEAP" );
+	
+	_memStat = reportMem( "", _memBefore.usage, "before", "HEAP" );
 
 	for ( r in _memStat.report )
 		_logger( r );
+	_logger( message="-------trigger GC------" );
+	createObject( "java", "java.lang.System" ).gc();
+	_memStatGC = reportMem( "", _memBefore.usage, "before", "HEAP" );
+	for ( r in _memStatGC.report )
+		_logger( r );
+	_logger( "" );
 
 	results.memory=_memStat;
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts/";

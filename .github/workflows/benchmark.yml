@@ -2,6 +2,21 @@ name: Simple benchmarking
 
 on:
   workflow_dispatch:
+    inputs:
+      never_rounds:
+        required: false
+        description: Never Rounds (1k)
+        default: 25
+        type: String
+      once_rounds:
+        required: false
+        description: Once Rounds (1k)
+        default: 0.5
+        type: String
+      benchmark_filter:
+        required: false
+        description: Test Filter
+        type: String
   workflow_call:
 
 jobs:
@@ -68,8 +83,9 @@ jobs:
           extensions: 7E673D15-D87C-41A6-8B5F1956528C605F #mysql
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
-          LUCEE_DUMP_THREADS: true
-          LUCEE_DUMP_THREADS_INTERVAL: 100000 #ms
+          BENCHMARK_CYCLES: ${{ github.event.inputs.never_rounds }}
+          BENCHMARK_ONCE_CYCLES: ${{ github.event.inputs.once_rounds }}
+          BENCHMARK_FILTER: ${{ github.event.inputs.benchmark_filter }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
