@@ -11,18 +11,22 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        luceeVersion: [ 5.4/snapshot/light, 6.0/snapshot/light, 6.1/snapshot/light, 6.2/snapshot/light ]
+        luceeVersion: [ 6.2/snapshot/zero, 6.2.0.166/rc/zero, 5.4/snapshot/light ] # 5.4/snapshot/light, 6.0/snapshot/light, 6.1/snapshot/light
         javaVersion: [ 11, 21, 23 ]
         exclude:
             - luceeVersion: 5.4/snapshot/light
               javaVersion: 21
             - luceeVersion: 5.4/snapshot/light
               javaVersion: 23
-            - luceeVersion: 6.0/snapshot/light
+            - luceeVersion: 6.0/snapshot/zero
               javaVersion: 21
-            - luceeVersion: 6.0/snapshot/light
+            - luceeVersion: 6.0/snapshot/zero
               javaVersion: 23
-            - luceeVersion: 6.1/snapshot/light
+            - luceeVersion: 6.1/snapshot/zero
+              javaVersion: 23
+            - luceeVersion: 6.2.0.166/rc/zero
+              javaVersion: 11
+            - luceeVersion: 6.2.0.166/rc/zero
               javaVersion: 23
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
@@ -63,6 +67,9 @@ jobs:
           execute: /index.cfm
           extensions: 7E673D15-D87C-41A6-8B5F1956528C605F #mysql
           luceeVersionQuery: ${{ matrix.luceeVersion }}
+        env:
+          LUCEE_DUMP_THREADS: true
+          LUCEE_DUMP_THREADS_INTERVAL: 100000 #ms
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -104,7 +111,7 @@ jobs:
         with:
             webroot: ${{ github.workspace }}/custom/benchmark
             execute: /report.cfm
-            luceeVersionQuery: 6/stable/light
+            luceeVersionQuery: 6/stable/zero
             extensions:  D46B46A9-A0E3-44E1-D972A04AC3A8DC10 #cfchart
 
 

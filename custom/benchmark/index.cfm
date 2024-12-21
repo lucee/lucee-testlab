@@ -1,19 +1,38 @@
 <cfscript>
-	runs = server.system.environment.BENCHMARK_CYCLES ?: 25000;
-
-	setting requesttimeout=runs;
-	warmup = []
+	never_runs = server.system.environment.BENCHMARK_CYCLES ?: 5000;
+	once_runs = server.system.environment.BENCHMARK_CYCLES ?: 500;
+	warmup_runs = 250;
+	setting requesttimeout=never_runs+once_runs;
+	warmup = [];
 
 	results = {
 		data = [],
 		run = {
 			version: server.lucee.version,
-			java: server.java.version,
-			runs: runs
+			java: server.java.version
 		}
 	};
+	/*
+	configImport( {
+			"debuggingEnabled": false,
+			"executionLog": {
+				"class": "lucee.runtime.engine.ConsoleExecutionLog",
+				"arguments": {
+					"min-time": 100,
+					"snippet": true,
+					"stream-type": "out",
+					"unit": "micro"
+				},
+				"enabled": true
+			},
+			"debuggingTemplate": false
+		}, 
+		"server",
+		"admin"
+	);
+	*/
 
-	ArraySet( warmup, 1, 25, 0 );
+	ArraySet( warmup, 1, warmup_runs, 0 );
 
 	_memBefore = reportMem( "", {}, "before", "HEAP" );
 	errorCount = 0;
@@ -30,6 +49,10 @@
 
 	loop list="once,never" item="inspect" {
 		configImport( {"inspectTemplate": inspect }, "server", "admin" );
+		if (inspect eq "never")
+			runs = never_runs;
+		else
+			runs = once_runs;
 
 		loop list="#application.testSuite.toList()#" item="type" {
 			template = "/tests/#type#.cfm";
@@ -49,13 +72,24 @@
 
 				systemOutput( "Running #type# [#numberFormat( runs )#] times, inspect: [#inspect#]", true );
 				s = getTickCount(units);
+
+				runAborted = false;
+				maxElapsedThreshold = 10 * 1000 * 1000; //10s see units!
 			
 				ArrayEach( arr, function( item, idx, _arr ){
+					if (runAborted) return;
 					var start = getTickCount(units);
 					_internalRequest(
 						template: template
 					);
-					arguments._arr[ arguments.idx ] = getTickCount(units) - start;
+					var elapsed = getTickCount(units) - start;
+					arguments._arr[ arguments.idx ] = elapsed;
+					if (!runAborted && elapsed > maxElapsedThreshold){
+						runAborted = true;
+						 var mess = "[#type#] was waaay too slow [#elapsed/1000#], aborting";
+						 _logger( mess );
+						 throw mess;
+					}
 				}, true);
 			} catch ( e ){
 				systemOutput( e, true );
@@ -75,7 +109,8 @@
 				_min: decimalFormat( arrayMin( arr )/ 1000 ),
 				_max: decimalFormat( arrayMax( arr )/ 1000 ),
 				_avg: decimalFormat( arrayAvg( arr )/ 1000 ),
-				error: runError
+				error: runError,
+				runs: arrayLen( arr )
 			});
 		}
 	}

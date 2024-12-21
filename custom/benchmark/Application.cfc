@@ -17,7 +17,14 @@ component {
             , "toString"
             , "xml"
             , "member-java"
-            , "member-cfml"
+            , "member-cfml" 
+            , "qrcode"
+            , "qrcode-createObject" 
+            , "resource"
+            , "resource-util"
+            , "directoryList"
+            , "qrcode-createObject-emptyInit"
+            , "properties"
         ];
     }
 

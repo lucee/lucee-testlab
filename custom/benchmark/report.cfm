@@ -18,7 +18,7 @@
 
 		for ( r in json.data ){
 			StructAppend( r, json.run );
-			r.throughput = int( json.run.runs / ( r.time / 1000 ) );
+			r.throughput = int( r.runs / ( r.time / 1000 ) );
 			row = queryAddRow( q );
 			QuerySetRow( q, row, r );
 		}
@@ -28,7 +28,7 @@
 
 	_logger( "## Summary Report" );
 
-	loop list="once,never" item="inspect" {
+	loop list="never,once" item="inspect" {
 		loop list="#application.testSuite.toList()#" item="type" {
 			dumpTable( q, type, inspect, replace(type,"-", " ", "all") & " - " & UCase( inspect ) );
 		}
@@ -96,6 +96,8 @@
 			loop list=q.columnlist item="local.col" {
 				if ( col eq "memory" or col eq "time" or col eq "throughput" )
 					arrayAppend( row, numberFormat( q [ col ] ) );
+				else if ( col eq "error" )
+					arrayAppend( row, htmleditformat( REReplace( q [ col ], "\n", " ", "ALL") ) );
 				else 
 					arrayAppend( row, q [ col ] );
 			}
