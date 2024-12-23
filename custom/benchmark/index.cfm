@@ -123,7 +123,7 @@
 
 			time = getTickCount(units)-s;
 
-			_logger( "Running #type# [#numberFormat( runs )#-#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
+			_logger( "Running #suiteName# [#numberFormat( runs )#-#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
 			ArrayAppend( results.data, {
 				time: time/1000,
 				inspect: inspect,
