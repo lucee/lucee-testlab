@@ -89,8 +89,8 @@
 						template: template
 					);
 				}, true);
-				systemOutput( "Sleeping 2s first, after warmup", true );
-				sleep( 2000 ); // time to settle
+				//systemOutput( "Sleeping 2s first, after warmup", true );
+				//sleep( 2000 ); // time to settle
 				
 				systemOutput( "Running #suiteName# [#numberFormat( runs/1000 )#k-#inspect#]", true );
 				s = getTickCount(units);
