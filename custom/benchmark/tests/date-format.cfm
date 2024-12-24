@@ -4,6 +4,6 @@
     df = DateFormat( d );
     df1 = DateFormat( d );
 
-    if ( df != df1 )
+    if ( dateCompare( df, df1 ) neq 0 )
         throw "dates don't match? [#df#] and [#df1#]"; 
 </cfscript>

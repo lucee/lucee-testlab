@@ -8,6 +8,6 @@
     json = serializeJSON( test );
     st = deserializeJSON( json );
 
-    if ( st.truth[ 1 ] != test.truth[ 1 ] )
+    if ( DateCompare( st.truth[ 1 ], test.truth[ 1 ] ) neq 0 )
         throw "dates don't match? [#st.truth[1]#] and [#test.truth[ 1 ]#]"; 
 </cfscript>
