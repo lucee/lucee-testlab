@@ -1,8 +1,8 @@
 <cfscript>
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts";
 	files = directoryList( dir );
-
-	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,_min,_max,_avg,_med,error,raw" );
+	
+	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,_min,_max,_avg,_med,error,raw,_perc" );
 	for ( f in files ){
 		systemOutput ( f, true );
 		json = deserializeJson( fileRead( f ) );
@@ -35,7 +35,12 @@
 	}
 
 	function _logger( string message="", boolean throw=false ){
-		//systemOutput( arguments.message, true );
+		if ( !len( server.system.environment.GITHUB_STEP_SUMMARY?:"" ) ) {
+			systemOutput( arguments.message, true );
+			if ( arguments.throw )
+				throw arguments.message;
+			return;
+		}
 		if ( !FileExists( server.system.environment.GITHUB_STEP_SUMMARY ) ){
 			fileWrite( server.system.environment.GITHUB_STEP_SUMMARY, "#### #server.lucee.version# ");
 			//fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, server.system.environment.toJson());
@@ -67,14 +72,17 @@
 
 		```
 		<cfquery name="local.q" dbtype="query">
-			select	version, java, time, memory,
-					throughput, _min, _avg, _med, _max, error
+			select	version, java, time, 
+					throughput, _perc, _min, _avg, _med, _max, memory, error
 			from	arguments.q_src
 			where	type = <cfqueryparam value="#arguments.type#">
 					and inspect = <cfqueryparam value="#arguments.inspect#">
 			order	by throughput desc 
 		</cfquery>
 		```
+
+		if ( q.recordCount eq 0 )
+			return;
 
 		var hdr = [];
 		var div = [];
@@ -93,8 +101,12 @@
 
 		var row = [];
 		loop query=q {
+			if ( q.time[ 1 ] neq 0 )
+				querySetCell( q, "_perc", 100 - int(( q.time[ 1 ] / q.time[ q.currentRow ]  ) * 100) , q.currentRow ) ;
 			loop list=q.columnlist item="local.col" {
 				if ( col eq "memory" or col eq "time" or col eq "throughput" )
+					arrayAppend( row, numberFormat( q [ col ] ) );
+				else if ( col eq "_perc" )
 					arrayAppend( row, numberFormat( q [ col ] ) );
 				else if ( col eq "error" )
 					arrayAppend( row, htmleditformat( REReplace( q [ col ], "\n", " ", "ALL") ) );
