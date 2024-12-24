@@ -16,7 +16,7 @@
 				"executionLog": {
 					"class": "lucee.runtime.engine.ConsoleExecutionLog",
 					"arguments": {
-						"min-time": 100,
+						"min-time": 10000, // ns
 						"snippet": true,
 						"stream-type": "out",
 						"unit": "micro"
