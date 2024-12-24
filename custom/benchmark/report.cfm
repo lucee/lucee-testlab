@@ -106,7 +106,7 @@
 		loop query=q {
 			if ( q.time[ 1 ] neq 0 )
 				querySetCell( q, "_perc", 100 - int(( q.time[ 1 ] / q.time[ q.currentRow ]  ) * 100) , q.currentRow ) ;
-			if ( q.perc neq 0 )
+			if ( q._perc neq 0 )
 				querySetCell( q, "_perc", "-#q._perc#", q.currentRow ) ;
 			loop list=q.columnlist item="local.col" {
 				if ( col eq "memory" or col eq "time" or col eq "throughput" )
