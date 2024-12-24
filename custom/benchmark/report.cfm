@@ -87,7 +87,10 @@
 		var hdr = [];
 		var div = [];
 		loop list=q.columnlist item="local.col" {
-			arrayAppend( hdr, replace( col, "_", "") );
+			if ( col eq "_perc" )
+				arrayAppend( hdr, "%" );
+			else 
+				arrayAppend( hdr, replace( col, "_", "") );
 			if ( col eq "memory" or col eq "time" or col eq "throughput" or left( col, 1 ) eq "_" )
 				arrayAppend( div, "---:" );
 			else
@@ -103,11 +106,13 @@
 		loop query=q {
 			if ( q.time[ 1 ] neq 0 )
 				querySetCell( q, "_perc", 100 - int(( q.time[ 1 ] / q.time[ q.currentRow ]  ) * 100) , q.currentRow ) ;
+			if ( q.perc neq 0 )
+				querySetCell( q, "_perc", "-#q.perc#", q.currentRow ) ;
 			loop list=q.columnlist item="local.col" {
 				if ( col eq "memory" or col eq "time" or col eq "throughput" )
 					arrayAppend( row, numberFormat( q [ col ] ) );
 				else if ( col eq "_perc" )
-					arrayAppend( row, numberFormat( q [ col ] ) );
+					arrayAppend( row, numberFormat( q [ col ] ) & "%");
 				else if ( col eq "error" )
 					arrayAppend( row, htmleditformat( REReplace( q [ col ], "\n", " ", "ALL") ) );
 				else 
