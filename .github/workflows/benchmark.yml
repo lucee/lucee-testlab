@@ -16,7 +16,12 @@ on:
       benchmark_filter:
         required: false
         description: Test Filter
-        type: String
+        type: string
+      exeLog:
+         required: false
+         description: Do Execution Log
+         default: false
+         type: boolean
   workflow_call:
 
 jobs:
@@ -86,6 +91,7 @@ jobs:
           BENCHMARK_CYCLES: ${{ github.event.inputs.never_rounds }}
           BENCHMARK_ONCE_CYCLES: ${{ github.event.inputs.once_rounds }}
           BENCHMARK_FILTER: ${{ github.event.inputs.benchmark_filter }}
+          EXELOG: ${{ github.event.inputs.exeLog }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -5,7 +5,32 @@
 	setting requesttimeout=never_runs+once_runs;
 	warmup = [];
 
-	filter = server.system.environment.BENCHMARK_FILTER ?: "";
+	exeLog = server.system.environment.EXELOG ?: false;
+	if (exeLog) {
+		systemOutput("Execution Log enabled, only doing single rounds", true);
+		never_runs = 1;
+		once_runs = 1;
+		warmup_runs = 1;
+		configImport( {
+				"debuggingEnabled": false,
+				"executionLog": {
+					"class": "lucee.runtime.engine.ConsoleExecutionLog",
+					"arguments": {
+						"min-time": 100,
+						"snippet": true,
+						"stream-type": "out",
+						"unit": "micro"
+					},
+					"enabled": true
+				},
+				"debuggingTemplate": false
+			}, 
+			"server",
+			"admin"
+		);
+	}
+
+	filter = server.system.environment.BENCHMARK_FILTER ?: "date";
 	if ( len( trim( filter ) ) ){
 		testDir = GetDirectoryFromPath( GetCurrentTemplatePath() ) & "/tests";
 		availableSuites = DirectoryList( testDir, true, "path" )
