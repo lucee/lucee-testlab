@@ -59,7 +59,7 @@ component  {
 					arrayAppend( row, numberFormat( q [ col ] ) );
 				else if ( col eq "_perc" )
 					arrayAppend( row, numberFormat( q [ col ] ) & "%");
-				else if ( col eq "error" )
+				else if ( col eq "error" or col eq "snippet")
 					arrayAppend( row, htmleditformat( REReplace( q [ col ], "\n", " ", "ALL") ) );
 				else 
 					arrayAppend( row, q [ col ] );
