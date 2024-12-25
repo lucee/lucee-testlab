@@ -33,16 +33,21 @@
 			"admin"
 		);
 	} else if (exeLog eq "debug") {
-		systemOutput("Debugging Execution Log enabled", true);
-		exeLogger = new exeLogger("admin");
-		exeLogger.enableExecutionLog( 
-			class="lucee.runtime.engine.DebugExecutionLog",
-			args={
-				"unit": "micro"
-				, "min-time": 100
-			},
-			maxlogs=never_runs // default is just 10! 
-		);
+		if ( benchmarkUtils.checkMinLuceeVersion( 6, 2 ) ) {
+			systemOutput("Debugging Execution Log enabled", true);
+			exeLogger = new exeLogger("admin");
+			exeLogger.enableExecutionLog(
+				class="lucee.runtime.engine.DebugExecutionLog",
+				args={
+					"unit": "micro"
+					, "min-time": 100
+				},
+				maxlogs=never_runs // default is just 10! 
+			);
+		} else {
+			exeLog = ""; // unsupported
+		}
+		
 	}
 
 	filter = benchmarkUtils.getTests( server.system.environment.BENCHMARK_FILTER ?: "");

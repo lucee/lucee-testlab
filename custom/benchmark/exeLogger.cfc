@@ -9,7 +9,7 @@ component  {
 			class="#arguments.class#" enabled= true
 			arguments=arguments.args;
 		admin action="updateDebug" type="server" password="#variables.adminPassword#" debug="true" template="true"; // template needs to be enabled to produce debug logs
-		admin action="updateDebugSetting" type="server" password="#variables.adminPassword#" maxLogs="#arguments.maxLogs#"
+		admin action="updateDebugSetting" type="server" password="#variables.adminPassword#" maxLogs="#arguments.maxLogs#";
 	}
 
 	function disableExecutionLog(class="lucee.runtime.engine.ConsoleExecutionLog"){

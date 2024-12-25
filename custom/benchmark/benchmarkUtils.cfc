@@ -136,4 +136,12 @@ component  {
 		return src;
 	}
 
+	function checkMinLuceeVersion(major, min){
+		var version = server.lucee.version;
+		var parts = listToArray( version, "." );
+		if ( parts[ 1 ] gte arguments.major and parts[ 2 ] gt arguments.min )// and parts[ 3 ] eq 7 )
+			return true;
+		return false;
+	}
+
 }
