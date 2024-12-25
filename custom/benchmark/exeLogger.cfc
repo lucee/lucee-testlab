@@ -35,8 +35,10 @@ component  {
 		var parts = QueryNew( "ID,COUNT,MIN,MAX,AVG,TOTAL,PATH,START,END,STARTLINE,ENDLINE,SNIPPET,KEY" );
 		var baseDir = arguments.baseDir;
 		arrayEach( logs, function( log ){
-			var q = cleanUpExeLog( log.pageParts, baseDir );
-			parts = queryAppend( parts, q );
+			log.pageParts = cleanUpExeLog( log.pageParts, baseDir );
+		}, true);
+		arrayEach( logs, function( log ){
+			parts = queryAppend( parts, log.pageParts );
 		});
 		purgeExecutionLog();
 		// avoid qoq problems with reserved words
