@@ -132,11 +132,7 @@
 				pageParts = exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
 				if ( pageParts.recordCount > 0 ){
 					queryDeleteColumn( pageParts, "key" );
-					_logger( message="", console=false );
-					_logger( message="```", console=false );
-					_logger( message=pageParts.toString() );
-					_logger( message="```", console=false );
-					_logger( message="", console=false );
+					_logger( message= benchmarkUtils.dumpTable( q=pageParts, title="Debug Execution Logs", console=false ) );
 				} else {
 					_logger( "--none available? maybe unsupported by this Lucee version?");
 				}

@@ -48,7 +48,7 @@
 			</cfquery>
 			```
 
-			benchmarkUtils.dumpTable( q_rpt, type, inspect, replace(type,"-", " ", "all") & " - " & UCase( inspect ) );
+			benchmarkUtils.dumpTable( q=q_rpt, title=replace(type,"-", " ", "all") & " - " & UCase( inspect ) );
 		}
 	}
 

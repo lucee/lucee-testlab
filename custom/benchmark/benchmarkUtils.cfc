@@ -23,7 +23,7 @@ component  {
 		};
 	}
 
-	function dumpTable( q, type, inspect, title ) localmode=true {
+	function dumpTable( q, title ) localmode=true {
 	
 		if ( q.recordCount eq 0 )
 			return;
