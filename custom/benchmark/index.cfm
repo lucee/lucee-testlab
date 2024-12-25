@@ -153,7 +153,9 @@
 				raw: arr
 			}
 			if (exeLog eq "debug" && inspect eq "never") {
+				pp = getTickCount();
 				pageParts = exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
+				systemOutput( "getDebugLogsCombined took #numberFormat(getTickCount()-pp)#ms", true );
 				if ( pageParts.recordCount > 0 ){
 					queryDeleteColumn( pageParts, "key" );
 					benchmarkUtils.dumpTable( q=pageParts, console=false);

@@ -64,7 +64,7 @@ component  {
 
 	function cleanUpExeLog( query pageParts, string baseDir ){
 		var parts = duplicate( pageParts );
-		queryAddColumn( parts, "key" );
+		queryAddColumn( parts, "key" ); //  this is synchronized 
 		var r = 0;
 		loop query=parts {
 			var r = parts.currentrow;
