@@ -129,14 +129,14 @@
 
 			if (exeLog eq "debug" && inspect eq "never") {
 				_logger( "Debug Execution logs");
-				pageParts=exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
+				pageParts = exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
 				if ( pageParts.recordCount > 0 ){
 					queryDeleteColumn( pageParts, "key" );
-					_logger( mess="", console=false );
-					_logger( mess="```", console=false );
-					_logger( mess=pageParts.toString() );
-					_logger( mess="```", console=false );
-					_logger( mess="", console=false );
+					_logger( message="", console=false );
+					_logger( message="```", console=false );
+					_logger( message=pageParts.toString() );
+					_logger( message="```", console=false );
+					_logger( message="", console=false );
 				} else {
 					_logger( "--none available? maybe unsupported by this Lucee version?");
 				}
