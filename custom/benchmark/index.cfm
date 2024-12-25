@@ -146,7 +146,7 @@
 				pageParts = exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
 				if ( pageParts.recordCount > 0 ){
 					queryDeleteColumn( pageParts, "key" );
-					_logger( message= benchmarkUtils.dumpTable( q=pageParts, title="#trim(suiteName)# Debug Execution Logs", console=false ) );
+					benchmarkUtils.dumpTable( q=pageParts, console=false);
 					result.pageParts = pageParts;
 				}
 			}

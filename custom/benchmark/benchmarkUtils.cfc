@@ -23,7 +23,7 @@ component  {
 		};
 	}
 
-	function dumpTable( q, title ) localmode=true {
+	function dumpTable( query q, string title="", boolean console=true ) localmode=true {
 	
 		if ( q.recordCount eq 0 )
 			return;
@@ -40,11 +40,13 @@ component  {
 			else
 				arrayAppend( div, "---" );
 		}
-		_logger( "" );
-		_logger( "###### #arguments.title#" );
-		_logger( "" );
-		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
-		_logger( "|" & arrayToList( div, "|" ) & "|" );
+		if ( len( trim( arguments.title ) ) ){
+			_logger( message="", console=arguments.console );
+			_logger( message="###### #arguments.title#", console=arguments.console );
+		}
+		_logger( message="", console=arguments.console );
+		_logger( message="|" & arrayToList( hdr, "|" ) & "|", console=arguments.console );
+		_logger( message="|" & arrayToList( div, "|" ) & "|", console=arguments.console );
 
 		var row = [];
 		loop query=q {
@@ -64,11 +66,11 @@ component  {
 				else 
 					arrayAppend( row, q [ col ] );
 			}
-			_logger( "|" & arrayToList( row, "|" ) & "|" );
+			_logger( message="|" & arrayToList( row, "|" ) & "|", console=arguments.console );
 			row = [];
 		}
 
-		_logger( "" );
+		_logger( message="", console=arguments.console );
 	}
 
 	function _logger( string message="", boolean throw=false, console=true ){
