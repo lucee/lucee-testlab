@@ -5,9 +5,13 @@
 	setting requesttimeout=never_runs+once_runs;
 	warmup = [];
 
-	exeLog = server.system.environment.EXELOG ?: false;
-	if (exeLog) {
-		systemOutput("Execution Log enabled, only doing single rounds", true);
+	benchmarkUtils = new benchmarkUtils();
+	_logger= benchmarkUtils._logger;
+	reportMem = benchmarkUtils.reportMem;
+
+	exeLog = server.system.environment.EXELOG ?: "";
+	if (exeLog eq "console") {
+		systemOutput("Console Execution Log enabled, only doing single rounds, due to verbosity", true);
 		never_runs = 1;
 		once_runs = 1;
 		warmup_runs = 1;
@@ -28,27 +32,18 @@
 			"server",
 			"admin"
 		);
+	} else if (exeLog eq "debug") {
+		systemOutput("Debugging Execution Log enabled", true);
+		exeLogger = new exeLogger("admin");
+		exeLogger.enableExecutionLog( "lucee.runtime.engine.DebugExecutionLog",{
+			"unit": "micro"
+		  , "min-time": 100
+		});
 	}
 
-	filter = server.system.environment.BENCHMARK_FILTER ?: "date";
-	if ( len( trim( filter ) ) ){
-		testDir = GetDirectoryFromPath( GetCurrentTemplatePath() ) & "/tests";
-		availableSuites = DirectoryList( testDir, true, "path" )
-		suites = [];
-		for ( suite in availableSuites ){
-			if ( suite contains filter )
-				arrayAppend( suites, listFirst( listLast( suite, "/\" ), "." ) );
-		}
-	} else {
-		suites = application.testSuite;
-	}
-	
-	longestName =  [];
-	arrayEach( suites, function( item ){
-		arrayAppend( longestName, len( item ) );
-	});
-	longestSuiteName = arrayMax( longestName );
-	suites = suites.toList();
+	filter = benchmarkUtils.getTests( server.system.environment.BENCHMARK_FILTER ?: "");
+	longestSuiteName = filter.longestSuiteName;
+	suites = filter.suites;
 
 	results = {
 		data = [],
@@ -57,25 +52,6 @@
 			java: server.java.version
 		}
 	};
-	/*
-	configImport( {
-			"debuggingEnabled": false,
-			"executionLog": {
-				"class": "lucee.runtime.engine.ConsoleExecutionLog",
-				"arguments": {
-					"min-time": 100,
-					"snippet": true,
-					"stream-type": "out",
-					"unit": "micro"
-				},
-				"enabled": true
-			},
-			"debuggingTemplate": false
-		}, 
-		"server",
-		"admin"
-	);
-	*/
 
 	ArraySet( warmup, 1, warmup_runs, 0 );
 
@@ -122,6 +98,10 @@
 
 				runAborted = false;
 				maxElapsedThreshold = 1 * 1000 * 1000; // in micro seconds, see units!
+
+				if (exeLog eq "debug") {
+					exeLogger.purgeExecutionLog();
+				}
 			
 				ArrayEach( arr, function( item, idx, _arr ){
 					if (runAborted) return;
@@ -139,17 +119,33 @@
 					}
 				}, true);
 			} catch ( e ){
-				systemOutput( e, true );
 				echo(e);
+				structDelete(e, "codePrintHtml"); // avoid unreadable &nbsp; on the console
+				systemOutput( e, true );
 				_logger( e.message );
 				runError = e.message;
 				errorCount++;
 			}
 
+			if (exeLog eq "debug" && inspect eq "never") {
+				_logger( "Debug Execution logs");
+				pageParts=exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
+				if ( pageParts.recordCount > 0 ){
+					queryDeleteColumn( pageParts, "key" );
+					_logger( mess="", console=false );
+					_logger( mess="```", console=false );
+					_logger( mess=pageParts.toString() );
+					_logger( mess="```", console=false );
+					_logger( mess="", console=false );
+				} else {
+					_logger( "--none available? maybe unsupported by this Lucee version?");
+				}
+			}
+
 			time = getTickCount(units)-s;
 
 			_logger( "Running #suiteName# [#numberFormat( runs )#-#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
-			ArrayAppend( results.data, {
+			result = {
 				time: time/1000,
 				inspect: inspect,
 				type: type,
@@ -160,7 +156,11 @@
 				error: runError,
 				runs: arrayLen( arr ),
 				raw: arr
-			});
+			}
+			if (exeLog eq "debug" && inspect eq "never") {
+				result.pageParts = pageParts;
+			}
+			ArrayAppend( results.data, result );
 		}
 	}
 
@@ -197,7 +197,7 @@
 			systemOutput( "--------- #logFile#-----------", true );
 			_log = fileRead( log );
 			logs [ _log ] = trim( _log );
-			systemOutput( _log, true );
+			//systemOutput( _log, true );
 		} else {
 			systemOutput( "--------- no #logFile# [#log#]", true );
 		}
@@ -208,55 +208,4 @@
 	if ( errorCount > 0 )
 		_logger( message="#errorCount# benchmark(s) failed", throw=true );
 
-	function _logger( string message="", boolean throw=false ){
-		systemOutput( arguments.message, true );
-		if ( !len( server.system.environment.GITHUB_STEP_SUMMARY?:"" ))
-			return;
-		if ( !FileExists( server.system.environment.GITHUB_STEP_SUMMARY  ) ){
-			fileWrite( server.system.environment.GITHUB_STEP_SUMMARY, "#### #server.lucee.version# ");
-			fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, server.system.environment.toJson());
-		}
-
-		if ( arguments.throw ) {
-			fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, "> [!WARNING]" & chr(10) );
-			fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, "> #arguments.message##chr(10)#");
-			throw arguments.message;
-		} else {
-			fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, " #arguments.message##chr(10)#");
-		}
-
-	}
-
-	struct function reportMem( string type, struct prev={}, string name="", filter="" ) {
-		var qry = getMemoryUsage( type );
-		var report = [];
-		var used = { name: arguments.name };
-		querySort(qry,"type,name");
-		loop query=qry {
-			if ( len( arguments.filter ) and arguments.filter neq qry.type )
-				continue;
-			if (qry.max == -1)
-				var perc = 0;
-			else
-				var perc = int( ( qry.used / qry.max ) * 100 );
-			//if(qry.max<0 || qry.used<0 || perc<90) 	continue;
-			//if(qry.max<0 || qry.used<0 || perc<90) 	continue;
-			var rpt = replace(ucFirst(qry.type), '_', ' ')
-				& " " & qry.name & ": " & numberFormat(perc) & "%, " & numberFormat( qry.used / 1024 / 1024 ) & " Mb";
-			if ( structKeyExists( arguments.prev, qry.name ) ) {
-				var change = numberFormat( (qry.used - arguments.prev[ qry.name ] ) / 1024 / 1024 );
-				if ( change gt 0 ) {
-					rpt &= ", (+ " & change & "Mb )";
-				} else if ( change lt 0 ) {
-					rpt &= ", ( " & change & "Mb )";
-				}
-			}
-			arrayAppend( report, rpt );
-			used[ qry.name ] = qry.used;
-		}
-		return {
-			report: report,
-			usage: used
-		};
-	}
 </cfscript>

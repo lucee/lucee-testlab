@@ -6,22 +6,26 @@ on:
       never_rounds:
         required: false
         description: Never Rounds (1k)
-        default: 25
-        type: String
+        default: '25'
+        type: string
       once_rounds:
         required: false
         description: Once Rounds (1k)
-        default: 0.5
-        type: String
+        default: '0.5'
+        type: string
       benchmark_filter:
         required: false
         description: Test Filter
         type: string
       exeLog:
-         required: false
-         description: Do Execution Log
-         default: false
-         type: boolean
+         description: Execution Log
+         required: true
+         default: 'none'
+         type: choice
+         options:
+           - none
+           - console
+           - debug
   workflow_call:
 
 jobs:
@@ -96,6 +100,7 @@ jobs:
           BENCHMARK_ONCE_CYCLES: ${{ github.event.inputs.once_rounds }}
           BENCHMARK_FILTER: ${{ github.event.inputs.benchmark_filter }}
           EXELOG: ${{ github.event.inputs.exeLog }}
+          LUCEE_DEBUGGING_MAXPAGEPARTS: 0
       - uses: actions/upload-artifact@v4
         if: always()
         with:
