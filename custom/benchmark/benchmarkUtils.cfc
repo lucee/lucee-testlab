@@ -41,7 +41,7 @@ component  {
 				arrayAppend( div, "---" );
 		}
 		_logger( "" );
-		_logger( "#### #arguments.title#" );
+		_logger( "###### #arguments.title#" );
 		_logger( "" );
 		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
 		_logger( "|" & arrayToList( div, "|" ) & "|" );

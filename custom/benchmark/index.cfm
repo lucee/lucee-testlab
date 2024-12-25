@@ -127,17 +127,6 @@
 				errorCount++;
 			}
 
-			if (exeLog eq "debug" && inspect eq "never") {
-				_logger( "Debug Execution logs");
-				pageParts = exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
-				if ( pageParts.recordCount > 0 ){
-					queryDeleteColumn( pageParts, "key" );
-					_logger( message= benchmarkUtils.dumpTable( q=pageParts, title="Debug Execution Logs", console=false ) );
-				} else {
-					_logger( "--none available? maybe unsupported by this Lucee version?");
-				}
-			}
-
 			time = getTickCount(units)-s;
 
 			_logger( "Running #suiteName# [#numberFormat( runs )#-#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
@@ -154,7 +143,12 @@
 				raw: arr
 			}
 			if (exeLog eq "debug" && inspect eq "never") {
-				result.pageParts = pageParts;
+				pageParts = exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
+				if ( pageParts.recordCount > 0 ){
+					queryDeleteColumn( pageParts, "key" );
+					_logger( message= benchmarkUtils.dumpTable( q=pageParts, title="#trim(suiteName)# Debug Execution Logs", console=false ) );
+					result.pageParts = pageParts;
+				}
 			}
 			ArrayAppend( results.data, result );
 		}
