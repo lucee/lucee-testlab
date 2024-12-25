@@ -45,6 +45,7 @@
 				maxlogs=never_runs // default is just 10! 
 			);
 		} else {
+			systemOutput("Debugging Execution Log not available for this version", true);
 			exeLog = ""; // unsupported
 		}
 		
