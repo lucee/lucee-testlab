@@ -35,10 +35,14 @@
 	} else if (exeLog eq "debug") {
 		systemOutput("Debugging Execution Log enabled", true);
 		exeLogger = new exeLogger("admin");
-		exeLogger.enableExecutionLog( "lucee.runtime.engine.DebugExecutionLog",{
-			"unit": "micro"
-		  , "min-time": 100
-		});
+		exeLogger.enableExecutionLog( 
+			class="lucee.runtime.engine.DebugExecutionLog",
+			args={
+				"unit": "micro"
+				, "min-time": 100
+			},
+			maxlogs=never_runs // default is just 10! 
+		);
 	}
 
 	filter = benchmarkUtils.getTests( server.system.environment.BENCHMARK_FILTER ?: "");

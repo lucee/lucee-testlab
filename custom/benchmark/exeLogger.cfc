@@ -4,11 +4,12 @@ component  {
 		variables.adminPassword = arguments.adminPassword;
 	};
 
-	function enableExecutionLog( string class, struct args ){
+	function enableExecutionLog( string class, struct args, numeric maxLogs ){
 		admin action="UpdateExecutionLog" type="server" password="#variables.adminPassword#"
 			class="#arguments.class#" enabled= true
 			arguments=arguments.args;
 		admin action="updateDebug" type="server" password="#variables.adminPassword#" debug="true" template="true"; // template needs to be enabled to produce debug logs
+		admin action="updateDebugSetting" type="server" password="#variables.adminPassword#" maxLogs="#arguments.maxLogs#"
 	}
 
 	function disableExecutionLog(class="lucee.runtime.engine.ConsoleExecutionLog"){
