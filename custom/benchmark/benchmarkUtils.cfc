@@ -63,6 +63,12 @@ component  {
 					arrayAppend( row, numberFormat( q [ col ] ) & "%");
 				else if ( col eq "error" or col eq "snippet")
 					arrayAppend( row, htmleditformat( REReplace( q [ col ], "\n", " ", "ALL") ) );
+				else if ( left( col, 1 ) eq "_" ) {
+					if ( q [ col ] gt 1 )
+						arrayAppend( row, numberFormat( q [ col ] ) );
+					else 
+						arrayAppend( row, decimalFormat( q [ col ] ) );
+				}
 				else 
 					arrayAppend( row, q [ col ] );
 			}
