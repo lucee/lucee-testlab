@@ -1,5 +1,5 @@
 <cfscript>
-	never_runs = int( ( server.system.environment.BENCHMARK_CYCLES ?: 25 ) * 1000);
+	never_runs = int( ( server.system.environment.BENCHMARK_CYCLES ?: 0.5 ) * 1000);
 	once_runs = int( ( server.system.environment.BENCHMARK_ONCE_CYCLES ?: 0.5) * 1000)
 	warmup_runs = 1000; // ensure level 4 compilation
 	setting requesttimeout=never_runs+once_runs;
@@ -137,11 +137,11 @@
 				errorCount++;
 			}
 
-			time = getTickCount(units)-s;
+			time = getTickCount( units ) - s;
 
 			_logger( "Running #suiteName# [#numberFormat( runs )#-#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
 			result = {
-				time: time/1000,
+				time: time / 1000,
 				inspect: inspect,
 				type: type,
 				_min: decimalFormat( arrayMin( arr ) / 1000 ),
@@ -154,13 +154,12 @@
 			}
 			if (exeLog eq "debug" && inspect eq "never") {
 				pp = getTickCount();
-				pageParts = exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
+				q_exeLog = exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
 				systemOutput( "getDebugLogsCombined took #numberFormat(getTickCount()-pp)#ms", true );
-				if ( pageParts.recordCount > 0 ){
-					_pageParts = duplicate( pageParts );
-					queryDeleteColumn( _pageParts, "key" );
-					benchmarkUtils.dumpTable( q=_pageParts, console=false);
-					result.pageParts = pageParts;
+				if ( q_exeLog.recordCount > 0 ){
+					result.exeLog = QueryToStruct( q_exeLog, "key" );
+					queryDeleteColumn( q_exeLog, "key" );
+					benchmarkUtils.dumpTable( q=q_exeLog, console=false );
 				}
 			}
 			ArrayAppend( results.data, result );

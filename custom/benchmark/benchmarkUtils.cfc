@@ -63,12 +63,7 @@ component  {
 				else if ( col eq "_perc" )
 					arrayAppend( row, numberFormat( q [ col ] ) & "%");
 				else if ( col eq "error" or col eq "snippet" )
-					arrayAppend( row, htmlEditFormat( 
-						REReplace( 
-							REReplace( q [ col ], "\n", " ", "ALL"),
-							"|", "&verbar;", "ALL"
-						)
-					) );  // newlines and pipes are not allowed in markdown tables
+					arrayAppend( row, markdownEscape( q [ col ] ) );  // newlines and pipes are not allowed in markdown tables
 				else if ( left( col, 1 ) eq "_" ) {
 					if ( q [ col ] gt 1 )
 						arrayAppend( row, numberFormat( q [ col ] ) );
@@ -157,6 +152,135 @@ component  {
 		else if ( parts[ 1 ] gt arguments.major)
 			return true;
 		return false;
+	}
+
+	function reportTests( runs, 
+			sectionTitle="Suite / Spec", 
+			sectionKey="suiteName", 
+			detailTitle="", 
+			detailKey="", 
+			statKey="time",
+			boolean sort=false ) localmode=true {
+
+		var sortedRuns = duplicate( runs );
+
+		arraySort(
+			sortedRuns,
+			function (e1, e2){
+				return compare(e1.version & e1.java, e2.version & e2.java);
+			}
+		); // sort runs by oldest version to newest version
+
+
+		var hdr = [ arguments.sectionTitle ];
+		var div = [ "---" ];
+		if ( len( arguments.detailTitle ) ){
+			arrayAppend( hdr, arguments.detailTitle );
+			arrayAppend( div, "---" );
+		}
+		loop array=sortedRuns item="local.run" {
+			arrayAppend( hdr, run.version & " " & listFirst( run.java, "." ) );
+			arrayAppend( div, "---:" ); // right align as they are all numeric
+		}
+
+		// diff column, first run vs last run
+		arrayAppend( hdr, "Difference (oldest vs newest)" );
+		arrayAppend( div, "---:" ); // right align as they are all numeric
+
+		_logger( "" );
+		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
+		_logger( "|" & arrayToList( div, "|" ) & "|" );
+
+		// now sort the tests by the difference in time between the first run and last run
+		var suiteSpecs = [];
+		if ( arguments.sort ){
+			var suiteSpecsDiff = {};
+
+			loop collection=runs[1].stats key="title" value="test" {
+				// difference between the test time for the newest version minus oldest version
+				var diff = sortedRuns[ arrayLen( runs ) ].stats[ arguments.sectionKey ][ arguments.statKey ] 
+					- sortedRuns[ 1 ].stats[ arguments.sectionKey ][ arguments.statKey ];
+				ArrayAppend( suiteSpecs, {
+					id: test[ arguments.sectionKey ],
+					diff: diff
+				});
+				suiteSpecsDiff[ test.suiteSpec ] = diff;
+			}
+
+			arraySort(
+				suiteSpecs,
+				function ( e1, e2 ){
+					if ( e1.diff gt e2.diff ) return -1;
+					else if ( e1.diff lt e2.diff ) return 1;
+					return 0;
+				}
+			); // sort by performance regression
+		} else {
+			loop collection=runs[1].stats key="title" value="test" {
+				ArrayAppend( suiteSpecs, {
+					id: test[ arguments.sectionKey ],
+					diff: -1
+				});
+			}
+		}
+
+		/*
+		systemOutput("", true);
+		systemOutput(suiteSpecs, true);
+
+		systemOutput("", true);
+		systemOutput(sortedRuns, true);
+		systemOutput("", true);
+		*/
+
+		var row = [];
+		loop array=suiteSpecs item="test" {
+			ArrayAppend( row, markdownEscape( wrap( sortedRuns[ 1 ].stats[ test.id ] [arguments.sectionKey ], 70 ) ) );
+			if ( len( arguments.detailTitle ) )
+				ArrayAppend( row, markdownEscape( wrap( sortedRuns[ 1 ].stats[ test.id ][ arguments.detailKey ], 70 ) ) );
+
+			loop array=sortedRuns item="local.run" {
+				if ( structKeyExists( run.stats, test.id ) ) {
+					var rowStats="";
+					if ( isSimpleValue( arguments.statKey ) ){
+						rowStats = numFormat( run.stats[ test.id ][ arguments.statKey ] );
+					} else {
+						var delim = "";
+						arrayEach( arguments.statKey, function( key ){
+							var n = run.stats[ test.id ][ key ];
+							rowStats &= delim & numFormat( n );
+							delim = " / ";
+						});
+					}
+					arrayAppend( row, rowStats );
+				} else {
+					arrayAppend( row, "" );
+				}
+			}
+			if ( arguments.sort ){
+				arrayAppend( row, numberFormat( test.diff ) );
+			}
+			_logger( "|" & arrayToList( row, "|" ) & "|" );
+			row = [];
+		}
+
+		_logger( "" );
+	}
+
+	function markdownEscape( string str ){
+		var s = replace( arguments.str, "|", "\|", "ALL" );
+		s = replace( s, "`", "\`", "ALL" );
+		s = REReplace( s , "\n", "\n", "ALL" );
+		return s;
+	}
+
+	function numFormat( n ){
+		if ( n eq 0 )
+			return 0;
+		else if ( n gt 1 )
+			return numberFormat( n );
+		else
+			return decimalFormat( n );
 	}
 
 }

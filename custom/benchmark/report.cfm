@@ -2,7 +2,10 @@
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts";
 	files = directoryList( dir );
 	
-	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,_min,_max,_avg,_med,error,raw,_perc,pageparts" );
+	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,_min,_max,_avg,_med,error,raw,_perc,exeLog" );
+
+	tests = structNew('ordered');
+
 	for ( f in files ){
 		systemOutput ( f, true );
 		json = deserializeJson( fileRead( f ) );
@@ -21,10 +24,18 @@
 			r.throughput = int( r.runs / ( r.time / 1000 ) );
 			row = queryAddRow( q );
 			QuerySetRow( q, row, r );
+			if ( structKeyExists( r, "exeLog" ) ){
+				if ( !structKeyExists( tests, r.type ) )
+					tests[ r.type ] = [];
+				arrayAppend( tests[ r.type ], {
+					"java": json.run.java,
+					"version": json.run.version,
+					// "totalDuration": json.totalDuration,
+					"stats": r.exeLog
+				});
+			}
 		}
 	}
-
-	runs = q.runs;
 
 	benchmarkUtils = new benchmarkUtils();
 	_logger= benchmarkUtils._logger;
@@ -50,6 +61,31 @@
 
 			benchmarkUtils.dumpTable( q=q_rpt, title=replace(type,"-", " ", "all") & " - " & UCase( inspect ) );
 		}
+	}
+
+	exeLog = server.system.environment.EXELOG ?: "";
+
+	if (exeLog == "debug"){
+		_logger( "## Execution Log Cross Reference" );
+		_logger( "" );
+		if ( structCount( tests ) ){
+			for ( type in tests ){
+				_logger( "#### " & replace( type, "-", " ", "all" ) );
+				_logger( "" );
+				runs = tests[ type ];
+				benchmarkUtils.reportTests(	runs=runs,
+					sectionTitle="Template",
+					sectionKey="key",
+					detailTitle="Snippet",
+					detailKey="snippet",
+					statKey=[ "_MIN", "_AVG", "_MAX" ]
+				);
+			}
+		} else {
+			_logger( "No exeLog data found" );
+		}
+
+		
 	}
 
 </cfscript>
