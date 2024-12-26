@@ -144,5 +144,7 @@ jobs:
             execute: /report.cfm
             luceeVersionQuery: 6/stable/zero
             extensions:  D46B46A9-A0E3-44E1-D972A04AC3A8DC10 #cfchart
-
+        env:
+          BENCHMARK_FILTER: ${{ github.event.inputs.benchmark_filter }}
+          EXELOG: ${{ github.event.inputs.exeLog }}
 
