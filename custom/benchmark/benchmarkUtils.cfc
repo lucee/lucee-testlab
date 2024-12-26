@@ -2,11 +2,12 @@ component  {
 
 	function getTests( string filter="" ){
 		if ( len( trim( filter ) ) ){
+			systemOutput("Filtering tests by [#filter#]", true);
 			var testDir = GetDirectoryFromPath( GetCurrentTemplatePath() ) & "/tests";
 			var availableSuites = DirectoryList( testDir, true, "path" )
 			var suites = [];
 			for ( var suite in availableSuites ){
-				if ( suite contains filter )
+				if ( suite contains filter && listLast( suite, "." ) eq "cfm" )
 					arrayAppend( suites, listFirst( listLast( suite, "/\" ), "." ) );
 			}
 		} else {
@@ -61,8 +62,13 @@ component  {
 					arrayAppend( row, numberFormat( q [ col ] ) );
 				else if ( col eq "_perc" )
 					arrayAppend( row, numberFormat( q [ col ] ) & "%");
-				else if ( col eq "error" or col eq "snippet")
-					arrayAppend( row, htmleditformat( REReplace( q [ col ], "\n", " ", "ALL") ) );
+				else if ( col eq "error" or col eq "snippet" )
+					arrayAppend( row, htmlEditFormat( 
+						REReplace( 
+							REReplace( q [ col ], "\n", " ", "ALL"),
+							"|", "&verbar;", "ALL"
+						)
+					) );  // newlines and pipes are not allowed in markdown tables
 				else if ( left( col, 1 ) eq "_" ) {
 					if ( q [ col ] gt 1 )
 						arrayAppend( row, numberFormat( q [ col ] ) );

@@ -157,8 +157,9 @@
 				pageParts = exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
 				systemOutput( "getDebugLogsCombined took #numberFormat(getTickCount()-pp)#ms", true );
 				if ( pageParts.recordCount > 0 ){
-					queryDeleteColumn( pageParts, "key" );
-					benchmarkUtils.dumpTable( q=pageParts, console=false);
+					_pageParts = duplicate( pageParts );
+					queryDeleteColumn( _pageParts, "key" );
+					benchmarkUtils.dumpTable( q=_pageParts, console=false);
 					result.pageParts = pageParts;
 				}
 			}
