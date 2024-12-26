@@ -183,9 +183,11 @@ component  {
 			arrayAppend( div, "---:" ); // right align as they are all numeric
 		}
 
+		if ( arguments.sort ){
 		// diff column, first run vs last run
-		arrayAppend( hdr, "Difference (oldest vs newest)" );
-		arrayAppend( div, "---:" ); // right align as they are all numeric
+			arrayAppend( hdr, "Difference (oldest vs newest)" );
+			arrayAppend( div, "---:" ); // right align as they are all numeric
+		}
 
 		_logger( "" );
 		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
@@ -268,19 +270,20 @@ component  {
 	}
 
 	function markdownEscape( string str ){
-		var s = replace( arguments.str, "|", "\|", "ALL" );
+		var s = replace( trim( arguments.str ), "|", "\|", "ALL" );
 		s = replace( s, "`", "\`", "ALL" );
-		s = REReplace( s , "\n", "\n", "ALL" );
+		s = htmlEditFormat( s );
+		s = REReplace( s , "\n", "<br>", "ALL" ); // sigh
 		return s;
 	}
 
 	function numFormat( n ){
 		if ( n eq 0 )
 			return 0;
-		else if ( n gt 1 )
+		else if ( n gt 5 )
 			return numberFormat( n );
 		else
-			return decimalFormat( n );
+			return decimalFormat( round(n,1) );
 	}
 
 }

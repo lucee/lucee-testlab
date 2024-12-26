@@ -158,7 +158,9 @@
 				systemOutput( "getDebugLogsCombined took #numberFormat(getTickCount()-pp)#ms", true );
 				if ( q_exeLog.recordCount > 0 ){
 					result.exeLog = QueryToStruct( q_exeLog, "key" );
-					queryDeleteColumn( q_exeLog, "key" );
+					queryDeleteColumn( q_exeLog, "path" );
+					queryDeleteColumn( q_exeLog, "startline" );
+					queryDeleteColumn( q_exeLog, "endline" );
 					benchmarkUtils.dumpTable( q=q_exeLog, console=false );
 				}
 			}
