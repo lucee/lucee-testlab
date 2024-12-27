@@ -44,7 +44,15 @@
 	longestSuiteName = filter.longestSuiteName;
 	suites = filter.suites;
 
+	exeLog = server.system.environment.EXELOG ?: "";
+
 	_logger( "## Summary Report" );
+
+	if ( len( exeLog ) ){
+		_logger( "" );
+		_logger( "Note: ExecutionLog was set to [#exeLog#], not all versions run with executionLog enabled and it affects overall performance" );
+		_logger( "" );
+	}
 
 	loop list="never,once" item="inspect" {
 		loop list="#filter.suites#" item="type" {
@@ -62,8 +70,6 @@
 			benchmarkUtils.dumpTable( q=q_rpt, title=replace(type,"-", " ", "all") & " - " & UCase( inspect ) );
 		}
 	}
-
-	exeLog = server.system.environment.EXELOG ?: "";
 
 	if (exeLog == "debug"){
 		_logger( "## Execution Log Cross Reference" );
