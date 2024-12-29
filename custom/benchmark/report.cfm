@@ -48,7 +48,7 @@
 
 	_logger( "## Summary Report" );
 
-	if ( len( exeLog ) ){
+	if ( len( exeLog ) && exeLog neq "none" ){
 		_logger( "" );
 		_logger( "Note: ExecutionLog was set to [#exeLog#], not all versions run with executionLog enabled and it affects overall performance" );
 		_logger( "" );
