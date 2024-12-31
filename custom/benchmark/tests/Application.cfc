@@ -1,5 +1,6 @@
 component {
 	this.name="bench";
+	this.sessionManagement = false;
 	this.datasource = {
 		class: 'com.mysql.cj.jdbc.Driver'
 		, bundleName: 'com.mysql.cj'
