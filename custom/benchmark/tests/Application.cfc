@@ -1,6 +1,6 @@
 component {
 	this.name="bench";
-	this.sessionManagement = false;
+	this.sessionManagement = false; // before LDEV-5230, internal request always created sessions
 	this.datasource = {
 		class: 'com.mysql.cj.jdbc.Driver'
 		, bundleName: 'com.mysql.cj'
