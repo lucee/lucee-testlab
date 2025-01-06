@@ -3,7 +3,7 @@
 	files = directoryList( dir );
 	
 	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,"
-		"_min,_max,_avg,_med,error,raw,_perc,exeLog,totalDuration" );
+		& "_min,_max,_avg,_med,error,raw,_perc,exeLog,totalDuration" );
 
 	tests = structNew('ordered');
 	runs = [];
