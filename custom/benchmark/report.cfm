@@ -58,7 +58,7 @@
 
 	_logger( "## Summary Report" );
 
-	reportRuns( runs );
+	benchmarkUtils.reportRuns( runs );
 
 	if ( len( exeLog ) && exeLog neq "none" ){
 		_logger( "" );
