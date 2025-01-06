@@ -38,7 +38,7 @@
 			}
 		}
 		arrayAppend( runs, {
-			"java": json.run.javaVersion,
+			"java": json.run.java,
 			"version": json.run.version,
 			"totalDuration": json.run.totalDuration
 		});
@@ -53,6 +53,9 @@
 
 	exeLog = server.system.environment.EXELOG ?: "";
 
+	javaDistribution = server.system.environment.JAVA_DISTRIBUTION ?: ""; 
+	benchmarkCycles = server.system.environment.BENCHMARK_CYCLES ?: ""; 
+
 	_logger( "## Summary Report" );
 
 	reportRuns( runs );
@@ -62,6 +65,8 @@
 		_logger( "Note: ExecutionLog was set to [#exeLog#], not all versions run with executionLog enabled and it affects overall performance" );
 		_logger( "" );
 	}
+	_logger( "Using Java Distribution: " & javaDistribution );
+	_logger( "Never rounds: " & benchmarkCycles & "k" );
 
 	loop list="never,once" item="inspect" {
 		loop list="#filter.suites#" item="type" {
