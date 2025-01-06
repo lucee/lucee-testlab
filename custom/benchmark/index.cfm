@@ -104,6 +104,7 @@
 				//systemOutput( "Sleeping 2s first, after warmup", true );
 				//sleep( 2000 ); // time to settle
 				
+				// duplicate output here, but it's useful when a test regresses to see where it's hanging
 				systemOutput( "Running #suiteName# [#numberFormat( runs/1000 )#k-#inspect#]", true );
 				s = getTickCount(units);
 
@@ -140,7 +141,7 @@
 
 			time = getTickCount( units ) - s;
 
-			_logger( "Running #suiteName# [#numberFormat( runs )#-#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
+			_logger( "Finished #suiteName# [#numberFormat( runs/1000 )#k-#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
 			result = {
 				time: time / 1000,
 				inspect: inspect,

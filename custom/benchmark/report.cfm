@@ -58,8 +58,6 @@
 
 	_logger( "## Summary Report" );
 
-	benchmarkUtils.reportRuns( runs );
-
 	if ( len( exeLog ) && exeLog neq "none" ){
 		_logger( "" );
 		_logger( "Note: ExecutionLog was set to [#exeLog#], not all versions run with executionLog enabled and it affects overall performance" );
@@ -68,6 +66,39 @@
 	_logger( "Using Java Distribution: " & javaDistribution );
 	_logger( "Never rounds: " & benchmarkCycles & "k" );
 
+	benchmarkUtils.reportRuns( runs );
+
+	// report out the winners for each benchmark
+	winners = {};
+	loop list="#filter.suites#" item="type" {
+		```
+		<cfquery name="q_win" dbtype="query">
+			select	version, java, time, 
+					throughput, _perc, _min, _avg, _med, _max, memory, error
+			from	q
+			where	type = <cfqueryparam value="#type#">
+					and inspect = 'never'
+			order	by (throughput+0) desc
+		</cfquery>
+		```
+		if ( !structKeyExists( winners, q_win.version ) )
+			winners[q_win.version] = [];
+		arrayAppend( winners[ q_win.version ], type );
+	}
+	_logger( "" );
+	_logger( "## Benchmark Winners by Version");
+	_logger( "" );
+	hdr = [ "Version", "Test(s)"];
+	div = [ "---", "---"];
+	_logger( "|" & arrayToList( hdr, "|" ) & "|" );
+	_logger( "|" & arrayToList( div, "|" ) & "|" );
+	loop collection=winners key="winner" value="wins"{
+		_logger("|" & winner & "|" & wrap(arrayToList(wins, ', '),100) & "|" );
+	}
+	_logger( "" );
+	abort;
+
+	// report out per test
 	loop list="never,once" item="inspect" {
 		loop list="#filter.suites#" item="type" {
 			```
