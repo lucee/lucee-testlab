@@ -33,7 +33,7 @@ on:
            - debug
   workflow_call:
 
-run-name: "Benchmarking: ${{ github.event.inputs.never_rounds }} rounds, distro ${{ github.event.inputs.java_distribution }}, exeLog: ${{ github.event.inputs.exeLog }}"
+run-name: "Benchmarking: ${{ github.event.inputs.never_rounds }}k rounds, distro ${{ github.event.inputs.java_distribution }}, exeLog: ${{ github.event.inputs.exeLog }}"
 
 jobs:
   benchmarks:
