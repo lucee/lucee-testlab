@@ -2,7 +2,8 @@
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts";
 	files = directoryList( dir );
 	
-	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,_min,_max,_avg,_med,error,raw,_perc,exeLog" );
+	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,"
+		"_min,_max,_avg,_med,error,raw,_perc,exeLog,totalDuration" );
 
 	tests = structNew('ordered');
 	runs = [];
@@ -31,7 +32,7 @@
 				arrayAppend( tests[ r.type ], {
 					"java": json.run.java,
 					"version": json.run.version,
-					// "totalDuration": json.totalDuration,
+					// "totalDuration": json.run.totalDuration,
 					"stats": r.exeLog
 				});
 			}

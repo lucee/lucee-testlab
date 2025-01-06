@@ -13,6 +13,11 @@ on:
         description: Once Rounds (1k)
         default: '0.5'
         type: string
+      java_distribution:
+        required: false
+        description: Java Distribution
+        type: string
+        default: 'temurin'
       benchmark_filter:
         required: false
         description: Test Filter
@@ -66,7 +71,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{matrix.javaVersion}}
-          distribution: "temurin"
+          distribution: ${{ github.event.inputs.java_distribution }}
       - name: Cache Maven packages
         if: always()
         uses: actions/cache@v4
@@ -118,7 +123,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
             java-version: 11
-            distribution: "temurin"
+            distribution: ${{ github.event.inputs.java_distribution }}
       - name: Cache Maven packages
         if: always()
         uses: actions/cache@v4
