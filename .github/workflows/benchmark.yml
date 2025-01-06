@@ -1,4 +1,4 @@
-name: Simple benchmarking
+name: Benchmarking
 
 on:
   workflow_dispatch:
@@ -6,23 +6,34 @@ on:
       never_rounds:
         required: false
         description: Never Rounds (1k)
-        default: 25
-        type: String
+        default: '25'
+        type: string
       once_rounds:
         required: false
         description: Once Rounds (1k)
-        default: 0.5
-        type: String
+        default: '0.5'
+        type: string
+      java_distribution:
+        required: false
+        description: Java Distribution
+        type: string
+        default: 'temurin'
       benchmark_filter:
         required: false
         description: Test Filter
         type: string
       exeLog:
-         required: false
-         description: Do Execution Log
-         default: false
-         type: boolean
+         description: Execution Log
+         required: true
+         default: 'none'
+         type: choice
+         options:
+           - none
+           - console
+           - debug
   workflow_call:
+
+run-name: "Benchmarking: ${{ github.event.inputs.never_rounds }} rounds, distro ${{ github.event.inputs.java_distribution }}, exeLog: ${{ github.event.inputs.exeLog }}"
 
 jobs:
   benchmarks:
@@ -32,12 +43,14 @@ jobs:
       max-parallel: 1
       matrix:
         luceeVersion: [ 6.2/snapshot/zero, 6.2.0.166/rc/zero, 5.4/snapshot/light ] # 5.4/snapshot/light, 6.0/snapshot/light, 6.1/snapshot/light
-        javaVersion: [ 11, 21, 23 ]
+        javaVersion: [ 11, 21, 23, 24-ea ]
         exclude:
             - luceeVersion: 5.4/snapshot/light
               javaVersion: 21
             - luceeVersion: 5.4/snapshot/light
               javaVersion: 23
+            - luceeVersion: 5.4/snapshot/light
+              javaVersion: 24-ea
             - luceeVersion: 6.0/snapshot/zero
               javaVersion: 21
             - luceeVersion: 6.0/snapshot/zero
@@ -48,6 +61,8 @@ jobs:
               javaVersion: 11
             - luceeVersion: 6.2.0.166/rc/zero
               javaVersion: 23
+            - luceeVersion: 6.2.0.166/rc/zero
+              javaVersion: 24-ea
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
         compile: ${{ github.event.inputs.compile }}
@@ -58,7 +73,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{matrix.javaVersion}}
-          distribution: "temurin"
+          distribution: ${{ github.event.inputs.java_distribution }}
       - name: Cache Maven packages
         if: always()
         uses: actions/cache@v4
@@ -92,6 +107,7 @@ jobs:
           BENCHMARK_ONCE_CYCLES: ${{ github.event.inputs.once_rounds }}
           BENCHMARK_FILTER: ${{ github.event.inputs.benchmark_filter }}
           EXELOG: ${{ github.event.inputs.exeLog }}
+          LUCEE_DEBUGGING_MAXPAGEPARTS: 0
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -105,11 +121,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up JDK 11
+      - name: Set up JDK 21 / Temurin
         uses: actions/setup-java@v4
         with:
-            java-version: 11
-            distribution: "temurin"
+            java-version: 21
+            distribution: 'temurin'
       - name: Cache Maven packages
         if: always()
         uses: actions/cache@v4
@@ -135,5 +151,10 @@ jobs:
             execute: /report.cfm
             luceeVersionQuery: 6/stable/zero
             extensions:  D46B46A9-A0E3-44E1-D972A04AC3A8DC10 #cfchart
-
-
+        env:
+          BENCHMARK_FILTER: ${{ github.event.inputs.benchmark_filter }}
+          EXELOG: ${{ github.event.inputs.exeLog }}
+          JAVA_DISTRIBUTION: ${{ github.event.inputs.java_distribution }}
+          BENCHMARK_CYCLES: ${{ github.event.inputs.never_rounds }}
+          BENCHMARK_ONCE_CYCLES: ${{ github.event.inputs.once_rounds }}
+          

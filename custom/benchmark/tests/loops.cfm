@@ -1,4 +1,4 @@
-<cfset variables.iteration = 5000>
+<cfset variables.iteration = 1000>
 <cfset variables.x = 0>
 <cfset variables.tick = getTickCount()>
 <cfloop from="1" to="#variables.iteration#" index="variables.i">

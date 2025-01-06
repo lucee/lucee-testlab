@@ -2,7 +2,12 @@
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts";
 	files = directoryList( dir );
 	
-	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,_min,_max,_avg,_med,error,raw,_perc" );
+	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,"
+		& "_min,_max,_avg,_med,error,raw,_perc,exeLog,totalDuration" );
+
+	tests = structNew('ordered');
+	runs = [];
+
 	for ( f in files ){
 		systemOutput ( f, true );
 		json = deserializeJson( fileRead( f ) );
@@ -21,108 +26,86 @@
 			r.throughput = int( r.runs / ( r.time / 1000 ) );
 			row = queryAddRow( q );
 			QuerySetRow( q, row, r );
+			if ( structKeyExists( r, "exeLog" ) ){
+				if ( !structKeyExists( tests, r.type ) )
+					tests[ r.type ] = [];
+				arrayAppend( tests[ r.type ], {
+					"java": json.run.java,
+					"version": json.run.version,
+					// "totalDuration": json.run.totalDuration,
+					"stats": r.exeLog
+				});
+			}
 		}
+		arrayAppend( runs, {
+			"java": json.run.java,
+			"version": json.run.version,
+			"totalDuration": json.run.totalDuration
+		});
 	}
 
-	runs = q.runs;
+	benchmarkUtils = new benchmarkUtils();
+	_logger= benchmarkUtils._logger;
+
+	filter = benchmarkUtils.getTests( server.system.environment.BENCHMARK_FILTER ?: "");
+	longestSuiteName = filter.longestSuiteName;
+	suites = filter.suites;
+
+	exeLog = server.system.environment.EXELOG ?: "";
+
+	javaDistribution = server.system.environment.JAVA_DISTRIBUTION ?: ""; 
+	benchmarkCycles = server.system.environment.BENCHMARK_CYCLES ?: ""; 
 
 	_logger( "## Summary Report" );
 
+	benchmarkUtils.reportRuns( runs );
+
+	if ( len( exeLog ) && exeLog neq "none" ){
+		_logger( "" );
+		_logger( "Note: ExecutionLog was set to [#exeLog#], not all versions run with executionLog enabled and it affects overall performance" );
+		_logger( "" );
+	}
+	_logger( "Using Java Distribution: " & javaDistribution );
+	_logger( "Never rounds: " & benchmarkCycles & "k" );
+
 	loop list="never,once" item="inspect" {
-		loop list="#application.testSuite.toList()#" item="type" {
-			dumpTable( q, type, inspect, replace(type,"-", " ", "all") & " - " & UCase( inspect ) );
+		loop list="#filter.suites#" item="type" {
+			```
+			<cfquery name="q_rpt" dbtype="query">
+				select	version, java, time, 
+						throughput, _perc, _min, _avg, _med, _max, memory, error
+				from	q
+				where	type = <cfqueryparam value="#type#">
+						and inspect = <cfqueryparam value="#inspect#">
+				order	by (throughput+0) desc
+			</cfquery>
+			```
+
+			benchmarkUtils.dumpTable( q=q_rpt, title=replace(type,"-", " ", "all") & " - " & UCase( inspect ) );
 		}
 	}
 
-	function _logger( string message="", boolean throw=false ){
-		if ( !len( server.system.environment.GITHUB_STEP_SUMMARY?:"" ) ) {
-			systemOutput( arguments.message, true );
-			if ( arguments.throw )
-				throw arguments.message;
-			return;
-		}
-		if ( !FileExists( server.system.environment.GITHUB_STEP_SUMMARY ) ){
-			fileWrite( server.system.environment.GITHUB_STEP_SUMMARY, "#### #server.lucee.version# ");
-			//fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, server.system.environment.toJson());
-		}
-
-		if ( arguments.throw ) {
-			fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, "> [!WARNING]" & chr(10) );
-			fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, "> #arguments.message##chr(10)#");
-			throw arguments.message;
-		} else {
-			fileAppend( server.system.environment.GITHUB_STEP_SUMMARY, "#arguments.message##chr(10)#");
-		}
-
-	}
-
-	function getImageBase64( img ){
-		saveContent variable="local.x" {
-			imageWriteToBrowser( arguments.img );
-		}
-		var src = listGetAt( x, 2, '"' );
-		// hack suggested here https://stackoverflow.com/questions/61553399/how-can-i-save-a-valid-image-to-github-using-their-api#comment125857660_71201317
-		// return mid( src, len( "data:image/png;base64," ) + 1 ); didn't work either
-		return src;
-	}
-
-   // systemOutput( serializeJSON( q, true) );
-
-   function dumpTable( q_src, type, inspect, title ) localmode=true {
-
-		```
-		<cfquery name="local.q" dbtype="query">
-			select	version, java, time, 
-					throughput, _perc, _min, _avg, _med, _max, memory, error
-			from	arguments.q_src
-			where	type = <cfqueryparam value="#arguments.type#">
-					and inspect = <cfqueryparam value="#arguments.inspect#">
-			order	by throughput desc 
-		</cfquery>
-		```
-
-		if ( q.recordCount eq 0 )
-			return;
-
-		var hdr = [];
-		var div = [];
-		loop list=q.columnlist item="local.col" {
-			if ( col eq "_perc" )
-				arrayAppend( hdr, "%" );
-			else 
-				arrayAppend( hdr, replace( col, "_", "") );
-			if ( col eq "memory" or col eq "time" or col eq "throughput" or left( col, 1 ) eq "_" )
-				arrayAppend( div, "---:" );
-			else
-				arrayAppend( div, "---" );
-		}
+	if (exeLog == "debug"){
+		_logger( "## Execution Log Cross Reference" );
 		_logger( "" );
-		_logger( "#### #arguments.title#" );
-		_logger( "" );
-		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
-		_logger( "|" & arrayToList( div, "|" ) & "|" );
-
-		var row = [];
-		loop query=q {
-			if ( q.time[ 1 ] neq 0 )
-				querySetCell( q, "_perc", 100 - int(( q.time[ 1 ] / q.time[ q.currentRow ]  ) * 100) , q.currentRow ) ;
-			if ( q._perc neq 0 )
-				querySetCell( q, "_perc", "-#q._perc#", q.currentRow ) ;
-			loop list=q.columnlist item="local.col" {
-				if ( col eq "memory" or col eq "time" or col eq "throughput" )
-					arrayAppend( row, numberFormat( q [ col ] ) );
-				else if ( col eq "_perc" )
-					arrayAppend( row, numberFormat( q [ col ] ) & "%");
-				else if ( col eq "error" )
-					arrayAppend( row, htmleditformat( REReplace( q [ col ], "\n", " ", "ALL") ) );
-				else 
-					arrayAppend( row, q [ col ] );
+		if ( structCount( tests ) ){
+			for ( type in tests ){
+				_logger( "#### " & replace( type, "-", " ", "all" ) );
+				_logger( "" );
+				runs = tests[ type ];
+				benchmarkUtils.reportTests(	runs=runs,
+					sectionTitle="Template",
+					sectionKey="key",
+					detailTitle="Snippet",
+					detailKey="snippet",
+					statKey=[ "_MIN", "_AVG", "_MAX" ]
+				);
 			}
-			_logger( "|" & arrayToList( row, "|" ) & "|" );
-			row = [];
+		} else {
+			_logger( "No exeLog data found" );
 		}
 
-		_logger( "" );
+		
 	}
 
 </cfscript>

@@ -4,7 +4,7 @@
 
     function calcPrimes() localmode=true {
         ticks = getTickCount();
-        stopIndex   = 250;
+        stopIndex   = 125;
         primes      = [];
         divisions   = 0;
         ArrayAppend(primes, 2);
@@ -34,7 +34,7 @@
     numPrimes = calcPrimes();
     
 
-    if ( 53 != numPrimes)
-        throw "Expected 53 primes, got #numPrimes#";
+    if ( 30 != numPrimes )
+        throw "Expected 30 primes, got #numPrimes#";
 </cfscript>
 
