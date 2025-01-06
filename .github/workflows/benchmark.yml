@@ -1,4 +1,4 @@
-name: Simple benchmarking
+name: Benchmarking
 
 on:
   workflow_dispatch:
@@ -32,6 +32,8 @@ on:
            - console
            - debug
   workflow_call:
+
+run-name: "Benchmarking: ${{ github.event.inputs.once_rounds }} rounds, distro ${{ github.event.inputs.java_distribution }}, exeLog: ${{ github.event.inputs.exeLog }}"
 
 jobs:
   benchmarks:
