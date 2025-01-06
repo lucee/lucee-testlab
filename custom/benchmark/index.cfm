@@ -1,5 +1,5 @@
 <cfscript>
-	never_runs = int( ( server.system.environment.BENCHMARK_CYCLES ?: 0.5 ) * 1000);
+	never_runs = int( ( server.system.environment.BENCHMARK_CYCLES ?: 25 ) * 1000);
 	once_runs = int( ( server.system.environment.BENCHMARK_ONCE_CYCLES ?: 0.5) * 1000)
 	warmup_runs = 1000; // ensure level 4 compilation
 	setting requesttimeout=never_runs+once_runs;
@@ -78,6 +78,7 @@
 	systemOutput( getCpuUsage() );
 	sleep( 5000 ); // initial time to settle
 
+	run_startTime = getTickCount();
 	loop list="once,never" item="inspect" {
 		systemOutput("", true);
 		configImport( {"inspectTemplate": inspect }, "server", "admin" );
@@ -168,6 +169,8 @@
 		}
 	}
 
+	results.run.totalDuration = getTickCount() - run_startTime;
+
 	_logger( message="" );
 	_logger( message="-------test run complete------" );
 	
@@ -206,8 +209,52 @@
 			systemOutput( "--------- no #logFile# [#log#]", true );
 		}
 	}
-
 	_logger( message="-------finished dumping logs------" );
+
+	do_heap_dump =  server.system.environment.BENCHMARK_HEAPDUMP ?: false;
+	if ( do_heap_dump ){
+		_logger( "" );
+		_logger( message="-------heap dump------" );
+		logs = "";
+		_log = "";
+		results = "";
+		result = "";
+		arr = "";
+		for (v in variables){
+			if (!isCustomFunction(variables[v]))
+				systemOutput(v & ": " & len(variables[v]), true);
+		}
+
+		application name="bench";
+		applicationStop();
+		
+		admin
+			action="purgeExpiredSessions"
+			type="server"
+			password="admin";
+	
+		_logger( message="-------trigger GC------" );
+		createObject( "java", "java.lang.System" ).gc();
+		_memStatGC = reportMem( "", _memBefore.usage, "before", "HEAP" );
+		for ( r in _memStatGC.report )
+			_logger( r );
+		_logger( "" );
+
+		
+		dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "heapdumps/";
+		if ( !directoryExists( dir ) )
+			directoryCreate( dir );
+
+		dumpFile = dir & "heapdump-#lsDateTimeFormat(now(),'yyyy-mm-dd-HH-nn-ss')#.hprof";
+		systemOutput( "Dumping heap to #dumpFile#", true );
+
+		admin 
+			type="server"
+			password="admin"
+			action="heapDump" 
+			destination=dumpfile;
+			live=true; // TODO avoid // in URL
+	}
 
 	if ( errorCount > 0 )
 		_logger( message="#errorCount# benchmark(s) failed", throw=true );

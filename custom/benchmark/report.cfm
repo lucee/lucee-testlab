@@ -5,6 +5,7 @@
 	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,_min,_max,_avg,_med,error,raw,_perc,exeLog" );
 
 	tests = structNew('ordered');
+	runs = [];
 
 	for ( f in files ){
 		systemOutput ( f, true );
@@ -35,6 +36,11 @@
 				});
 			}
 		}
+		arrayAppend( runs, {
+			"java": json.run.javaVersion,
+			"version": json.run.version,
+			"totalDuration": json.run.totalDuration
+		});
 	}
 
 	benchmarkUtils = new benchmarkUtils();
@@ -47,6 +53,8 @@
 	exeLog = server.system.environment.EXELOG ?: "";
 
 	_logger( "## Summary Report" );
+
+	reportRuns( runs );
 
 	if ( len( exeLog ) && exeLog neq "none" ){
 		_logger( "" );

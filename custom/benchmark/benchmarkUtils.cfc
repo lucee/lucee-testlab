@@ -154,6 +154,36 @@ component  {
 		return false;
 	}
 
+	function reportRuns( srcRuns ) localmode=true {
+
+		var runs = duplicate( srcRuns );
+		arraySort(
+			runs,
+			function (e1, e2){
+				if (e1.totalDuration lt e2.totalDuration) return -1;
+				else if (e1.totalDuration gt e2.totalDuration) return 1;
+				return 0;
+			}
+		); // fastest to slowest
+
+		var hdr = [ "Version", "Java", "Time" ];
+		var div = [ "---", "---", "---:" ];
+		_logger( "" );
+		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
+		_logger( "|" & arrayToList( div, "|" ) & "|" );
+
+		var row = [];
+		loop array=runs item="local.run" {
+			ArrayAppend( row, run.version );
+			ArrayAppend( row, run.java );
+			arrayAppend( row, numberFormat( run.totalDuration ) );
+			_logger( "|" & arrayToList( row, "|" ) & "|" );
+			row = [];
+		}
+
+		_logger( "" );
+	}
+
 	function reportTests( runs, 
 			sectionTitle="Suite / Spec", 
 			sectionKey="suiteName", 
