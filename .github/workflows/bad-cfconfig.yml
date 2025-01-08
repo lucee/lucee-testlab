@@ -89,7 +89,7 @@ jobs:
            execute: /debug.cfm
            luceeVersionQuery: ${{ matrix.luceeVersion }}
          env:
-           LUCEE_EXTENSIONS: B737ABC4-D43F-4D91-8E8E973E37C40D1B:2.0.0.28-SNAPSHOT
+           LUCEE_EXTENSIONS: B737ABC4-D43F-4D91-8E8E973E37C40D1B;version=2.0.0.28-SNAPSHOT
            check_extensions: B737ABC4-D43F-4D91-8E8E973E37C40D1B:2.0.0.28-SNAPSHOT
 
       - name: Copy .CFConfig-newer-extension.json5 into context
