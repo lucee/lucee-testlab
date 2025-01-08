@@ -129,9 +129,15 @@
 		loop collection=runs[1].stats key="title" value="test" {
 			// difference between the test time for the newest version minus oldest version
 			var diff = sortedRuns[arrayLen(runs)].stats[test.suiteSpec].time - sortedRuns[1].stats[test.suiteSpec].time;
+			try {
+				var percentage = int( ( sortedRuns[1].stats[test.suiteSpec].time / sortedRuns[arrayLen(runs)].stats[test.suiteSpec].time ) * 100 );
+			} catch (e){
+				var percentage = "err"; // probably div by zero
+			}
 			ArrayAppend( suiteSpecs, {
 				suiteSpec: test.suiteSpec,
-				diff: diff
+				diff: diff,
+				percentage: percentage
 			});
 			suiteSpecsDiff[test.suiteSpec] = diff;
 		}
@@ -155,7 +161,11 @@
 				else
 					arrayAppend( row, "");
 			}
-			arrayAppend( row, numberFormat( test.diff ) );
+			if ( test.diff eq 0 ) {
+				arrayAppend( row, numberFormat( test.diff ) );
+			} else {
+				arrayAppend( row, numberFormat( test.diff ) & " (" & test.percentage & "%)" );
+			}
 			_logger( "|" & arrayToList( row, "|" ) & "|" );
 			row = [];
 		}
