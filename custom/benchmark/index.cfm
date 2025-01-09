@@ -1,5 +1,5 @@
 <cfscript>
-	never_runs = int( ( server.system.environment.BENCHMARK_CYCLES ?: 25 ) * 1000);
+	never_runs = int( ( server.system.environment.BENCHMARK_CYCLES ?: 25) * 1000);
 	once_runs = int( ( server.system.environment.BENCHMARK_ONCE_CYCLES ?: 0.5) * 1000)
 	warmup_runs = 1000; // ensure level 4 compilation
 	setting requesttimeout=never_runs+once_runs;
@@ -130,9 +130,11 @@
 						 throw mess;
 					}
 				}, true);
-			} catch ( e ){
-				echo(e);
-				structDelete(e, "codePrintHtml"); // avoid unreadable &nbsp; on the console
+			} catch ( _e ){
+				e = benchmarkUtils.cleanException(_e);
+				lastOkRound = arrayFind(arr, function(item) { return item != 0; });
+				_logger( "------- Exception occurred around round [#lastOkRound#]" );
+				echo(_e); // for running in browser
 				systemOutput( e, true );
 				_logger( e.message );
 				runError = e.message;

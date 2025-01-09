@@ -94,7 +94,7 @@
 	_logger( "|" & arrayToList( div, "|" ) & "|" );
 	loop collection=winners key="winner" value="wins"{
 		_logger("|" & winner & "|"
-			& benchmarkUtils.markdownEscape( wrap( arrayToList( wins, ', ' ), 100 ) ) & "|" );
+			& benchmarkUtils.markdownEscape( wrap( arrayToList( wins, ', ' ), 150 ) ) & "|" );
 	}
 	_logger( "" );
 

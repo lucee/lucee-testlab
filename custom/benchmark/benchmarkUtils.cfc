@@ -65,10 +65,7 @@ component  {
 				else if ( col eq "error" or col eq "snippet" )
 					arrayAppend( row, markdownEscape( q [ col ] ) );  // newlines and pipes are not allowed in markdown tables
 				else if ( left( col, 1 ) eq "_" ) {
-					if ( q [ col ] gt 1 )
-						arrayAppend( row, numberFormat( q [ col ] ) );
-					else 
-						arrayAppend( row, decimalFormat( q [ col ] ) );
+					arrayAppend( row, numFormat( q [ col ] ) );
 				}
 				else 
 					arrayAppend( row, q [ col ] );
@@ -314,6 +311,23 @@ component  {
 			return numberFormat( n );
 		else
 			return decimalFormat( round(n,1) );
+	}
+
+	// avoid unreadable &nbsp; on the console	
+	function cleanException( src ){
+		var e = deserializeJSON( serializeJSON( src ) );
+		var strip = [ "codePrintHtml", "type", "id", "Raw_trace" ];
+		arrayEach(e.tagContext, function( el, idx, ee ){
+			for ( var p in strip )
+				structDelete( el, p );
+		});
+		if (structKeyExists(e, "cause") && structKeyExists( e.cause, "tagContext" ) ){
+			arrayEach( e.cause.tagContext, function( el, idx, ee ){
+				for ( var p in strip )
+					structDelete( el, p );
+			});
+		}
+		return e;
 	}
 
 }
