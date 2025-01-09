@@ -138,7 +138,9 @@
 				_logger( "------- Exception occurred around round [#lastOkRound#]" );
 				echo(_e); // for running in browser
 				systemOutput( e, true );
+				_logger( message="`" & "``", console=false );
 				_logger( message=e.stacktrace, console=false );
+				_logger( message="`" & "``", console=false );
 				runError = e.message;
 				errorCount++;
 			}
