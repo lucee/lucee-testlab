@@ -78,9 +78,11 @@
 	systemOutput( getCpuUsage() );
 	sleep( 5000 ); // initial time to settle
 
+	_logger( server.lucee.version );
+
 	run_startTime = getTickCount();
 	loop list="once,never" item="inspect" {
-		systemOutput("", true);
+		_logger( "" );
 		configImport( {"inspectTemplate": inspect }, "server", "admin" );
 		if (inspect eq "never")
 			runs = never_runs;
