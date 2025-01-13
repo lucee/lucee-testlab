@@ -310,7 +310,7 @@ component  {
 		else if ( n gt 5 )
 			return numberFormat( n );
 		else
-			return decimalFormat( round(n,1) );
+			return decimalFormat( n );
 	}
 
 	// avoid unreadable &nbsp; on the console	
