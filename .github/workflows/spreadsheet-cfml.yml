@@ -5,7 +5,7 @@ on:
     inputs:
       compile:
         required: false
-        default: false
+        default: true
         type: boolean
   workflow_call:
 
@@ -52,8 +52,8 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        luceeVersion: [ 6.2/snapshot/jar, 6.2.0.166/rc/jar, 6.1/snapshot/jar, 6.0/snapshot/jar, 5.4/snapshot/jar ]
-        javaVersion: [ 11, 21, 23 ]
+        luceeVersion: [ 6.2/snapshot/jar, 6.1/snapshot/jar, 6.0/snapshot/jar, 5.4/snapshot/jar ]
+        javaVersion: [ 11, 21 ]
         exclude:
             - luceeVersion: 5.4/snapshot/jar
               javaVersion: 21

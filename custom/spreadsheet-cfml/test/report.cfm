@@ -130,7 +130,7 @@
 			// difference between the test time for the newest version minus oldest version
 			var diff = sortedRuns[arrayLen(runs)].stats[test.suiteSpec].time - sortedRuns[1].stats[test.suiteSpec].time;
 			try {
-				var percentage = int( ( sortedRuns[1].stats[test.suiteSpec].time / sortedRuns[arrayLen(runs)].stats[test.suiteSpec].time ) * 100 );
+				var percentage = 100-int( ( sortedRuns[1].stats[test.suiteSpec].time / sortedRuns[arrayLen(runs)].stats[test.suiteSpec].time ) * 100 );
 			} catch (e){
 				var percentage = "err"; // probably div by zero
 			}
