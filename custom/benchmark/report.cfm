@@ -68,6 +68,21 @@
 
 	benchmarkUtils.reportRuns( runs );
 
+	// by java version
+	```
+	<cfquery name="q_java" dbtype="query">
+		select	java
+		from	q
+		group by java
+		order by java desc
+	</cfquery>
+	```
+
+	loop query="q_java" {
+		_logger( "#### Summary Report - Java #q_java.java#" );
+		benchmarkUtils.reportRuns( runs, java );
+	}
+
 	// report out the winners for each benchmark
 	winners = {};
 	loop list="#filter.suites#" item="type" {

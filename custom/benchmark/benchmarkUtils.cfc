@@ -151,7 +151,7 @@ component  {
 		return false;
 	}
 
-	function reportRuns( srcRuns ) localmode=true {
+	function reportRuns( srcRuns, java="" ) localmode=true {
 
 		var runs = duplicate( srcRuns );
 		arraySort(
@@ -171,11 +171,13 @@ component  {
 
 		var row = [];
 		loop array=runs item="local.run" {
-			ArrayAppend( row, run.version );
-			ArrayAppend( row, run.java );
-			arrayAppend( row, numberFormat( run.totalDuration ) );
-			_logger( "|" & arrayToList( row, "|" ) & "|" );
-			row = [];
+			if ( len( arguments.java ) eq 0 || run.java eq arguments.java ){
+				ArrayAppend( row, run.version );
+				ArrayAppend( row, run.java );
+				arrayAppend( row, numberFormat( run.totalDuration ) );
+				_logger( "|" & arrayToList( row, "|" ) & "|" );
+				row = [];
+			}
 		}
 
 		_logger( "" );
