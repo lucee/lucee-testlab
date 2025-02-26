@@ -51,7 +51,7 @@
 		
 	}
 
-	filter = benchmarkUtils.getTests( server.system.environment.BENCHMARK_FILTER ?: "hello");
+	filter = benchmarkUtils.getTests( server.system.environment.BENCHMARK_FILTER ?: "");
 	longestSuiteName = filter.longestSuiteName;
 	suites = filter.suites;
 
