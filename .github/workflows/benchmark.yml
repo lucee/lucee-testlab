@@ -42,7 +42,7 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        luceeVersion: [ 6.2.1/snapshot/zero, 6.2.0/stable/zero, 6.1/stable/zero, 5.4/stable/light ] # 6.0/snapshot/light
+        luceeVersion: [ 6.2.1/snapshot/zero, 6.2.1.10/snapshot/zero, 6.2.1.20/snapshot/zero, 6.2.1.30/snapshot/zero, 6.2.0/stable/zero ] # 6.0/snapshot/light
         javaVersion: [ 11, 21, 23 ] # 24-ea
         exclude:
             - luceeVersion: 5.4/stable/light
