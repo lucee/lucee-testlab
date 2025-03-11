@@ -9,13 +9,13 @@ on:
         type: boolean
       java_versions:
         required: false
-        description: Java Versions
+        description: Java Versions (json)
         default: '[21]'
         type: string
       Lucee_versions:
         required: false
-        description: Lucee Versions
-        default: '[6.2/snapshot/jar, 6.2/stable/jar]'
+        description: Lucee Versions (json)
+        default: '["6.2/snapshot/jar", "6.2/stable/jar"]'
         type: string
   workflow_call:
 
