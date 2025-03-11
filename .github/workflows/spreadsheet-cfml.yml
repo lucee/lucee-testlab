@@ -12,7 +12,7 @@ on:
         description: Java Versions (json)
         default: '[21,11]'
         type: string
-      Lucee_versions:
+      lucee_versions:
         required: false
         description: Lucee Versions (json)
         default: '[ "6.2/snapshot/jar", "6.2/stable/jar", "6.1/stable/jar", "6.0/stable/jar", "5.4/stable/jar"]'
