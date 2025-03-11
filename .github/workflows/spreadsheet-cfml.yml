@@ -62,8 +62,8 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        luceeVersion: ${{ github.event.inputs.lucee_versions }}
-        javaVersion: ${{ github.event.inputs.java_versions }}
+        luceeVersion: [${{ github.event.inputs.lucee_versions }}]
+        javaVersion: [${{ github.event.inputs.java_versions }}]
         exclude:
             - luceeVersion: 5.4/stable/jar
               javaVersion: 21
