@@ -7,6 +7,16 @@ on:
         required: false
         default: true
         type: boolean
+      java_versions:
+        required: false
+        description: Java Versions
+        default: '21'
+        type: string
+      Lucee_versions:
+        required: false
+        description: Lucee Versions
+        default: '6.2/snapshot/jar, 6.2/stable/jar'
+        type: string
   workflow_call:
 
 jobs:
@@ -52,8 +62,8 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        luceeVersion: [ 6.2/snapshot/jar, 6.2/stable/jar ]
-        javaVersion: [ 21 ]
+        luceeVersion: ${{ github.event.inputs.lucee_versions }}
+        javaVersion: ${{ github.event.inputs.java_versions }}
         exclude:
             - luceeVersion: 5.4/stable/jar
               javaVersion: 21
