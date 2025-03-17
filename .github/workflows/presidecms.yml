@@ -9,12 +9,12 @@ on:
         java_versions:
           required: false
           description: Java Versions (json)
-          default: '[23,21,11]'
+          default: '[ 23, 21 ]'
           type: string
         lucee_versions:
           required: false
           description: Lucee Versions (json)
-          default: '[ "6.2/snapshot/jar", "6.2/stable/jar", "6.1/stable/jar", "6.0/stable/jar", "5.4/stable/jar"]'
+          default: '[ "6.2/snapshot/jar", "6.2/stable/jar"]'
           type: string
     workflow_call:
 jobs:
@@ -67,6 +67,7 @@ jobs:
       matrix:
         luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
         javaVersion: ${{ fromJSON(github.event.inputs.java_versions) }}
+        cacheKeys: [0, 5000, 10000]
         exclude:
             - luceeVersion: 5.4/stable/jar
               javaVersion: 21
@@ -130,6 +131,7 @@ jobs:
             PRESIDETEST_DB_PASSWORD: preside
             PRESIDETEST_DB_NAME: preside_test
             LUCEE_BASE_CONFIG: ${{ github.workspace }}/tests/.cfconfig.json
+            LUCEE_CACHE_VARIABLEKEYS: ${{matrix.cacheKeys}}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
