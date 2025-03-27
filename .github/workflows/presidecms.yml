@@ -9,7 +9,7 @@ on:
         java_versions:
           required: false
           description: Java Versions (json)
-          default: '[23,21,11]'
+          default: '[ 24, 21, 11 ]'
           type: string
         lucee_versions:
           required: false
