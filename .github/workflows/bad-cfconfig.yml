@@ -2,11 +2,12 @@ name: Check Bad .CFConfigs
 
 on:
   workflow_dispatch:
-    lucee_versions:
-      required: false
-      description: Lucee Versions (json)
-      default: '[ "7.0/snapshot/jar", "6.2/snapshot/jar", "6.2/stable/jar" ]'
-      type: string
+    inputs:
+      lucee_versions:
+        required: false
+        description: Lucee Versions (json)
+        default: '[ "7.0/snapshot/jar", "6.2/snapshot/jar", "6.2/stable/jar" ]'
+        type: string
   workflow_call:
 
 jobs:
