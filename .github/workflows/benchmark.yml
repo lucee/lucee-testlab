@@ -165,4 +165,5 @@ jobs:
           JAVA_DISTRIBUTION: ${{ github.event.inputs.java_distribution }}
           BENCHMARK_CYCLES: ${{ github.event.inputs.never_rounds }}
           BENCHMARK_ONCE_CYCLES: ${{ github.event.inputs.once_rounds }}
+          LUCEE_LISTENER_TYPE: modern
           
