@@ -41,20 +41,20 @@ jobs:
         java-version: 11
         distribution: 'temurin'
     - name: Install the ortus security key
-      run: curl -fsSl https://downloads.ortussolutions.com/debs/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/ortussolutions.gpg > /dev/null  
+      run: curl -fsSl https://downloads.ortussolutions.com/debs/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/ortussolutions.gpg > /dev/null
     - name: Add the commandbox source
       run: echo "deb [signed-by=/usr/share/keyrings/ortussolutions.gpg] https://downloads.ortussolutions.com/debs/noarch /" | sudo tee /etc/apt/sources.list.d/commandbox.list
     - name: Update apt and install commandbox
       run: sudo apt-get update && sudo apt-get install apt-transport-https commandbox
     - name: Install dependencies
-      run: box install verbose=true        
+      run: box install verbose=true
     - name: Store installed webroot for matrix steps
       uses: actions/upload-artifact@v4
       with:
         name: webroot
         include-hidden-files: true
         path: ${{ github.workspace }}
-    
+
   tests:
     runs-on: ubuntu-latest
     needs: [ setup-spreadsheet-cfml ]
@@ -68,17 +68,14 @@ jobs:
             - luceeVersion: 5.4/stable/jar
               javaVersion: 21
             - luceeVersion: 5.4/stable/jar
-              javaVersion: 23
+              javaVersion: 24
             - luceeVersion: 6.0/stable/jar
               javaVersion: 21
             - luceeVersion: 6.0/stable/jar
-              javaVersion: 23
+              javaVersion: 24
             - luceeVersion: 6.1/stable/jar
-              javaVersion: 23
-            - luceeVersion: 6.2.0.166/rc/jar
-              javaVersion: 11
-            - luceeVersion: 6.2.0.166/rc/jar
-              javaVersion: 23
+              javaVersion: 24
+
     env:
       compile: ${{ github.event.inputs.compile }}
     steps:
