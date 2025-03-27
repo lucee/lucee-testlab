@@ -16,7 +16,7 @@ on:
       java_versions:
         required: false
         description: Java Versions (json)
-        default: '[ 23, 21, 11 ]'
+        default: '[ 24, 21, 11 ]'
         type: string
       lucee_versions:
         required: false
@@ -58,19 +58,19 @@ jobs:
             - luceeVersion: 5.4/stable/light
               javaVersion: 21
             - luceeVersion: 5.4/stable/light
-              javaVersion: 23
+              javaVersion: 24
             - luceeVersion: 5.4/stable/light
-              javaVersion: 24-ea
+              javaVersion: 24
             - luceeVersion: 6.0/stable/zero
               javaVersion: 21
             - luceeVersion: 6.0/stable/zero
-              javaVersion: 23
+              javaVersion: 24
             - luceeVersion: 6.0/stable/zero
-              javaVersion: 24-ea
+              javaVersion: 24
             - luceeVersion: 6.1/stable/zero
-              javaVersion: 23
+              javaVersion: 24
             - luceeVersion: 6.1/stable/zero
-              javaVersion: 24-ea
+              javaVersion: 24
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
         compile: ${{ github.event.inputs.compile }}
