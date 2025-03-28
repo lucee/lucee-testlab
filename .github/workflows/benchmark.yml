@@ -166,4 +166,4 @@ jobs:
           BENCHMARK_CYCLES: ${{ github.event.inputs.never_rounds }}
           BENCHMARK_ONCE_CYCLES: ${{ github.event.inputs.once_rounds }}
           LUCEE_LISTENER_TYPE: modern
-          
+          LUCEE_APPLICATION_PATH_CACHE_TIMEOUT: -1
