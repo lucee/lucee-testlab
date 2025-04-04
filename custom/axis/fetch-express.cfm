@@ -38,7 +38,7 @@
 
 	webroot = expandPath("../../express/webapps/ROOT");
 	systemOutput("copying test files into webroot [#webroot#]", true);
-	DirectoryCopy(expandPath("../../express-tests/"), webroot);
+	DirectoryCopy(expandPath("../../custom/axis/express-tests/"), webroot);
 	systemOutput(directoryList(path=webroot, recurse=true), true);
 
 </cfscript>
