@@ -44,7 +44,7 @@ jobs:
         uses: actions/cache@v4
         if: always()
         with:
-          path: /home/runner/work/lucee-express-cache
+          path: /home/runner/work/lucee-testlab/lucee-testlab/lucee-express-cache/
           key: lucee-express
       - name: Download Lucee Express
         uses: lucee/script-runner@main
