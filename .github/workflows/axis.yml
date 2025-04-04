@@ -1,4 +1,4 @@
-name: Check Bad .CFConfigs
+name: Webservice tests
 
 on:
   workflow_dispatch:
