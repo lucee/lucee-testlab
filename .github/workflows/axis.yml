@@ -46,7 +46,7 @@ jobs:
         with:
           path: /home/runner/work/lucee-express-cache
           key: lucee-express
-      - name: Check good .CFConfig.json LUCEE_BASE_CONFIG
+      - name: Download Lucee Express
         uses: lucee/script-runner@main
         with:
           webroot: ${{ github.workspace }}/custom/axis

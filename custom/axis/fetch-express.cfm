@@ -9,7 +9,7 @@
 
 	http url="https://update.lucee.org/rest/update/provider/latest/#listDeleteAt(requestVersion, 3, "/")#/express/info"	result="json";
 
-	var versionInfo = deserializeJson(json.filecontent);
+	versionInfo = deserializeJson(json.filecontent);
 	/*
 		{
 			version: "6.0.4.24-SNAPSHOT",
