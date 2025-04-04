@@ -6,7 +6,12 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="axis" {
 		describe( title="Lucee webservice / axis tests", body=function() {
 
 			it(title="extensionInfo()", body = function( currentSpec ) {
-				systemOutput( ExtensionInfo( "DF28D0A4-6748-44B9-A2FDC12E4E2E4D38" ), true );
+				systemOutput("", true);
+				systemOutput("extensionInfo(axis)", true);
+				var info = ExtensionInfo( "DF28D0A4-6748-44B9-A2FDC12E4E2E4D38" );
+				for (var i in info)
+					systemOutput( i , true );
+				systemOutput("", true);
 			});
 
 			it(title="test wsdl", body = function( currentSpec ) {
