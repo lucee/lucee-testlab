@@ -1,0 +1,56 @@
+name: Check Bad .CFConfigs
+
+on:
+  workflow_dispatch:
+    inputs:
+      lucee_versions:
+        required: false
+        description: Lucee Versions (json)
+        default: '[ "7.0/snapshot/jar", "6.2/snapshot/jar", "6.2/stable/jar" ]'
+        type: string
+  workflow_call:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
+        javaVersion: [ 21 ]
+    env:
+        luceeVersionQuery: ${{ matrix.luceeVersion }}
+        compile: ${{ github.event.inputs.compile }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK ${{matrix.javaVersion}}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{matrix.javaVersion}}
+          distribution: "temurin"
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: maven-cache
+      - name: Cache Lucee files
+        uses: actions/cache@v4
+        if: always()
+        with:
+          path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
+          key: lucee-downloads  
+      - name: Cache Lucee Express files
+        uses: actions/cache@v4
+        if: always()
+        with:
+          path: /home/runner/work/lucee-express-cache
+          key: lucee-express
+      - name: Check good .CFConfig.json LUCEE_BASE_CONFIG
+        uses: lucee/script-runner@main
+        with:
+          webroot: ${{ github.workspace }}/custom/axis
+          execute: /fetch-express.cfm
+          luceeVersion: zero-6.2.0.321
+        env:
+          fetch: ${{ matrix.luceeVersion }}
