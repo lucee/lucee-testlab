@@ -3,7 +3,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="axis" {
 	variables.localhost="http://127.0.0.1:8888/";
 
 	function run( testResults , testBox ) {
-		describe( title="Lucee webservice axis tests",skip=Util::isAWSNotSupported(), body=function() {
+		describe( title="Lucee webservice / axis tests", body=function() {
 			
 			it(title="test wsdl", body = function( currentSpec ) {
 				http url="#localhost#/ws.cfc?wsdl" result="local.result";
