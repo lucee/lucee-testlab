@@ -7,7 +7,7 @@
 	if ( !directoryExists( destDir ) )
 		directoryCreate( destDir )
 
-	http url="https://update.lucee.org/rest/update/provider/latest/#listDeleteAt(requestVersion, "/", 3)#/express/info"	result="json";
+	http url="https://update.lucee.org/rest/update/provider/latest/#listDeleteAt(requestVersion, 3, "/")#/express/info"	result="json";
 
 	var versionInfo = deserializeJson(json.filecontent);
 	/*
