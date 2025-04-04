@@ -33,12 +33,22 @@
 	systemOutput("extracting express into [#expressDir#]", true);
 	zip action="unzip" destination="#expressDir#" file="#destDir#/#versionInfo.filename#";
 
-	systemOutput("Directory List [#expressDir#]", true);
-	systemOutput(directoryList(path=expressDir, recurse=true), true);
+	dumpDir( expressDir );
+
+	function dumpDir(dir){
+		systemOutput("Directory List [#dir#]", true);
+		var d = directoryList(path=dir, recurse=true);
+		arrayEach(d, function(f){
+			systemOutput(f, true);
+		});
+	}
 
 	webroot = expandPath("../../express/webapps/ROOT");
-	systemOutput("copying test files into webroot [#webroot#]", true);
+	tests = expandPath("../../custom/axis/express-tests/");
+	dumpDir( tests );
+	systemOutput("copying test files into webroot [#webroot#] from [#tests#]", true);
 	DirectoryCopy(expandPath("../../custom/axis/express-tests/"), webroot);
-	systemOutput(directoryList(path=webroot, recurse=true), true);
+	dumpDir( webroot );
+	
 
 </cfscript>
