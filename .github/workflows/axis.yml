@@ -70,7 +70,7 @@ jobs:
           webroot: ${{ github.workspace }}/lucee/test
           execute: /bootstrap-tests.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
+          extensions: DF28D0A4-6748-44B9-A2FDC12E4E2E4D38 # axis ext
         env:
           testLabels: axis
           testAdditional: ${{ github.workspace }}/custom/axis/tests
-          lucee_extensions: DF28D0A4-6748-44B9-A2FDC12E4E2E4D38 # axis ext
