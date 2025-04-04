@@ -80,5 +80,4 @@ jobs:
       - name: Debug Express exception.log 
         if: failure()
         run: |
-            ls -lR express
-            cat express/lucee-server/context/exception.log
+            cat express/lucee-server/context/logs/exception.log
