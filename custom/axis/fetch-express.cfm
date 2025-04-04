@@ -5,7 +5,7 @@
 	destDir = expandPath("../../lucee-express-cache/" );
 	systemOutput(" Cache dir: " & destDir, true);
 	if ( !directoryExists( destDir ) )
-		directoryCreate( destDir )
+		directoryCreate( destDir );
 
 	http url="https://update.lucee.org/rest/update/provider/latest/#listDeleteAt(requestVersion, 3, "/")#/express/info"	result="json";
 
@@ -27,5 +27,18 @@
 	}
 
 	systemOutput( fileInfo("#destDir#/#versionInfo.filename#"), true );
+
+	expressDir = expandPath("../../express/" );
+	directoryCreate( expressDir )
+	systemOutput("extracting express into [#expressDir#]", true);
+	zip action="unzip" destination="#expressDir#" file="#destDir#/#versionInfo.filename#";
+
+	systemOutput("Directory List [#expressDir#]", true);
+	systemOutput(directoryList(path=expressDir, recurse=true), true);
+
+	webroot = expandPath("../../express/webapps/ROOT");
+	systemOutput("copying test files into webroot [#webroot#]", true);
+	DirectoryCopy(expandPath("../../express-tests/"), webroot);
+	systemOutput(directoryList(path=webroot, recurse=true), true);
 
 </cfscript>

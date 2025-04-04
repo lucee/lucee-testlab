@@ -51,6 +51,25 @@ jobs:
         with:
           webroot: ${{ github.workspace }}/custom/axis
           execute: /fetch-express.cfm
-          luceeVersion: zero-6.2.0.321
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
           fetch: ${{ matrix.luceeVersion }}
+      - name: Run Express
+        run: |
+          export lucee_extensions="DF28D0A4-6748-44B9-A2FDC12E4E2E4D38" 
+          ./express/bin/startup.sh
+      - name: Checkout Lucee
+        uses: actions/checkout@v4
+        with:
+          repository: lucee/lucee
+          path: lucee
+      - name: Run Lucee Test Suite
+        uses: lucee/script-runner@main
+        with:
+          webroot: ${{ github.workspace }}/lucee/test
+          execute: /bootstrap-tests.cfm
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
+        env:
+          testLabels: axis
+          testAdditional: ${{ github.workspace }}/custom/axis/tests
+          lucee_extensions: DF28D0A4-6748-44B9-A2FDC12E4E2E4D38 # axis ext
