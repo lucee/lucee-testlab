@@ -6,14 +6,13 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="axis" {
 		describe( title="Lucee webservice / axis tests", body=function() {
 
 			it(title="extensionInfo()", body = function( currentSpec ) {
-				systemOutput(ExtensionInfo("DF28D0A4-6748-44B9-A2FDC12E4E2E4D38"), true);
+				systemOutput( ExtensionInfo( "DF28D0A4-6748-44B9-A2FDC12E4E2E4D38" ), true );
 			});
-			
-			
+
 			it(title="test wsdl", body = function( currentSpec ) {
 				http url="#localhost#/ws.cfc?wsdl" result="local.result";
-				var wdsl = result.filecontent ?: "";
-				expect( isXml(wsdl ) ).toBeTrue();
+				var wsdl = result.filecontent ?: "";
+				expect( isXml( wsdl ) ).toBeTrue();
 			});
 
 			it(title="test method", body = function( currentSpec ) {
