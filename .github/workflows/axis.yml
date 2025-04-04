@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
         javaVersion: [ 21 ]
@@ -39,7 +40,7 @@ jobs:
         if: always()
         with:
           path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
-          key: lucee-downloads  
+          key: lucee-downloads
       - name: Cache Lucee Express files
         uses: actions/cache@v4
         if: always()
@@ -56,7 +57,7 @@ jobs:
           fetch: ${{ matrix.luceeVersion }}
       - name: Run Express
         run: |
-          export lucee_extensions="DF28D0A4-6748-44B9-A2FDC12E4E2E4D38" 
+          export lucee_extensions="DF28D0A4-6748-44B9-A2FDC12E4E2E4D38"
           ./express/bin/startup.sh
       - name: Checkout Lucee
         uses: actions/checkout@v4
