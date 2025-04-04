@@ -74,3 +74,8 @@ jobs:
         env:
           testLabels: axis
           testAdditional: ${{ github.workspace }}/custom/axis/tests
+      - name: Debug Express exception.log 
+        if: always()
+        run: |
+            cat express/lucee-server/context/exception.log
+        
