@@ -59,6 +59,8 @@ jobs:
         run: |
           export lucee_extensions="DF28D0A4-6748-44B9-A2FDC12E4E2E4D38"
           ./express/bin/startup.sh
+          echo "sleeping for 10s to allow lucee to deploy and startup...."
+          sleep 10
           curl http://127.0.0.1:8888
       - name: Checkout Lucee
         uses: actions/checkout@v4
