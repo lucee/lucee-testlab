@@ -202,4 +202,13 @@ jobs:
             preCleanup: false
         env:
           check_extensions: -D46B46A9-A0E3-44E1-D972A04AC3A8DC10:0.0.404.404
-  
+
+      - name: Check CFCHART extension is installed via LUCEE_EXTENSIONS
+        uses: lucee/script-runner@main
+        if: always()
+        with:
+           webroot: ${{ github.workspace }}/custom/bad-cfconfig
+           execute: /debug.cfm
+           luceeVersionQuery: ${{ matrix.luceeVersion }}
+        env:
+          LUCEE_EXTENSIONS: D46B46A9-A0E3-44E1-D972A04AC3A8DC10
