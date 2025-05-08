@@ -212,3 +212,4 @@ jobs:
            luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:
           LUCEE_EXTENSIONS: D46B46A9-A0E3-44E1-D972A04AC3A8DC10
+          LUCEE_LOGGING_FORCE_LEVEL: trace
