@@ -97,7 +97,7 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             cat express/lucee-server/context/logs/deploy.log | tee -a $GITHUB_STEP_SUMMARY
       - name: Debug Express exception.log
-        if: failure()
+        if: always()
         run: |
             echo "------exception.log----------"
             cat express/lucee-server/context/logs/exception.log
@@ -105,12 +105,16 @@ jobs:
                 echo "------web exception.log 5.4 ----------"
                 cat express/webapps/ROOT/WEB-INF/lucee/logs/exception.log
             fi
+            echo "------application.log----------"
+            cat express/lucee-server/context/logs/application.log
             echo ""
             echo "------out.log----------"
             cat express/lucee-server/context/logs/out.log
             echo ""
-            echo "------err.log----------"
-            cat express/lucee-server/context/logs/err.log
+            if [ -f "express/lucee-server/context/logs/err.log" ]; then
+                echo "------err.log----------"
+                cat express/lucee-server/context/logs/err.log
+            fi
       - name: Debug filesystem
         if: always()
         run: |
