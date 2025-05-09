@@ -18,7 +18,7 @@ jobs:
       max-parallel: 1
       matrix:
         luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
-        javaVersion: [ 21 ]
+        javaVersion: [ 11 ]
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
         compile: ${{ github.event.inputs.compile }}
@@ -85,8 +85,9 @@ jobs:
       - name: Debug Express deploy.log
         if: always()
         run: |
-            echo "------deploy.log----------"
-            cat express/lucee-server/context/logs/deploy.log
+            echo "## deploy.log" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat express/lucee-server/context/logs/deploy.log >> $GITHUB_STEP_SUMMARY
       - name: Debug Express exception.log
         if: failure()
         run: |
