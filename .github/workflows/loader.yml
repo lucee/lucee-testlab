@@ -83,11 +83,17 @@ jobs:
       - name: Debug Express exception.log
         if: failure()
         run: |
+            cat express/webapps/ROOT/check.cfm
+            echo ""
             echo "------deploy.log----------"
             cat express/lucee-server/context/logs/deploy.log
             echo ""
             echo "------exception.log----------"
             cat express/lucee-server/context/logs/exception.log
+            if [ -f "express/webapps/ROOT/WEB-INF/lucee/logs/exception.log" ]; then
+                echo "------web exception.log 5.4 ----------"
+                cat express/webapps/ROOT/WEB-INF/lucee/logs/exception.log
+            fi
             echo ""
             echo "------out.log----------"
             cat express/lucee-server/context/logs/out.log
