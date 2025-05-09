@@ -118,4 +118,4 @@ jobs:
       - name: Debug filesystem
         if: always()
         run: |
-            ls -lRH
+            ls -lRH express
