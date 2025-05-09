@@ -94,7 +94,7 @@ jobs:
         run: |
             echo "## deploy.log" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            cat express/lucee-server/context/logs/deploy.log >> $GITHUB_STEP_SUMMARY
+            cat express/lucee-server/context/logs/deploy.log | tee -a $GITHUB_STEP_SUMMARY
       - name: Debug Express exception.log
         if: failure()
         run: |
