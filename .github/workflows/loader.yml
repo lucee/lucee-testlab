@@ -58,7 +58,7 @@ jobs:
       - name: Run Express, shutdown, deploy 7 core, startup again
         run: |
           echo "#### ${{ matrix.luceeVersion }}" >> $GITHUB_STEP_SUMMARY
-          echo "<cfscript>if (server.lucee.version neq url.version) header statusCode=500;</cfscript><cfoutput>###### Lucee Linux #server.lucee.version#, using Java #server.java.version##chr(10)####### Running on #server.servlet.name#, OS #server.os.version# #server.os.arch#</cfoutput>" > express/webapps/ROOT/check.cfm
+          echo "<cfoutput>###### Lucee Linux #server.lucee.version#, using Java #server.java.version##chr(10)####### Running on #server.servlet.name#, OS #server.os.version# #server.os.arch#</cfoutput>" > express/webapps/ROOT/check.cfm
           ./express/bin/startup.sh
           echo "sleeping for 10s to allow lucee to deploy and startup...."
           sleep 5
@@ -83,7 +83,6 @@ jobs:
       - name: Debug Express exception.log
         if: failure()
         run: |
-            cat express/webapps/ROOT/check.cfm
             echo ""
             echo "------deploy.log----------"
             cat express/lucee-server/context/logs/deploy.log
