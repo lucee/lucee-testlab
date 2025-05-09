@@ -84,6 +84,14 @@ jobs:
           ./express/bin/shutdown.sh
           ls -lRH ./express/lucee-server/deploy >> $GITHUB_STEP_SUMMARY
           ls -lRH ./express/lucee-server/patches >> $GITHUB_STEP_SUMMARY
+          echo "stopping lucee again, sleep 5 ...."
+          ./express/bin/shutdown.sh
+          sleep 5
+          ./express/bin/startup.sh
+          echo "sleeping for 10s to allow lucee to startup again...."
+          sleep 10
+          curl http://127.0.0.1:8888/check.cfm --fail-with-body >> $GITHUB_STEP_SUMMARY
+          ./express/bin/shutdown.sh
       - name: Tomcat Logs
         if: ${{ always() }}
         run: |
