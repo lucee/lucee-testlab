@@ -59,4 +59,5 @@ jobs:
           extensions: 91AF5D75-8CEF-4510-A170240C401F5FBA,A345C8CB-04CC-4D2B-93D50471D5105D83 # log viewer, performance analyzer
         env:
           testFilter: adminPages
-          LUCEE_BASE_CONFIGzzzz: ${{ github.workspace }}/_custom/custom/bad-cfconfig/.CFConfig-good-debug.json
+          LUCEE_TEST_ADMIN_PATH: /lucee/admin/
+          LUCEE_BASE_CONFIG: ${{ github.workspace }}/_custom/custom/bad-cfconfig/.CFConfig-good-debug.json
