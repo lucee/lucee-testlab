@@ -4,7 +4,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 		describe( title="Test POI via static method", body=function() {
 
 			beforeEach( function( currentSpec, data ){
-				SystemOutput( "-------------- #currentSpec.title# --------------", true );
+				SystemOutput( "-------------- #currentSpec# --------------", true );
 			});
 
 			it(title="load poi 5.4.0 via javasettings (first time)", body = function( currentSpec ) {
