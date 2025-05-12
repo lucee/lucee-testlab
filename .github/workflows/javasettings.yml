@@ -56,3 +56,5 @@ jobs:
         env:
           testLabels: javasettings
           testAdditional: ${{ github.workspace }}/custom/javasettings/tests
+          LUCEE_LOGGING_FORCE_LEVEL: trace
+          LUCEE_LOGGING_FORCE_APPENDER: console

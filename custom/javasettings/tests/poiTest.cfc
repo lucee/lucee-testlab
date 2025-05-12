@@ -3,6 +3,9 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 	function run( testResults , testBox ) {
 		describe( title="Test POI via static method", body=function() {
 
+			beforeEach( function( currentSpec, data ){
+				SystemOutput( "-------------- #currentSpec.title# --------------", true );
+			});
 
 			it(title="load poi 5.4.0 via javasettings (first time)", body = function( currentSpec ) {
 				expect( _getPoi540() ).toBe( "5.4.0" );
