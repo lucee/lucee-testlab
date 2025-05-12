@@ -24,7 +24,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 				"maven": [ "org.apache.tika:tika:1.28.5" ]
 			}' {
 			
-			import "org.apache.tika.Tika"
+			import org.apache.tika.Tika
 
 			function getTika(){
 				return new Tika();

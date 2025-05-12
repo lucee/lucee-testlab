@@ -19,7 +19,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 				"maven": [ "org.apache.poi:poi:5.4.0" ]
 			}' {
 			
-			import "org.apache.poi.Version";
+			import org.apache.poi.Version;
 
 			function getVersion(){
 				return Version::getVersion();
@@ -35,7 +35,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 				"maven": [ "org.apache.poi:poi:5.4.1" ]
 			}' {
 			
-			import "org.apache.poi.Version";
+			import org.apache.poi.Version;
 
 			function getVersion(){
 				return Version::getVersion();
