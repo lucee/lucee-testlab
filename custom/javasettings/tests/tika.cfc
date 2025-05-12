@@ -4,15 +4,18 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 		describe( title="Test Tika", body=function() {
 
 			it(title="load tika via javasettings ", body = function( currentSpec ) {
-				var t = getTikaCFC().getTika();
+				var cfc = getTikaCFC()
+				var t = cfc.getTika();
 				systemOutput(getMetaData(t), true);
-				systemOutput(t.getClass(), true);
+				dump(var=t, output="console");
 			});
 
 			it(title="load tika via javasettings again", body = function( currentSpec ) {
+				var cfc = getTikaCFC()
+				var t = cfc.getTika();
 				var t = getTikaCFC().getTika();
 				systemOutput(getMetaData(t), true);
-				systemOutput(t.getClass(), true);
+				dump(var=t, output="console");
 			});
 	
 		});
