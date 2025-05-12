@@ -12,11 +12,12 @@ jobs:
       matrix:
         luceeVersion:
           [
-            5.4/snapshot/jar,
+            6.2.0/snapshot/jar,
+            6.2.1/snapshot/jar,
             6.2/snapshot/jar,
             7.0/snapshot/jar
           ]
-        javaVersion: [ 11 ]
+        javaVersion: [ 21 ]
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
         compile: ${{ github.event.inputs.compile }}
