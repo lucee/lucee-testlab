@@ -3,11 +3,22 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 	function run( testResults , testBox ) {
 		describe( title="Test POI via static method", body=function() {
 
+
 			it(title="load poi 5.4.0 via javasettings ", body = function( currentSpec ) {
 				expect( _getPoi540() ).toBe( "5.4.0" );
 			});
 
+			it(title="load poi 5.4.0 via javasettings (again)", body = function( currentSpec ) {
+				expect( _getPoi540() ).toBe( "5.4.0" );
+			});
+
+
 			it(title="load poi 5.4.1 via javasettings", body = function( currentSpec ) {
+				expect( _getPoi541() ).toBe( "5.4.1" );
+			});
+
+			
+			it(title="load poi 5.4.1 via javasettings (again)", body = function( currentSpec ) {
 				expect( _getPoi541() ).toBe( "5.4.1" );
 			});
 	
