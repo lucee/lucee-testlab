@@ -6,7 +6,7 @@ on:
       lucee_versions:
         required: false
         description: Lucee Versions (json)
-        default: '[ "6.2/all/jar", "5.4/all/jar" ]'
+        default: '[ "7/all/jar", "6.2/all/jar", "5.4/all/jar" ]'
         type: string
   workflow_call:
 
@@ -79,7 +79,7 @@ jobs:
           ls -lRH ./express/lucee-server/deploy >> $GITHUB_STEP_SUMMARY
           ./express/bin/startup.sh
           echo "sleeping for 10s to allow lucee to re-deploy and startup...."
-          # sleep 10
+          sleep 5
           curl http://127.0.0.1:8888/check.cfm --fail-with-body >> $GITHUB_STEP_SUMMARY
           ./express/bin/shutdown.sh
           ls -lRH ./express/lucee-server/deploy >> $GITHUB_STEP_SUMMARY
