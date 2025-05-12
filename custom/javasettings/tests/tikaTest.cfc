@@ -19,7 +19,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 	}
 
 	private function _getTika(){
-		// lucee bundles 1.24
+		// lucee bundles 1.28.4
 		var tikaComponent = new component javaSettings='{
 				"maven": [ "org.apache.tika:tika:1.28.5" ]
 			}' {
