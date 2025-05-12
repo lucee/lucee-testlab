@@ -4,13 +4,13 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 		describe( title="Test Tika", body=function() {
 
 			it(title="load tika via javasettings ", body = function( currentSpec ) {
-				var t = getTika.getTika();
+				var t = getTikaCFC().getTika();
 				systemOutput(getMetaData(t), true);
 				systemOutput(t.getClass(), true);
 			});
 
 			it(title="load tika via javasettings again", body = function( currentSpec ) {
-				var t = getTika.getTika();
+				var t = getTikaCFC().getTika();
 				systemOutput(getMetaData(t), true);
 				systemOutput(t.getClass(), true);
 			});
@@ -19,7 +19,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 	}
 
 
-	private function getTika(){
+	private function getTikaCFC(){
 		// lucee bundles 1.24
 		var tikaComp = new component javaSettings='{
 				"maven": [ "org.apache.tika:tika:1.25" ]
