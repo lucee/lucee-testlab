@@ -32,7 +32,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 			}
 		};
 
-		return new tikaComp();
+		return tikaComp;
 
 	}
 }
