@@ -1,0 +1,59 @@
+name: Javasettings
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        luceeVersion:
+          [
+            5.4/snapshot/jar,
+            6.2/snapshot/jar,
+            7.0/snapshot/jar
+          ]
+        javaVersion: [ 11 ]
+    env:
+        luceeVersionQuery: ${{ matrix.luceeVersion }}
+        compile: ${{ github.event.inputs.compile }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: _custom
+      - name: Checkout Lucee
+        uses: actions/checkout@v4
+        with:
+          repository: lucee/lucee
+          path: lucee
+      - name: Set up JDK ${{matrix.javaVersion}}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{matrix.javaVersion}}
+          distribution: "temurin"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: maven-cache
+      - name: Cache Lucee files
+        if: always()
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
+          key: lucee-downloads
+
+      - name: Run javasettings tests
+        uses: lucee/script-runner@main
+        with:
+          webroot: ${{ github.workspace }}/lucee/test
+          execute: /bootstrap-tests.cfm
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
+        env:
+          testLabels: javasettings
+          testAdditional: ${{ github.workspace }}/custom/javasettings/tests
