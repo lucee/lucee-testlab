@@ -18,8 +18,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="javasettings" {
 		});
 	}
 
-
-	private function getTikaCFC(){
+	private function getTika(){
 		// lucee bundles 1.24
 		var tikaComponent = new component javaSettings='{
 				"maven": [ "org.apache.tika:tika:1.25" ]
