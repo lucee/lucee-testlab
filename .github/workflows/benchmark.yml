@@ -21,7 +21,7 @@ on:
       lucee_versions:
         required: false
         description: Lucee Versions (json)
-        default: '[ "7.0/snapshot/zero", "6.2.1/snapshot/zero", "6.2.0/stable/zero", "6.1/stable/zero", "5.4/stable/light" ]'
+        default: '[ "7.0/snapshot/zero", "6.2/snapshot/zero", "6.2.1/stable/zero", "6.2.0/stable/zero", "5.4/stable/light" ]'
         type: string
       java_distribution:
         required: false
