@@ -14,8 +14,8 @@
 		json = deserializeJson( fileRead( f ) );
 
 		json.run.java = listFirst( json.run.java, "." );
-
 		json.run.memory = benchmarkUtils.getTotalMemoryUsage( json.memory.usage );
+		json.run.gcCount = json.gcCount;
 
 		for ( r in json.data ){
 			StructAppend( r, json.run );
