@@ -1,8 +1,9 @@
 <cfscript>
+	benchmarkUtils = new benchmarkUtils();
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts";
 	files = directoryList( dir );
 
-	q = queryNew( "version,java,type,time,runs,inspect,memory,throughput,"
+	q = queryNew( "version,java,type,time,runs,inspect,memory,testMemory,throughput,"
 		& "_min,_max,_avg,_med,error,raw,_perc,exeLog,totalDuration" );
 
 	tests = structNew('ordered');
@@ -14,12 +15,7 @@
 
 		json.run.java = listFirst( json.run.java, "." );
 
-		memory = 0;
-		for ( m in json.memory.usage ){
-			if ( isNumeric( json.memory.usage[ m ] ) )
-				memory += json.memory.usage[ m ];
-		}
-		json.run.memory = int( memory / 1024 / 1024 );
+		json.run.memory = benchmarkUtils.getTotalMemoryUsage( json.memory.usage );
 
 		for ( r in json.data ){
 			StructAppend( r, json.run );
@@ -44,7 +40,7 @@
 		});
 	}
 
-	benchmarkUtils = new benchmarkUtils();
+	
 	_logger= benchmarkUtils._logger;
 
 	filter = benchmarkUtils.getTests( server.system.environment.BENCHMARK_FILTER ?: "");
@@ -119,7 +115,7 @@
 			```
 			<cfquery name="q_rpt" dbtype="query">
 				select	version, java, time,
-						throughput, _perc, _min, _avg, _med, _max, memory, error
+						throughput, _perc, _min, _avg, _med, _max, error, testMemory as memory
 				from	q
 				where	type = <cfqueryparam value="#type#">
 						and inspect = <cfqueryparam value="#inspect#">

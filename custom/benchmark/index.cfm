@@ -116,6 +116,8 @@
 				if (exeLog eq "debug") {
 					exeLogger.purgeExecutionLog();
 				}
+				createObject( "java", "java.lang.System" ).gc();
+				testMemStatStart = reportMem( "", {}, "before", "HEAP" );
 			
 				ArrayEach( arr, function( item, idx, _arr ){
 					if (runAborted) return;
@@ -132,6 +134,7 @@
 						 throw mess;
 					}
 				}, true);
+
 			} catch ( _e ){
 				e = benchmarkUtils.cleanException(_e);
 				lastOkRound = arrayFind(arr, function(item) { return item != 0; });
@@ -144,6 +147,7 @@
 				runError = e.message;
 				errorCount++;
 			}
+			testMemStatEnd = reportMem( "", testMemStatStart.usage, "before", "HEAP" );
 
 			time = getTickCount( units ) - s;
 
@@ -152,6 +156,7 @@
 				time: time / 1000,
 				inspect: inspect,
 				type: type,
+				testMemory: benchmarkUtils.getMemoryUsage( testMemStatEnd.usage ),
 				_min: decimalFormat( arrayMin( arr ) / 1000 ),
 				_max: decimalFormat( arrayMax( arr ) / 1000 ),
 				_avg: decimalFormat( arrayAvg( arr ) / 1000 ),

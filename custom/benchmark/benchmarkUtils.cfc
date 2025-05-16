@@ -130,6 +130,15 @@ component  {
 		};
 	}
 
+	numeric getTotalMemoryUsage( usage ){
+		var memory = 0;
+		for ( m in arguments.usage ){
+			if ( isNumeric( arguments.usage[ m ] ) )
+				memory += arguments.usage[ m ];
+		}
+		return int( memory / 1024 / 1024 );
+	}
+
 	function getImageBase64( img ){
 		saveContent variable="local.x" {
 			imageWriteToBrowser( arguments.img );
