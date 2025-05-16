@@ -149,7 +149,7 @@
 			}
 			// note this is without doing a GC
 			testMemStatEnd = reportMem( "", testMemStatStart.usage, "before", "HEAP" );
-			testMemoryUsage =  benchmarkUtils.getMemoryUsage( testMemStatEnd.usage );
+			testMemoryUsage =  benchmarkUtils.getTotalMemoryUsage( testMemStatEnd.usage );
 			time = getTickCount( units ) - s;
 
 			_logger( "Finished #suiteName# [#numberFormat( runs/1000 )#k-#inspect#] took #numberFormat( time/1000 )# ms, "
