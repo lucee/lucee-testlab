@@ -147,16 +147,20 @@
 				runError = e.message;
 				errorCount++;
 			}
+			// note this is without doing a GC
 			testMemStatEnd = reportMem( "", testMemStatStart.usage, "before", "HEAP" );
-
+			testMemoryUsage =  benchmarkUtils.getMemoryUsage( testMemStatEnd.usage );
 			time = getTickCount( units ) - s;
 
-			_logger( "Finished #suiteName# [#numberFormat( runs/1000 )#k-#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
+			_logger( "Finished #suiteName# [#numberFormat( runs/1000 )#k-#inspect#] took #numberFormat( time/1000 )# ms, "
+				& "or #numberFormat(runs/(time/1000/1000))# per second, "
+				& "using #numberFormat(testMemoryUsage)# Mb"
+			);
 			result = {
 				time: time / 1000,
 				inspect: inspect,
 				type: type,
-				testMemory: benchmarkUtils.getMemoryUsage( testMemStatEnd.usage ),
+				testMemory: testMemoryUsage,
 				_min: decimalFormat( arrayMin( arr ) / 1000 ),
 				_max: decimalFormat( arrayMax( arr ) / 1000 ),
 				_avg: decimalFormat( arrayAvg( arr ) / 1000 ),

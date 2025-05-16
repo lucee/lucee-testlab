@@ -130,9 +130,9 @@ component  {
 		};
 	}
 
-	numeric getTotalMemoryUsage( usage ){
+	function getTotalMemoryUsage( struct usage ){
 		var memory = 0;
-		for ( m in arguments.usage ){
+		for ( var m in arguments.usage ){
 			if ( isNumeric( arguments.usage[ m ] ) )
 				memory += arguments.usage[ m ];
 		}
