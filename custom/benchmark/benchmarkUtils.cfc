@@ -172,8 +172,8 @@ component  {
 			}
 		); // fastest to slowest
 
-		var hdr = [ "Version", "Java", "Time" ];
-		var div = [ "---", "---", "---:" ];
+		var hdr = [ "Version", "Java", "Time", "Memory" ];
+		var div = [ "---", "---", "---:", "---:" ];
 		_logger( "" );
 		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
 		_logger( "|" & arrayToList( div, "|" ) & "|" );
@@ -184,6 +184,7 @@ component  {
 				ArrayAppend( row, run.version );
 				ArrayAppend( row, run.java );
 				arrayAppend( row, numberFormat( run.totalDuration ) );
+				arrayAppend( row, numberFormat( run.memory ) );
 				_logger( "|" & arrayToList( row, "|" ) & "|" );
 				row = [];
 			}

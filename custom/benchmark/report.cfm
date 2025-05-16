@@ -36,7 +36,8 @@
 		arrayAppend( runs, {
 			"java": json.run.java,
 			"version": json.run.version,
-			"totalDuration": json.run.totalDuration
+			"totalDuration": json.run.totalDuration,
+			"memory": json.run.memory
 		});
 	}
 
