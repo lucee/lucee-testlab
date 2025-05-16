@@ -15,8 +15,7 @@
 
 		json.run.java = listFirst( json.run.java, "." );
 		json.run.memory = benchmarkUtils.getTotalMemoryUsage( json.memory.usage );
-		json.run.gcCount = json.gcCount;
-
+		
 		for ( r in json.data ){
 			StructAppend( r, json.run );
 			r.throughput = int( r.runs / ( r.time / 1000 ) );
@@ -38,7 +37,7 @@
 			"version": json.run.version,
 			"totalDuration": json.run.totalDuration,
 			"memory": json.run.memory,
-			"gcCount": json.run.gcCount
+			"gcCount": json.gcCount
 		});
 	}
 
