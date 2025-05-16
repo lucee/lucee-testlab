@@ -58,7 +58,7 @@ component  {
 					querySetCell( q, "_perc", "-#abs(q._perc)#", q.currentRow ) ;
 			}
 			loop list=q.columnlist item="local.col" {
-				if ( col eq "memory" or col eq "time" or col eq "throughput" )
+				if ( col eq "memory" or col eq "time" or col eq "throughput" or col eq "gc" )
 					arrayAppend( row, numberFormat( q [ col ] ) );
 				else if ( col eq "_perc" )
 					arrayAppend( row, numberFormat( q [ col ] ) & "%");
@@ -130,6 +130,15 @@ component  {
 		};
 	}
 
+	function getTotalMemoryUsage( struct usage ){
+		var memory = 0;
+		for ( var m in arguments.usage ){
+			if ( isNumeric( arguments.usage[ m ] ) )
+				memory += arguments.usage[ m ];
+		}
+		return int( memory / 1024 / 1024 );
+	}
+
 	function getImageBase64( img ){
 		saveContent variable="local.x" {
 			imageWriteToBrowser( arguments.img );
@@ -151,6 +160,16 @@ component  {
 		return false;
 	}
 
+	function getGcCount(){
+		var javaManagementFactory = createObject( "java", "java.lang.management.ManagementFactory" );
+		var gcBeans =javaManagementFactory.getGarbageCollectorMXBeans();
+		var n = 0 ;
+		for (var gc in gcBeans){
+			var n = n + gc.getCollectionCount();
+		}
+		return n;
+	}
+
 	function reportRuns( srcRuns, java="" ) localmode=true {
 
 		var runs = duplicate( srcRuns );
@@ -163,8 +182,8 @@ component  {
 			}
 		); // fastest to slowest
 
-		var hdr = [ "Version", "Java", "Time" ];
-		var div = [ "---", "---", "---:" ];
+		var hdr = [ "Version", "Java", "Time", "Memory", "GCs" ];
+		var div = [ "---", "---", "---:", "---:", "---:" ];
 		_logger( "" );
 		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
 		_logger( "|" & arrayToList( div, "|" ) & "|" );
@@ -175,6 +194,8 @@ component  {
 				ArrayAppend( row, run.version );
 				ArrayAppend( row, run.java );
 				arrayAppend( row, numberFormat( run.totalDuration ) );
+				arrayAppend( row, numberFormat( run.memory ) );
+				arrayAppend( row, numberFormat( run.gcCount ) );
 				_logger( "|" & arrayToList( row, "|" ) & "|" );
 				row = [];
 			}

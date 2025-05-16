@@ -116,6 +116,9 @@
 				if (exeLog eq "debug") {
 					exeLogger.purgeExecutionLog();
 				}
+				createObject( "java", "java.lang.System" ).gc();
+				testMemStatStart = reportMem( "", {}, "before", "HEAP" );
+				testGCStart = benchmarkUtils.getGcCount();
 			
 				ArrayEach( arr, function( item, idx, _arr ){
 					if (runAborted) return;
@@ -132,6 +135,7 @@
 						 throw mess;
 					}
 				}, true);
+
 			} catch ( _e ){
 				e = benchmarkUtils.cleanException(_e);
 				lastOkRound = arrayFind(arr, function(item) { return item != 0; });
@@ -144,14 +148,22 @@
 				runError = e.message;
 				errorCount++;
 			}
-
+			// note this is without doing a GC
+			testMemStatEnd = reportMem( "", testMemStatStart.usage, "before", "HEAP" );
+			testMemoryUsage =  benchmarkUtils.getTotalMemoryUsage( testMemStatEnd.usage );
+			testGCCount = benchmarkUtils.getGcCount() - testGCStart;
 			time = getTickCount( units ) - s;
 
-			_logger( "Finished #suiteName# [#numberFormat( runs/1000 )#k-#inspect#] took #numberFormat( time/1000 )# ms, or #numberFormat(runs/(time/1000/1000))# per second" );
+			_logger( "Finished #suiteName# [#numberFormat( runs/1000 )#k-#inspect#] took #numberFormat( time/1000 )# ms, "
+				& "or #numberFormat(runs/(time/1000/1000))# per second, "
+				& "using #numberFormat(testMemoryUsage)# Mb"
+			);
 			result = {
 				time: time / 1000,
 				inspect: inspect,
 				type: type,
+				testMemory: testMemoryUsage,
+				gcCount: testGCCount,
 				_min: decimalFormat( arrayMin( arr ) / 1000 ),
 				_max: decimalFormat( arrayMax( arr ) / 1000 ),
 				_avg: decimalFormat( arrayAvg( arr ) / 1000 ),
@@ -192,6 +204,7 @@
 		_logger( r );
 	_logger( "" );
 
+	results.gcCount = benchmarkUtils.getGcCount();
 	results.memory=_memStat;
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts/";
 	if (!directoryExists( dir ))
