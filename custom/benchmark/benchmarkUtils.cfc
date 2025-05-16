@@ -160,6 +160,16 @@ component  {
 		return false;
 	}
 
+	function getGcCount(){
+		var javaManagementFactory = createObject( "java", "java.lang.management.ManagementFactory" );
+		var gcBeans =javaManagementFactory.getGarbageCollectorMXBeans();
+		var n = 0 ;
+		for (var gc in gcBeans){
+			var n = n + gc.getCollectionCount();
+		}
+		return n;
+	}
+
 	function reportRuns( srcRuns, java="" ) localmode=true {
 
 		var runs = duplicate( srcRuns );
@@ -172,8 +182,8 @@ component  {
 			}
 		); // fastest to slowest
 
-		var hdr = [ "Version", "Java", "Time", "Memory" ];
-		var div = [ "---", "---", "---:", "---:" ];
+		var hdr = [ "Version", "Java", "Time", "Memory", "GCs" ];
+		var div = [ "---", "---", "---:", "---:", "---:" ];
 		_logger( "" );
 		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
 		_logger( "|" & arrayToList( div, "|" ) & "|" );
@@ -185,6 +195,7 @@ component  {
 				ArrayAppend( row, run.java );
 				arrayAppend( row, numberFormat( run.totalDuration ) );
 				arrayAppend( row, numberFormat( run.memory ) );
+				arrayAppend( row, numberFormat( run.gcCount ) );
 				_logger( "|" & arrayToList( row, "|" ) & "|" );
 				row = [];
 			}

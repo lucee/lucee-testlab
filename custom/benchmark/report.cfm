@@ -3,7 +3,7 @@
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts";
 	files = directoryList( dir );
 
-	q = queryNew( "version,java,type,time,runs,inspect,memory,testMemory,throughput,"
+	q = queryNew( "version,java,type,time,runs,inspect,memory,testMemory,gccount,throughput,"
 		& "_min,_max,_avg,_med,error,raw,_perc,exeLog,totalDuration" );
 
 	tests = structNew('ordered');
@@ -37,7 +37,8 @@
 			"java": json.run.java,
 			"version": json.run.version,
 			"totalDuration": json.run.totalDuration,
-			"memory": json.run.memory
+			"memory": json.run.memory,
+			"gcCount": json.run.gcCount
 		});
 	}
 
@@ -116,7 +117,7 @@
 			```
 			<cfquery name="q_rpt" dbtype="query">
 				select	version, java, time,
-						throughput, _perc, _min, _avg, _med, _max, error, testMemory as memory
+						throughput, _perc, _min, _avg, _med, _max, error, testMemory as memory, gccount as _gc
 				from	q
 				where	type = <cfqueryparam value="#type#">
 						and inspect = <cfqueryparam value="#inspect#">

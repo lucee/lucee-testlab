@@ -118,6 +118,7 @@
 				}
 				createObject( "java", "java.lang.System" ).gc();
 				testMemStatStart = reportMem( "", {}, "before", "HEAP" );
+				testGCStart = benchmarkUtils.getGcCount();
 			
 				ArrayEach( arr, function( item, idx, _arr ){
 					if (runAborted) return;
@@ -150,6 +151,7 @@
 			// note this is without doing a GC
 			testMemStatEnd = reportMem( "", testMemStatStart.usage, "before", "HEAP" );
 			testMemoryUsage =  benchmarkUtils.getTotalMemoryUsage( testMemStatEnd.usage );
+			testGCCount = benchmarkUtils.getGcCount() - testGCStart;
 			time = getTickCount( units ) - s;
 
 			_logger( "Finished #suiteName# [#numberFormat( runs/1000 )#k-#inspect#] took #numberFormat( time/1000 )# ms, "
@@ -161,6 +163,7 @@
 				inspect: inspect,
 				type: type,
 				testMemory: testMemoryUsage,
+				gcCount: testGCCount,
 				_min: decimalFormat( arrayMin( arr ) / 1000 ),
 				_max: decimalFormat( arrayMax( arr ) / 1000 ),
 				_avg: decimalFormat( arrayAvg( arr ) / 1000 ),
@@ -201,6 +204,7 @@
 		_logger( r );
 	_logger( "" );
 
+	results.gcCount = benchmarkUtils.getGcCount();
 	results.memory=_memStat;
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts/";
 	if (!directoryExists( dir ))
