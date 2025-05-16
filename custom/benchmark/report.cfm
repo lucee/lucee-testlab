@@ -116,7 +116,7 @@
 			```
 			<cfquery name="q_rpt" dbtype="query">
 				select	version, java, time,
-						throughput, _perc, _min, _avg, _med, _max, error, testMemory as memory, gccount as _gc
+						throughput, _perc, _min, _avg, _med, _max, error, testMemory as memory, gccount as gc
 				from	q
 				where	type = <cfqueryparam value="#type#">
 						and inspect = <cfqueryparam value="#inspect#">

@@ -58,7 +58,7 @@ component  {
 					querySetCell( q, "_perc", "-#abs(q._perc)#", q.currentRow ) ;
 			}
 			loop list=q.columnlist item="local.col" {
-				if ( col eq "memory" or col eq "time" or col eq "throughput" )
+				if ( col eq "memory" or col eq "time" or col eq "throughput" or col eq "gc" )
 					arrayAppend( row, numberFormat( q [ col ] ) );
 				else if ( col eq "_perc" )
 					arrayAppend( row, numberFormat( q [ col ] ) & "%");
