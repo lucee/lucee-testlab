@@ -25,6 +25,7 @@ component {
             , "directoryList"
             , "qrcode-createObject-emptyInit"
             , "properties"
+            , "replaceNoCase"
         ];
     }
 
