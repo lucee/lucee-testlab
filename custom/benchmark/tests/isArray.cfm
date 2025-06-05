@@ -1,6 +1,9 @@
 <cfscript>
 	str = "column1,column2";
-    loop times="50"{
-        q = isArray(str);
-    }
+	function test( str ){
+		loop times="50" {
+			var q = isArray(arguments.str);
+		}
+	}
+	test();
 </cfscript>
