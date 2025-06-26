@@ -57,8 +57,8 @@ jobs:
           fetch: ${{ matrix.luceeVersion }}
       - name: Run Express
         run: |
-          export LUCEE_EXTENSIONS="DF28D0A4-6748-44B9-A2FDC12E4E2E4D38"
-          printenv LUCEE_EXTENSIONS
+          mkdir ./express/lucee-server/deploy/
+          cp ${{ github.workspace }}/custom/rest/tests/.CFConfig.json ./express/lucee-server/deploy/.CFConfig.json
           ./express/bin/startup.sh
           echo "sleeping for 10s to allow lucee to deploy and startup...."
           sleep 10
@@ -74,10 +74,9 @@ jobs:
           webroot: ${{ github.workspace }}/lucee/test
           execute: /bootstrap-tests.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
-          extensions: DF28D0A4-6748-44B9-A2FDC12E4E2E4D38 # axis ext
         env:
-          testLabels: axis
-          testAdditional: ${{ github.workspace }}/custom/axis/tests
+          testLabels: rest
+          testAdditional: ${{ github.workspace }}/custom/rest/tests
       - name: Debug Express exception.log
         if: failure()
         run: |
