@@ -58,7 +58,7 @@ jobs:
       - name: Run Express
         run: |
           mkdir ./express/lucee-server/deploy/
-          cp ${{ github.workspace }}/custom/rest/tests/.CFConfig.json ./express/lucee-server/deploy/.CFConfig.json
+          cp ${{ github.workspace }}/custom/rest/.CFConfig.json ./express/lucee-server/deploy/.CFConfig.json
           ./express/bin/startup.sh
           echo "sleeping for 10s to allow lucee to deploy and startup...."
           sleep 10
