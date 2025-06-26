@@ -1,4 +1,4 @@
-name: Rest tests (placeholder)
+name: REST tests
 
 on:
   workflow_dispatch:
