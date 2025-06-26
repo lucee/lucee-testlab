@@ -9,7 +9,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				http url="#localhost#/rest/" result="local.result";
 				systemOutput( "", true );
 				systemOutput( result.filecontent, true );
-				expect( result.filecontent ).toBeInclude("Available sevice mappings are:");
+				expect( result.filecontent ).toInclude( "Available sevice mappings are:" );
 			});
 
 		});
