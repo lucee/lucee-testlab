@@ -106,6 +106,7 @@ jobs:
           execute: /test/index.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
           compile: ${{ env.compile }}
+          extensions: 8D7FB0DF-08BB-1589-FE3975678F07DB17 # compress
      - uses: actions/upload-artifact@v4
        if: always()
        with:
