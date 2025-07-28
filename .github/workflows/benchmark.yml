@@ -41,6 +41,10 @@ on:
            - none
            - console
            - debug
+      variable_keys:
+         description: Key Cache Size
+         required: false
+         type: string
   workflow_call:
 
 run-name: "Benchmarking: ${{ github.event.inputs.never_rounds }}k rounds, distro ${{ github.event.inputs.java_distribution }}, exeLog: ${{ github.event.inputs.exeLog }}"
@@ -116,6 +120,7 @@ jobs:
           BENCHMARK_FILTER: ${{ github.event.inputs.benchmark_filter }}
           EXELOG: ${{ github.event.inputs.exeLog }}
           LUCEE_DEBUGGING_MAXPAGEPARTS: 0
+          LUCEE_CACHE_VARIABLEKEYS: ${{ github.event.inputs.variable_keys }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
