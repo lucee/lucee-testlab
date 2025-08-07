@@ -173,14 +173,13 @@
 	if ( structKeyExists( logs, "err.log" ) && len( logs["err.log"] ?: "" ) ) {
 		_logger( logs[ "err.log" ] , true);
 	}
-	systemOutput("---- final .CFConfig.json ---", true);
 
-	if (!fileExists(expandPath('{lucee-config}.CFConfig.json')){
+	systemOutput("---- final .CFConfig.json ---", true);
+	if ( !fileExists( expandPath( '{lucee-config}.CFConfig.json' ) ) ){
 		systemOutput("File not found [#expandPath('{lucee-config}.CFConfig.json')#] maybe LUCEE_BASE_CONFIG?", true);
 	} else {
-		cfconfig = deserializeJSON( fileRead( expandPath('{lucee-config}.CFConfig.json') ) );	
+		cfconfig = deserializeJSON( fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
 		systemOutput( serializeJson(var=cfconfig, compact=false), true );
 	}
-
 
 </cfscript>
