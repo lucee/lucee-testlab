@@ -174,4 +174,9 @@
 		_logger( logs[ "err.log" ] , true);
 	}
 
+	cfconfig = deserializeJSON( fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
+	systemOutput("---- final .CFConfig.json ---", true);
+	systemOutput( serializeJson(var=cfconfig, compact=false), true );
+
+
 </cfscript>
