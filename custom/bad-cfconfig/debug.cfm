@@ -146,8 +146,7 @@
 			
 		}
 	}
-
-	systemOutput("---- final .CFConfig.json ---", true);
+	systemOutput("", true);
 	if ( !fileExists( expandPath( '{lucee-config}.CFConfig.json' ) ) ){
 		systemOutput("File not found [#expandPath('{lucee-config}.CFConfig.json')#] maybe LUCEE_BASE_CONFIG?", true);
 	} else {
@@ -155,7 +154,7 @@
 		defaultConfig = getDirectoryFromPath(getCurrentTemplatePath()) & "/.CFConfig-default.json";
 		if ( fileExists( defaultConfig ) ){
 			defaultConfig = deserializeJSON( fileRead( defaultConfig ) );
-			systemOutput("Comparing default CFconfig to final CFconfig", true);
+			systemOutput("------ Comparing default CFconfig to final CFconfig ---------", true);
 			changed = {};
 			structEach( defaultConfig, function( key, value ) {
 				if ( !structKeyExists( cfconfig, key ) ) {
@@ -203,7 +202,7 @@
 		//systemOutput( "", true );
 		//systemOutput( serializeJson(var=cfconfig, compact=false), true );
 	}
-
+	systemOutput("", true);
 
 	check_extensions        = server.system.environment.check_extensions ?: "";
 	check_extensions_since  = server.system.environment.check_extensions_since ?: "";
