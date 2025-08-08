@@ -174,6 +174,64 @@
 		_logger( logs[ "err.log" ] , true);
 	}
 
+	function reportComplexDiff( topLevelKey, a, b ){
+		if ( isArray( a ) ){
+			// different approach, we don't care about the array order, just the values
+			var _a = {};
+			var _b = {};
+			arrayEach( a, function( value ) {
+				_a[ serializeJson(var=value, compact=false) ] = value;
+			});
+			arrayEach( b, function( value ) {
+				_b[ serializeJson(var=value, compact=false) ] = value;
+			});
+			structEach( _a, function( key, value ) {
+				if ( !structKeyExists( _b, key ) ) {	// removed
+					systemOutput("#chr(9)##chr(9)#removed Config [#topLevelKey#]: " & serializeJson(var=value, compact=false), true);
+				}
+			});
+			// now check in the other direction
+			structEach( _b, function( key, value ) {
+				if ( !structKeyExists( _a, key ) ) {	// added
+					systemOutput("#chr(9)##chr(9)#added Config [#topLevelKey#]: "  & serializeJson(var=value, compact=false), true);
+				}
+			});
+
+		} else { // struct
+			var changed = {};
+			structEach( a, function( key, value ) {
+				if ( !structKeyExists( b, key ) ) {
+					systemOutput("removed Config [#topLevelKey#][#key#]: " & serializeJson(var=value, compact=false), true);
+				} else {
+					var def = serializeJson(var=value, compact=false);
+					var cur = serializeJson(var=b[key], compact=false);
+					if (def != cur){
+						changed[key] = true;
+						systemOutput("changed Config [#topLevelKey#][#key#]:", true);
+						systemOutput("#chr(9)#default: " & def, true);
+						systemOutput("#chr(9)#after: " & cur, true);
+					}
+				}
+			});
+			// now check in the other direction
+			structEach( b, function( key, value ) {
+				if ( !structKeyExists( a, key ) ) {
+					systemOutput("added Config [#topLevelKey#][#key#]: " & serializeJson(var=value, compact=false), true);
+				} else if (!structKeyExists( changed, key )	){ // avoid reporting the same changes twice
+					var def = serializeJson(var=value, compact=false);
+					var cur = serializeJson(var=a[key], compact=false);
+					if (def != cur){
+						changed[key] = true;
+						systemOutput("changed Config [#topLevelKey#][#key#]:", true);
+						systemOutput("#chr(9)#default: " & def, true);
+						systemOutput("#chr(9)#after: " & cur, true);
+					}
+				}
+			});
+			
+		}
+	}
+
 	systemOutput("---- final .CFConfig.json ---", true);
 	if ( !fileExists( expandPath( '{lucee-config}.CFConfig.json' ) ) ){
 		systemOutput("File not found [#expandPath('{lucee-config}.CFConfig.json')#] maybe LUCEE_BASE_CONFIG?", true);
@@ -194,8 +252,12 @@
 					if (def != cur){
 						changed[key] = true;
 						systemOutput("changed Config [#key#]! ", true);
-						systemOutput("#chr(9)#default: " & def, true);
-						systemOutput("#chr(9)#after: " & cur, true);
+						if ( isArray( value ) || isStruct( value ) ){
+							reportComplexDiff(key, value, cfConfig[key]);
+						} else {
+							systemOutput("#chr(9)#default: " & def, true);
+							systemOutput("#chr(9)#after: " & cur, true);
+						}
 						systemOutput("", true);
 					}
 				}
@@ -210,8 +272,12 @@
 					var cur = serializeJson(var=cfconfig[key], compact=false);
 					if (def != cur){
 						systemOutput("changed Config [#key#]! ", true);
-						systemOutput("#chr(9)#default: " & def, true);
-						systemOutput("#chr(9)#after: " & cur, true);
+						if ( isArray( value ) || isStruct( value ) ){
+							reportComplexDiff(key, value, cfConfig[key]);
+						} else {
+							systemOutput("#chr(9)#default: " & def, true);
+							systemOutput("#chr(9)#after: " & cur, true);
+						}
 						systemOutput("", true);
 					}
 				}
