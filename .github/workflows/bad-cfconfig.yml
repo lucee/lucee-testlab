@@ -120,8 +120,8 @@ jobs:
         if: always()
         run: |
           mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/
-          cp -a ${{ github.workspace }}/custom/bad-cfconfig/.CFConfig-newer-extension.json5 /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/.CFConfig.json
-      - name: Check good .CFConfig with newer image extension ( via /deploy )
+          cp -a ${{ github.workspace }}/custom/bad-cfconfig/.CFConfig-newer-extension-snippet.json5 /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/.CFConfig.json
+      - name: Check .CFConfig with newer image extension snippet ( via /deploy )
         uses: lucee/script-runner@main
         if: always()
         with:

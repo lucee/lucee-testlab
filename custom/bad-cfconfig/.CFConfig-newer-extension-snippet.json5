@@ -1,0 +1,9 @@
+{
+	"extensions": [
+        {
+            "id": "B737ABC4-D43F-4D91-8E8E973E37C40D1B",
+            "name": "Image extension",
+            "version": "2.0.0.28-SNAPSHOT"
+        }
+    ]
+}
