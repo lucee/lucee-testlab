@@ -132,6 +132,19 @@ jobs:
         env:
           check_extensions: B737ABC4-D43F-4D91-8E8E973E37C40D1B:2.0.0.28-SNAPSHOT
           check_extensions_since: 6.1.1
+      - name: Copy .CFConfig-newer-mappings.json5 into /deploy
+        if: always()
+        run: |
+          mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/
+          cp -a ${{ github.workspace }}/custom/bad-cfconfig/.CFConfig-newer-mappings.json5 /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/.CFConfig.json
+      - name: Check .CFConfig with newer mappings via snippet ( via /deploy )
+        uses: lucee/script-runner@main
+        if: always()
+        with:
+          webroot: ${{ github.workspace }}/custom/bad-cfconfig
+          execute: /debug.cfm
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
+          preCleanup: false
 
       - name: Copy .CFConfig-empty-cacheHandlers.json5 into /deploy
         if: always()

@@ -1,0 +1,16 @@
+{
+  "mappings": {
+    "/contenscms": {
+      "physical": "/var/www/contens",
+      "primary": "physical",
+      "topLevel": "true",
+      "readOnly": "false"
+    },
+    "/cmf": {
+      "physical": "/var/www/cmf",
+      "primary": "physical",
+      "topLevel": "true",
+      "readOnly": "false"
+    }
+  }
+}
