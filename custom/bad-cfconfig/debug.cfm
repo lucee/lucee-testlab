@@ -199,8 +199,9 @@
 		} else {
 			systemOutput( "Default config not found [#defaultConfig#]", true);
 		}
-		//systemOutput( "", true );
-		//systemOutput( serializeJson(var=cfconfig, compact=false), true );
+		systemOutput( "", true );
+		systemOutput( "---- final CFConfig.json ----", true );
+		systemOutput( serializeJson(var=cfconfig, compact=false), true );
 	}
 	systemOutput("", true);
 
