@@ -65,6 +65,7 @@ jobs:
       - name: Copy .CFConfig-good.json5 into context
         if: always()
         run: |
+          rm -rf /home/runner/work/_actions/lucee/script-runner/main/temp/
           mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/
           cp -a ${{ github.workspace }}/custom/bad-cfconfig/.CFConfig-good.json5 /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/.CFConfig.json
       - name: Check good .CFConfig.json (via context)
@@ -103,6 +104,7 @@ jobs:
       - name: Copy .CFConfig-newer-extension.json5 into context
         if: always()
         run: |
+          rm -rf /home/runner/work/_actions/lucee/script-runner/main/temp/
           mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/
           cp -a ${{ github.workspace }}/custom/bad-cfconfig/.CFConfig-newer-extension.json5 /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/.CFConfig.json
       - name: Check good .CFConfig with newer image extension ( via context )
@@ -119,6 +121,7 @@ jobs:
       - name: Copy .CFConfig-newer-extension.json5 into /deploy
         if: always()
         run: |
+          rm -rf /home/runner/work/_actions/lucee/script-runner/main/temp/
           mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/
           cp -a ${{ github.workspace }}/custom/bad-cfconfig/.CFConfig-newer-extension-snippet.json5 /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/.CFConfig.json
       - name: Check .CFConfig with newer image extension snippet ( via /deploy )
@@ -135,6 +138,7 @@ jobs:
       - name: Copy .CFConfig-newer-mappings.json5 into /deploy
         if: always()
         run: |
+          rm -rf /home/runner/work/_actions/lucee/script-runner/main/temp/
           mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/
           cp -a ${{ github.workspace }}/custom/bad-cfconfig/.CFConfig-newer-mappings.json5 /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/.CFConfig.json
       - name: Check .CFConfig with newer mappings via snippet ( via /deploy )
@@ -149,8 +153,9 @@ jobs:
       - name: Copy .CFConfig-empty-cacheHandlers.json5 into /deploy
         if: always()
         run: |
+          rm -rf /home/runner/work/_actions/lucee/script-runner/main/temp/
           mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/
-           cp -a ${{ github.workspace }}/custom/bad-cfconfig/.CFConfig-empty-cacheHandlers.json /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/.CFConfig.json
+          cp -a ${{ github.workspace }}/custom/bad-cfconfig/.CFConfig-empty-cacheHandlers.json /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/.CFConfig.json
       - name: Check .CFConfig with empty cacheHandlers ( via /deploy )
         uses: lucee/script-runner@main
         if: always()
@@ -196,6 +201,7 @@ jobs:
       - name: Copy .CFConfig-bad-extension.json5 into context (s3 ext)
         if: always()
         run: |
+          rm -rf /home/runner/work/_actions/lucee/script-runner/main/temp/
           mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/
           cp -a ${{ github.workspace }}/custom/bad-cfconfig/.CFConfig-bad-extension.json5 /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/.CFConfig.json
       - name: Check bad .CFConfig with wrong version number for bundled s3 extension (via context)
@@ -212,6 +218,7 @@ jobs:
       - name: Copy .CFConfig-bad-extension.json5 into context (chart ext)
         if: always()
         run: |
+          rm -rf /home/runner/work/_actions/lucee/script-runner/main/temp/
           mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/
           cp -a ${{ github.workspace }}/custom/bad-cfconfig/.CFConfig-bad-extension-404.json5 /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/.CFConfig.json
       - name: Check bad .CFConfig with wrong version number for unbundled chart extension (via context)
