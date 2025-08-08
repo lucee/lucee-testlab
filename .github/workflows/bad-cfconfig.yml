@@ -41,6 +41,15 @@ jobs:
           path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
           key: lucee-downloads
 
+      - name: Extract and save default .CFConfig.json
+        uses: lucee/script-runner@main
+        if: always()
+        with:
+          webroot: ${{ github.workspace }}/custom/bad-cfconfig
+          execute: /saveDefault.cfm
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
+          compile: true
+
       - name: Check good .CFConfig.json LUCEE_BASE_CONFIG
         uses: lucee/script-runner@main
         if: always()

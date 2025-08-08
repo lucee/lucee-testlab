@@ -178,7 +178,48 @@
 	if ( !fileExists( expandPath( '{lucee-config}.CFConfig.json' ) ) ){
 		systemOutput("File not found [#expandPath('{lucee-config}.CFConfig.json')#] maybe LUCEE_BASE_CONFIG?", true);
 	} else {
-		cfconfig = deserializeJSON( fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
+		cfConfig = deserializeJSON( fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
+		defaultConfig = getDirectoryFromPath(getCurrentTemplatePath()) & "/.CFConfig-default.json";
+		if ( fileExists( defaultConfig ) ){
+			defaultConfig = deserializeJSON( fileRead( defaultConfig ) );
+			systemOutput("Comparing default CFconfig to final CFconfig", true);
+			changed = {};
+			structEach( defaultConfig, function( key, value ) {
+				if ( !structKeyExists( cfconfig, key ) ) {
+					systemOutput("removed Config [#key#]: " & serializeJson(var=value, compact=false), true);
+					systemOutput("", true);
+				} else {
+					var def = serializeJson(var=value, compact=false);
+					var cur = serializeJson(var=cfConfig[key], compact=false);
+					if (def != cur){
+						changed[key] = true;
+						systemOutput("changed Config [#key#]! ", true);
+						systemOutput("#chr(9)#default: " & def, true);
+						systemOutput("#chr(9)#after: " & cur, true);
+						systemOutput("", true);
+					}
+				}
+			});
+			// now check in the other direction
+			structEach( cfConfig, function( key, value ) {
+				if ( !structKeyExists( defaultConfig, key ) ) {
+					systemOutput("added Config [#key#]: " & serializeJson(var=value, compact=false), true);
+					systemOutput("", true);
+				} else if (!structKeyExists( changed, key )	){ // avoid reporting the same changes twice
+					var def = serializeJson(var=value, compact=false);
+					var cur = serializeJson(var=cfconfig[key], compact=false);
+					if (def != cur){
+						systemOutput("changed Config [#key#]! ", true);
+						systemOutput("#chr(9)#default: " & def, true);
+						systemOutput("#chr(9)#after: " & cur, true);
+						systemOutput("", true);
+					}
+				}
+			});
+		} else {
+			systemOutput( "Default config not found [#defaultConfig#]", true);
+		}
+		systemOutput( "", true );
 		systemOutput( serializeJson(var=cfconfig, compact=false), true );
 	}
 
