@@ -89,91 +89,6 @@
 
 	}
 
-	check_extensions        = server.system.environment.check_extensions ?: "";
-	check_extensions_since  = server.system.environment.check_extensions_since ?: "";
-	expect_empty_config     = server.system.environment.expect_empty_config ?: "";
-	
-	// don't crash on older versions
-	if ( len( check_extensions_since ) ) {
-		_logger( "" );
-		_logger( "check_extensions_since: #check_extensions_since#" )
-		luceeVersion = ListToArray( server.lucee.version, "." );
-		sinceVersion = ListToArray( check_extensions_since, "." );
-
-		try {
-			loop array=luceeVersion item="vv" index="i" {
-				if ( i gt arrayLen( sinceVersion ) )
-					break; // all good
-				if ( vv lt sinceVersion[ i ] )
-					throw "too old!"
-			}
-		} catch( e ) {
-			_logger( e.message );
-			_logger( "skipping checking extensions, as Lucee [#server.lucee.version#] is too old for this test [#check_extensions_since#]");
-			check_extensions = "";
-		} 
-		
-	}
-
-
-	if ( len( check_extensions ) ) {
-		_logger( " " );
-		_logger( "Checking extensions [ #check_extensions# ]");
-
-		_exts = extensionList();
-		exts = {};
-		loop query=_exts {
-			exts [ _exts.id ] = QueryRowData( _exts, _exts.currentrow ) ;
-		}
-		
-		loop list="#check_extensions#" index="ext" {
-			if ( left( ext, 1 ) == "-" ) {
-				// check extension isn't installed
-				ext = mid( ext, 2 );
-				extId = listFirst( ext, ":" );
-				extVersion = listLast( ext, ":" );
-				if ( structKeyExists( exts, extId ) )
-					_logger( "ERROR: Extension [#exts[ extId ].name#:#exts[extID ].version#] is installed but shoudn't be", true);
-				else 
-					_logger( "Good! Extension [#extId#] isn't installed");
-			} else {
-				// check extension is installed and correct version
-				extId = listFirst( ext, ":" );
-				extVersion = listLast( ext, ":" );
-				if ( ! structKeyExists(exts, extId ) ) {
-					_logger( "ERROR: Extension [#extId#:#extVersion#] should be installed", true);
-				} else if ( extVersion != exts[ extId ].version) {
-					_logger( "ERROR: Extension [#exts[ extId ].name#] should be [#extVersion#] but is [#exts[ extId ].version#]", true);
-				} else {
-					_logger( "Good! Extension [#exts[ extId ].name#] version [#exts[ extId ].version#] is installed ");
-				}
-			}
-		}
-	}
-
-	// importing a property with an empty array or struct should override/remove the default config altogether
-	if ( len( expect_empty_config ) ) {
-		_logger( "" );
-		_logger( "expect_empty_config: #expect_empty_config#" )
-		expect_empty_config = ListToArray( expect_empty_config, "," );
-
-		cfconfig = deserializeJSON( fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
-
-		loop array=expect_empty_config item="prop"{
-			if ( !structKeyExists( cfconfig, "prop" ) ){
-				_logger( "cfconfig property doesn't exist [#prop#]");
-			} else if ( isSimpleValue (config[ prop ] ) ) {
-				_logger( "ERROR: cfconfig property [#prop#] should be an array or struct, [#cfconfig[ prop ].toJson()#]", true);
-			} else if ( len( cfconfig[ prop] ) != 0 ){
-				_logger( "ERROR: cfconfig property [#prop#] should be empty [#cfconfig[ prop ].toJson()# ]", true);
-			}
-		}
-	}
-
-	if ( structKeyExists( logs, "err.log" ) && len( logs["err.log"] ?: "" ) ) {
-		_logger( logs[ "err.log" ] , true);
-	}
-
 	function reportComplexDiff( topLevelKey, a, b ){
 		if ( isArray( a ) ){
 			// different approach, we don't care about the array order, just the values
@@ -285,8 +200,94 @@
 		} else {
 			systemOutput( "Default config not found [#defaultConfig#]", true);
 		}
-		systemOutput( "", true );
-		systemOutput( serializeJson(var=cfconfig, compact=false), true );
+		//systemOutput( "", true );
+		//systemOutput( serializeJson(var=cfconfig, compact=false), true );
+	}
+
+
+	check_extensions        = server.system.environment.check_extensions ?: "";
+	check_extensions_since  = server.system.environment.check_extensions_since ?: "";
+	expect_empty_config     = server.system.environment.expect_empty_config ?: "";
+	
+	// don't crash on older versions
+	if ( len( check_extensions_since ) ) {
+		_logger( "" );
+		_logger( "check_extensions_since: #check_extensions_since#" )
+		luceeVersion = ListToArray( server.lucee.version, "." );
+		sinceVersion = ListToArray( check_extensions_since, "." );
+
+		try {
+			loop array=luceeVersion item="vv" index="i" {
+				if ( i gt arrayLen( sinceVersion ) )
+					break; // all good
+				if ( vv lt sinceVersion[ i ] )
+					throw "too old!"
+			}
+		} catch( e ) {
+			_logger( e.message );
+			_logger( "skipping checking extensions, as Lucee [#server.lucee.version#] is too old for this test [#check_extensions_since#]");
+			check_extensions = "";
+		} 
+		
+	}
+
+
+	if ( len( check_extensions ) ) {
+		_logger( " " );
+		_logger( "Checking extensions [ #check_extensions# ]");
+
+		_exts = extensionList();
+		exts = {};
+		loop query=_exts {
+			exts [ _exts.id ] = QueryRowData( _exts, _exts.currentrow ) ;
+		}
+		
+		loop list="#check_extensions#" index="ext" {
+			if ( left( ext, 1 ) == "-" ) {
+				// check extension isn't installed
+				ext = mid( ext, 2 );
+				extId = listFirst( ext, ":" );
+				extVersion = listLast( ext, ":" );
+				if ( structKeyExists( exts, extId ) )
+					_logger( "ERROR: Extension [#exts[ extId ].name#:#exts[extID ].version#] is installed but shoudn't be", true);
+				else 
+					_logger( "Good! Extension [#extId#] isn't installed");
+			} else {
+				// check extension is installed and correct version
+				extId = listFirst( ext, ":" );
+				extVersion = listLast( ext, ":" );
+				if ( ! structKeyExists(exts, extId ) ) {
+					_logger( "ERROR: Extension [#extId#:#extVersion#] should be installed", true);
+				} else if ( extVersion != exts[ extId ].version) {
+					_logger( "ERROR: Extension [#exts[ extId ].name#] should be [#extVersion#] but is [#exts[ extId ].version#]", true);
+				} else {
+					_logger( "Good! Extension [#exts[ extId ].name#] version [#exts[ extId ].version#] is installed ");
+				}
+			}
+		}
+	}
+
+	// importing a property with an empty array or struct should override/remove the default config altogether
+	if ( len( expect_empty_config ) ) {
+		_logger( "" );
+		_logger( "expect_empty_config: #expect_empty_config#" )
+		expect_empty_config = ListToArray( expect_empty_config, "," );
+
+		cfconfig = deserializeJSON( fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
+
+		loop array=expect_empty_config item="prop"{
+			if ( !structKeyExists( cfconfig, "prop" ) ){
+				_logger( "cfconfig property doesn't exist [#prop#]");
+			} else if ( isSimpleValue (config[ prop ] ) ) {
+				_logger( "ERROR: cfconfig property [#prop#] should be an array or struct, [#cfconfig[ prop ].toJson()#]", true);
+			} else if ( len( cfconfig[ prop] ) != 0 ){
+				_logger( "ERROR: cfconfig property [#prop#] should be empty [#cfconfig[ prop ].toJson()# ]", true);
+			}
+		}
+	}
+
+	if ( structKeyExists( logs, "err.log" ) && len( logs["err.log"] ?: "" ) ) {
+		_logger( logs[ "err.log" ] , true);
 	}
 
 </cfscript>
