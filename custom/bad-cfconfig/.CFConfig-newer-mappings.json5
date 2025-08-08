@@ -11,6 +11,15 @@
       "primary": "physical",
       "topLevel": "true",
       "readOnly": "false"
-    }
+    },
+    "/lucee/doc": {
+       "archive": "{lucee-config}/context/lucee-doc.lar",
+       "primary": "archive",
+       "listenerType": "modern",
+       "listenerMode": "curr2root",
+       "inspectTemplate": "always", // usually never
+       "topLevel": "true",
+       "readOnly": "true"
+     }
   }
 }
