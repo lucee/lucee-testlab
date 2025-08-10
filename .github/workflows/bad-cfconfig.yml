@@ -126,8 +126,8 @@ jobs:
         run: |
           rm -rf /home/runner/work/_actions/lucee/script-runner/main/temp/
           mkdir -p /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/
-          wget -nv https://ext.lucee.org/image-extension-${{ env.TEST_IMAGE_EXT }}.lex \
-            /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/image-extension-${{ env.TEST_IMAGE_EXT }}.lex
+          wget -nv -O /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/deploy/image-extension-${{ env.TEST_IMAGE_EXT }}.lex \
+              https://ext.lucee.org/image-extension-${{ env.TEST_IMAGE_EXT }}.lex
       - name: Check updating image extension via .lex file ( via /deploy )
         uses: lucee/script-runner@main
         if: always()
