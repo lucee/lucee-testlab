@@ -4,13 +4,12 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 	function beforeAll(){
 
-		//var cfconfig = fileRead( expandPath('{lucee-config}.CFConfig.json') );
-		//systemOutput( "---------------cfconfig------------", true );
-		//systemOutput( cfconfig, true );
-
 		var restPath = expandPath("../express-tests/simpleRest");
 		systemOutput( "---------------restPath------------", true );
 		systemOutput( restPath, true );
+		systemOutput( getCurrentTemplatePath(), true );
+		systemOutput( directoryExists(restPath), true );
+		systemOutput( directoryList(restPath), true );
 	
 		cfadmin(action="updateRestMapping",
 			type="server",
@@ -30,6 +29,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		systemOutput( "---------------rest mappings------------", true );
 		systemOutput( rest, true );
 
+		var cfconfig = fileRead( expandPath('{lucee-config}.CFConfig.json') );
+		systemOutput( "---------------cfconfig------------", true );
+		systemOutput( cfconfig, true );
+
 	}
 
 	function run( testResults , testBox ) {
@@ -43,7 +46,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="simple rest info", body = function( currentSpec ) {
-				http url="#localhost#/rest/simpleRest/info" result="local.result";
+				http url="#localhost#/rest/simpleRest/info" result="local.result" throwonerror=true;
 				systemOutput( "", true );
 				systemOutput( result.filecontent, true ); // returns the path
 			});
