@@ -14,9 +14,9 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		cfadmin(action="updateRestMapping",
 			type="server",
 			password="webweb",
-			virtual="/simpleRest",
+			virtual="",
 			physical=restPath,
-			default="false"
+			default="true"
 		);
 
 		```
@@ -47,9 +47,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="simple rest info", body = function( currentSpec ) {
-				http url="#localhost#/rest/simpleRest/info" result="local.result" throwonerror=true;
+				http url="#localhost#/rest/simpleRest/info" result="local.result";
 				systemOutput( "", true );
 				systemOutput( result.filecontent, true ); // returns the path
+				if (result.error) throw "Error: #result.filecontent#";
 			});
 
 		});
