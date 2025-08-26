@@ -77,10 +77,15 @@ jobs:
         env:
           testLabels: rest
           testAdditional: ${{ github.workspace }}/custom/rest/tests
+          LUCEE_LOGGING_FORCE_LEVEL: trace
       - name: Debug Express exception.log
         if: failure()
         run: |
-            echo "------deploy.log----------"
+            echo "------ deploy.log ----------"
             cat express/lucee-server/context/logs/deploy.log
-            echo "------exception.log----------"
+            echo "------ rest.log ----------"
+            cat express/lucee-server/context/logs/rest.log
+            echo "------ application.log ----------"
+            cat express/lucee-server/context/logs/application.log
+            echo "------ exception.log ----------"
             cat express/lucee-server/context/logs/exception.log
