@@ -3,12 +3,17 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 	variables.localhost="http://127.0.0.1:8888";
 
 	function beforeAll(){
+
+		var cfconfig = fileRead( expandPath('{lucee-config}.CFConfig.json') );
+		systemOutput( "---------------cfconfig------------", true );
+		systemOutput( cfconfig, true );
+
 		cfadmin(action="updateRestMapping",
-            type="server",
-            password="admin",
-            virtual="/simpleRest",
-            physical=expandPath("../express-tests/simpleRest"),
-            default="false"
+			type="server",
+			password="admin",
+			virtual="/simpleRest",
+			physical=expandPath("../express-tests/simpleRest"),
+			default="false"
 		);
 	}
 
