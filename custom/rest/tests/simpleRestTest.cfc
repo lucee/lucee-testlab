@@ -4,6 +4,8 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 	function beforeAll(){
 
+		dumpRestConfig();
+
 		var restPath = expandPath( getDirectoryFromPath(getCurrentTemplatePath()) & "../express-tests/simpleRest") & "/";
 		systemOutput( "---------------restPath------------", true );
 		systemOutput( restPath, true );
@@ -16,7 +18,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			password="webweb",
 			virtual="simpleRest",
 			physical=restPath,
-			default="true"
+			default="false"
 		);
 
 		```
@@ -27,12 +29,24 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			returnVariable="local.rest">
 		```
 		systemOutput( "---------------rest mappings------------", true );
-		for (var r in rest)
+		for (var r in rest){
 			systemOutput( r, true );
+			systemOutput( "Physical Exists:" & directoryExists( r.physical ) & ": " directoryList( r.physical ), true );
+		}
 
-		var cfconfig = DeSerializeJson(fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
-		systemOutput( "---------------cfconfig------------", true );
-		systemOutput( serializeJson( var=cfconfig.rest, compact=false ), true );
+		dumpRestConfig();
+
+		```
+		<cfadmin
+				action="updateRestSettings"
+				type="#request.adminType#"
+				password="#session["password"&request.adminType]#"
+				remoteClients="#request.getRemoteClients()#"
+
+				list="true"
+				>
+		```
+		dumpRestConfig();
 
 	}
 
@@ -54,5 +68,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 		});
+	}
+
+	private function dumpRestConfig(){
+		var cfconfig = DeSerializeJson(fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
+		systemOutput( "---------------cfconfig------------", true );
+		systemOutput( serializeJson( var=cfconfig.rest, compact=false ), true );
 	}
 }
