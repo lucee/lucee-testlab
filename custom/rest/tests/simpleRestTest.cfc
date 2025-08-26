@@ -3,7 +3,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 	variables.localhost="http://127.0.0.1:8888";
 
 	function beforeAll(){
-		admin(action="updateRestMapping",
+		cfadmin(action="updateRestMapping",
             type="server",
             password="admin",
             virtual="/simpleRest",
