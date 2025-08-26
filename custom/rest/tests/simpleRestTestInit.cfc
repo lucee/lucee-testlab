@@ -5,7 +5,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 	function beforeAll(){
 		dumpRestConfig();
 		var restPath = expandPath( getDirectoryFromPath(getCurrentTemplatePath()) & "../express-tests/simpleRest") & "/";
-		RestInitApplication( restPath, '/simpleRestInit', true, "admin" );
+		RestInitApplication( restPath, '/simpleRestInit', true, "webweb" );
 		dumpRestConfig();
 	}
 
@@ -32,7 +32,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 	private function dumpRestConfig(){
 		var cfconfig = DeSerializeJson(fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
 		systemOutput( "---------------cfconfig------------", true );
-		var rest = cfconfig.rest ?: { "restConfigMissing": true };
+		var rest = cfconfig.rest ?: { "noRestConfig": true };
 		systemOutput( serializeJson( var=rest, compact=false ), true );
 	}
 }

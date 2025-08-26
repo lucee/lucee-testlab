@@ -31,7 +31,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		systemOutput( "---------------rest mappings------------", true );
 		for (var r in rest){
 			systemOutput( r, true );
-			systemOutput( "Physical Exists:" & directoryExists( r.physical ) & ": " & directoryList( r.physical ), true );
+			systemOutput( "Physical Exists:" & directoryExists( r.physical ) & ": " & SerializeJson(directoryList( r.physical )), true );
 		}
 
 		dumpRestConfig();
