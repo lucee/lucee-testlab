@@ -14,7 +14,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		cfadmin(action="updateRestMapping",
 			type="server",
 			password="webweb",
-			virtual="/simpleRest",
+			virtual="simpleRest",
 			physical=restPath,
 			default="true"
 		);
