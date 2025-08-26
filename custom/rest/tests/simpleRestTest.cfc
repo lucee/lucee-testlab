@@ -4,7 +4,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 	function beforeAll(){
 
-		var restPath = expandPath("../../../custom/rest/express-tests/simpleRest");
+		var restPath = expandPath( getDirectoryFromPath(getCurrentTemplatePath()) & "../express-tests/simpleRest");
 		systemOutput( "---------------restPath------------", true );
 		systemOutput( restPath, true );
 		systemOutput( getCurrentTemplatePath(), true );
@@ -27,7 +27,8 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			returnVariable="local.rest">
 		```
 		systemOutput( "---------------rest mappings------------", true );
-		systemOutput( rest, true );
+		for (var r in rest)
+			systemOutput( r, true );
 
 		var cfconfig = DeSerializeJson(fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
 		systemOutput( "---------------cfconfig------------", true );
