@@ -4,7 +4,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 	function beforeAll(){
 
-		var restPath = expandPath( getDirectoryFromPath(getCurrentTemplatePath()) & "../express-tests/simpleRest");
+		var restPath = expandPath( getDirectoryFromPath(getCurrentTemplatePath()) & "../express-tests/simpleRest") & "/";
 		systemOutput( "---------------restPath------------", true );
 		systemOutput( restPath, true );
 		systemOutput( getCurrentTemplatePath(), true );
