@@ -31,7 +31,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		systemOutput( "---------------rest mappings------------", true );
 		for (var r in rest){
 			systemOutput( r, true );
-			systemOutput( "Physical Exists:" & directoryExists( r.physical ) & ": " directoryList( r.physical ), true );
+			systemOutput( "Physical Exists:" & directoryExists( r.physical ) & ": " & directoryList( r.physical ), true );
 		}
 
 		dumpRestConfig();
@@ -39,12 +39,9 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		```
 		<cfadmin
 				action="updateRestSettings"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
-				remoteClients="#request.getRemoteClients()#"
-
-				list="true"
-				>
+				type="server"
+				password="admin"
+				list="true"	>
 		```
 		dumpRestConfig();
 
