@@ -4,17 +4,32 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 	function beforeAll(){
 
-		var cfconfig = fileRead( expandPath('{lucee-config}.CFConfig.json') );
-		systemOutput( "---------------cfconfig------------", true );
-		systemOutput( cfconfig, true );
+		//var cfconfig = fileRead( expandPath('{lucee-config}.CFConfig.json') );
+		//systemOutput( "---------------cfconfig------------", true );
+		//systemOutput( cfconfig, true );
 
+		var restPath = expandPath("../express-tests/simpleRest");
+		systemOutput( "---------------restPath------------", true );
+		systemOutput( restPath, true );
+	
 		cfadmin(action="updateRestMapping",
 			type="server",
 			password="webweb",
 			virtual="/simpleRest",
-			physical=expandPath("../express-tests/simpleRest"),
+			physical=restPath,
 			default="false"
 		);
+
+		```
+		<cfadmin
+			action="getRestMappings"
+			type="server"
+			password="webweb"
+			returnVariable="local.rest">
+		```
+		systemOutput( "---------------rest mappings------------", true );
+		systemOutput( rest, true );
+
 	}
 
 	function run( testResults , testBox ) {
