@@ -40,7 +40,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		<cfadmin
 				action="updateRestSettings"
 				type="server"
-				password="admin"
+				password="webweb"
 				list="true"	>
 		```
 		dumpRestConfig();
