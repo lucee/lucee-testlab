@@ -70,6 +70,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 	private function dumpRestConfig(){
 		var cfconfig = DeSerializeJson(fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
 		systemOutput( "---------------cfconfig------------", true );
-		systemOutput( serializeJson( var=cfconfig.rest, compact=false ), true );
+		var rest = cfconfig.rest ?: { "restConfigMissing": true };
+		systemOutput( serializeJson( var=rest, compact=false ), true );
 	}
 }
