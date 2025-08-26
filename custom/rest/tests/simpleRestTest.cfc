@@ -10,7 +10,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 		cfadmin(action="updateRestMapping",
 			type="server",
-			password="admin",
+			password="webweb",
 			virtual="/simpleRest",
 			physical=expandPath("../express-tests/simpleRest"),
 			default="false"
