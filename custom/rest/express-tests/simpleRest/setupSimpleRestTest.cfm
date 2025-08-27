@@ -10,9 +10,9 @@
 	);
 
 	cfadmin(action="updateRestSettings",
-			type="server",
-			password="webweb",
-			list="true"
+		type="server",
+		password="webweb",
+		list="true"
 	);
 	new "../dumpRestConfig"().dumpRestConfig();
 </cfscript>
