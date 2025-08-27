@@ -3,7 +3,7 @@
 		"list": "true"
 	},
 	"mappings": {
-		"/rest": {
+		"/restTest": {
 			"physical": "/home/runner/work/lucee-testlab/lucee-testlab/custom/rest/",
 			"primary": "physical",
 			"topLevel": "true",
