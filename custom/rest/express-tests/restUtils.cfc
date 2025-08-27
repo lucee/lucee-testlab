@@ -26,4 +26,15 @@ component {
 		else
 			echo (serializeJSON(mess) & chr(10));
 	}
+
+	function clearRestMappings (){
+		cfadmin(action="getRestMappings",
+			type="server",
+			password="webweb",
+			returnVariable="local.rest");
+		logger( "---------------deleteing mappings------------" );
+		for (var r in rest){
+			RestDeleteApplication( dirPath=r.strphysical, password="webweb" );
+		}
+	}
 }

@@ -1,4 +1,5 @@
 <cfscript>
+	new "../restUtils"().clearRestMappings();
 	restPath = expandPath( getDirectoryFromPath( getCurrentTemplatePath() ) );
 	
 	cfadmin(action="updateRestMapping",
@@ -14,5 +15,5 @@
 		password="webweb",
 		list="true"
 	);
-	new "../dumpRestConfig"().dumpRestConfig();
+	new "../restUtils"().dumpRestConfig();
 </cfscript>

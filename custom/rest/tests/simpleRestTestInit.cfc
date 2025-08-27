@@ -10,7 +10,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		RestInitApplication( restPath, '/simpleRestInit', true, "webweb" );
 
 		systemOutput("---------local script runner---------", true);
-		new "../express-tests/dumpRestConfig"().dumpRestConfig();
+		new "../express-tests/restUtils"().dumpRestConfig();
 		*/
 		systemOutput("---------remote express server---------", true);
 		// this performs the same config on the express server

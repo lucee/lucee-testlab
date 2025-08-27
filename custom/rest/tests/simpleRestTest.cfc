@@ -23,7 +23,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				list="true"
 		);
 		systemOutput("---------local script runner---------", true);
-		new "../express-tests/dumpRestConfig"().dumpRestConfig();
+		new "../express-tests/restUtils"().dumpRestConfig();
 		*/
 		systemOutput("---------remote express server---------", true);
 		// this performs the same config on the express server
