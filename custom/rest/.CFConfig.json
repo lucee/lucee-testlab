@@ -2,5 +2,13 @@
 	"rest": {
 		"list": "true"
 	},
-	"hspw": "a5b25fe58cbf6a5d78a94b12fe568de51642797cffdb2dd4e86f691530db4bb6",
+	"mappings": {
+		"/rest": {
+			"physical": "/home/runner/work/lucee-testlab/lucee-testlab/custom/rest/",
+			"primary": "physical",
+			"topLevel": "true",
+			"readOnly": "false"
+		}
+	},
+	"hspw": "a5b25fe58cbf6a5d78a94b12fe568de51642797cffdb2dd4e86f691530db4bb6" // webweb
 }
