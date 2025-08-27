@@ -1,7 +1,7 @@
 <cfscript>
-	new "../resutUtils"().clearRestMappings();
-	dir = getDirectoryFromPath(getCurrentTemplatePath()) & "LDEV5323/"
+	new "../restUtils"().clearRestMappings();
+	dir = getDirectoryFromPath(getCurrentTemplatePath());
 	RestInitApplication( dir,            '/ldev5323root', false, "webweb" );
 	RestInitApplication( dir & "subdir", '/ldev5323sub',  false, "webweb" );
-	new "../resutUtils"().dumpRestConfig();
+	new "../restUtils"().dumpRestConfig();
 </cfscript>

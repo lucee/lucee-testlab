@@ -1,5 +1,7 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
+	variables.localhost = "http://127.0.0.1:8888";
+
 	function beforeAll(){
 		systemOutput("---------remote express server---------", true);
 		// this performs the same config on the express server
@@ -26,9 +28,8 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		} );
 	}
 
-	private function test(path, method, args={}){
-		var host = "http://127.0.0.1:8888";
-		var webUrl = host & arguments.path;
+	private function test(path, method="GET", args={}){
+		var webUrl = localhost & arguments.path;
 		systemOutput("could do http! testing via [#webUrl#]", true);
 	
 		var httpResult = "";

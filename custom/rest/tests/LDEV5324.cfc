@@ -1,5 +1,7 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
+	variables.localhost = "http://127.0.0.1:8888";
+
 	function beforeAll(){
 		systemOutput("---------remote express server---------", true);
 		// this performs the same config on the express server
@@ -15,7 +17,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 			it( "check rest component has the correct application scope", function(){
 				var result = test(path="/rest/ldev5324/ldev5324/getApplicationName", args={}, method="GET");
-				expect( trim( result.fileContent ) ).toBe( '"applicationName:lucee"' ) // .toBe( '"applicationName:ldev5324"' );  see LDEV5323
+				expect( trim( result.fileContent ) ).toBe( '"applicationName:ldev5324"' ); // see LDEV5323
 			});
 
 			it( "check rest method with wrong httpmethod (GET)", function(){
@@ -124,8 +126,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 	private function test(path, method, args={}){
 	
-		var host = "http://127.0.0.1:8888";
-		var webUrl = host & arguments.path;
+		var webUrl = localhost & arguments.path;
 		systemOutput("could do http! testing via [#webUrl#]", true);
 	
 		var httpResult = "";
