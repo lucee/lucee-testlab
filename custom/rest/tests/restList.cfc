@@ -13,7 +13,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="dump out runtime mappings from rest server", body = function( currentSpec ) {
-				http url="#localhost#/restTest/getMappings.cfm" result="local.result";
+				http url="#localhost#/restTest/express-tests/getMappings.cfm" result="local.result";
 				systemOutput( "--- runtime mappings --- ", true );
 				systemOutput( result.fileContent, true );
 				debug( result.filecontent );
