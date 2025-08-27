@@ -14,7 +14,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 			it(title="dump out runtime mappings", body = function( currentSpec ) {
 				systemOutput( "--- runtime mappings --- ", true );
-				systemOutput( serializeJson( var=getAppplicationSettings().mappings, compact=false ), true );
+				systemOutput( serializeJson( var=getApplicationSettings().mappings, compact=false ), true );
 			});
 
 		});
