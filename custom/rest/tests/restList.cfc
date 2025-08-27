@@ -12,6 +12,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				expect( result.filecontent ).toInclude( "Available sevice mappings are:" );
 			});
 
+			it(title="dump out runtime mappings from rest server", body = function( currentSpec ) {
+				http url="#localhost#/restTest/express-tests/getMappings.cfm" result="local.result";
+				systemOutput( "--- remote express server instance mappings --- ", true );
+				systemOutput( result.fileContent, true );
+				debug( result.filecontent );
+				if (result.error) throw "Error: #result.filecontent#";
+			});
+
 		});
 	}
 }

@@ -1,5 +1,21 @@
 {
 	"rest": {
 		"list": "true"
-	}
+	},
+	"mappings": {
+		"/restTest": {
+			"physical": "/home/runner/work/lucee-testlab/lucee-testlab/custom/rest/",
+			"primary": "physical",
+			"topLevel": "true",
+			"readOnly": "false"
+		},
+		"/testbox":{
+			"physical": "/home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/temp/testbox",
+			"primary": "physical",
+			"topLevel": "true",
+			"readOnly": "false"
+		}
+	},
+	//"pw": "webweb"
+	//"hspw": "510c305b13e816a2943a9b0db0d1c57973785bf8534e30f81117917ee3345c03" // webweb
 }
