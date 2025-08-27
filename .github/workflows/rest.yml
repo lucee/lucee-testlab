@@ -72,7 +72,7 @@ jobs:
       - name: Run Lucee Test Suite
         uses: lucee/script-runner@main
         with:
-          webroot: ${{ github.workspace }}/lucee/test
+          webroot: ${{ github.workspace }}/custom/rest/
           execute: /bootstrap-tests.cfm
           luceeVersionQuery: ${{ matrix.luceeVersion }}
         env:

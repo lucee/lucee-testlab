@@ -10,12 +10,13 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 	}
 
 	function run( testResults , testBox ) {
-		describe( title="Lucee Simple REST tests", body=function() {
+		describe( title="Lucee Simple REST tests- RestInitApplication", body=function() {
 
 			it(title="test REST List services", body = function( currentSpec ) {
 				http url="#localhost#/rest/" result="local.result";
 				systemOutput( "", true );
 				systemOutput( result.filecontent, true );
+				debug(result.filecontent );
 				expect( result.filecontent ).toInclude( "Available sevice mappings are:" );
 			});
 
@@ -23,6 +24,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				http url="#localhost#/rest/simpleRestInit/simpleRest/info" result="local.result";
 				systemOutput( "", true );
 				systemOutput( result.filecontent, true ); // returns the path
+				debug( result.filecontent );
 				if (result.error) throw "Error: #result.filecontent#";
 			});
 
