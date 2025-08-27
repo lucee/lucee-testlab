@@ -12,9 +12,12 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				expect( result.filecontent ).toInclude( "Available sevice mappings are:" );
 			});
 
-			it(title="dump out runtime mappings", body = function( currentSpec ) {
+			it(title="dump out runtime mappings from rest server", body = function( currentSpec ) {
+				http url="#localhost#/restTest/getMappings.cfm" result="local.result";
 				systemOutput( "--- runtime mappings --- ", true );
-				systemOutput( serializeJson( var=getApplicationSettings().mappings, compact=false ), true );
+				systemOutput( result.fileContent, true );
+				debug( result.filecontent );
+				if (result.error) throw "Error: #result.filecontent#";
 			});
 
 		});
