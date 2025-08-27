@@ -4,14 +4,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 	function beforeAll(){
 
-		dumpRestConfig();
 
+		// NOTE this is running in script runner, not on the express server!
+		/*
 		var restPath = expandPath( getDirectoryFromPath(getCurrentTemplatePath()) & "../express-tests/simpleRest") & "/";
-		systemOutput( "---------------restPath------------", true );
-		systemOutput( restPath, true );
-		systemOutput( getCurrentTemplatePath(), true );
-		systemOutput( directoryExists(restPath), true );
-		systemOutput( directoryList(restPath), true );
 	
 		cfadmin(action="updateRestMapping",
 			type="server",
@@ -21,32 +17,21 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			default="false"
 		);
 
-		```
-		<cfadmin
-			action="getRestMappings"
-			type="server"
-			password="webweb"
-			returnVariable="local.rest">
-		```
-		systemOutput( "---------------rest mappings------------", true );
-		for (var r in rest){
-			systemOutput( r, true );
-			systemOutput( r.strphysical, true );
-			systemOutput( "Exists:" & directoryExists( r.strphysical ), true );
-			systemOutput( "CFCs:" & serializeJson( directoryList( r.strphysical ) ), true );
-			systemOutput( "", true );
-		}
-
-		dumpRestConfig();
-
-		```
-		<cfadmin
-				action="updateRestSettings"
-				type="server"
-				password="webweb"
-				list="true"	>
-		```
-		dumpRestConfig();
+		cfadmin(action="updateRestSettings",
+				type="server",
+				password="webweb",
+				list="true"
+		);
+		systemOutput("---------local script runner---------", true);
+		new "../express-tests/dumpRestConfig"().dumpRestConfig();
+		*/
+		systemOutput("---------remote express server---------", true);
+		// this performs the same config on the express server
+		http url="#localhost#/restTest/express-tests/simpleRest/setupSimpleRestTest.cfm" result="local.result";
+		systemOutput( "", true );
+		systemOutput( result.filecontent, true ); // returns the path
+		debug( result.filecontent );
+		if (result.error) throw "Error: #result.filecontent#";
 
 	}
 
@@ -72,10 +57,4 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		});
 	}
 
-	private function dumpRestConfig(){
-		var cfconfig = DeSerializeJson(fileRead( expandPath('{lucee-config}.CFConfig.json') ) );
-		systemOutput( "---------------cfconfig------------", true );
-		var rest = cfconfig.rest ?: { "restConfigMissing": true };
-		systemOutput( serializeJson( var=rest, compact=false ), true );
-	}
 }

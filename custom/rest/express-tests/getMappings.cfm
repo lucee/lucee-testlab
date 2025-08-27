@@ -7,7 +7,7 @@
 	delim ="";
 	for (mapping in mappings){
 		echo(delim &chr(10));
-		echo(serializeJson( var=mapping, compact=false ));
+		echo(serializeJson( var={"#mapping.virtual#":mapping.physical}, compact=false ));
 		delim=",";
 	}
 </cfscript>]

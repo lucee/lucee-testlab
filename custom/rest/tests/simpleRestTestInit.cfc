@@ -3,10 +3,23 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 	variables.localhost="http://127.0.0.1:8888";
 
 	function beforeAll(){
-		dumpRestConfig();
+
+		// NOTE this is running in script runner, not on the express server!
+		/*
 		var restPath = expandPath( getDirectoryFromPath(getCurrentTemplatePath()) & "../express-tests/simpleRest") & "/";
 		RestInitApplication( restPath, '/simpleRestInit', true, "webweb" );
-		dumpRestConfig();
+
+		systemOutput("---------local script runner---------", true);
+		new "../express-tests/dumpRestConfig"().dumpRestConfig();
+		*/
+		systemOutput("---------remote express server---------", true);
+		// this performs the same config on the express server
+		http url="#localhost#/restTest/express-tests/simpleRest/setupSimpleRestTestInit.cfm" result="local.result";
+		systemOutput( "", true );
+		systemOutput( result.filecontent, true ); // returns the path
+		debug( result.filecontent );
+		if (result.error) throw "Error: #result.filecontent#";
+		
 	}
 
 	function run( testResults , testBox ) {

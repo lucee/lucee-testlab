@@ -8,7 +8,13 @@
 			"primary": "physical",
 			"topLevel": "true",
 			"readOnly": "false"
+		},
+		"/testbox":{
+			"physical": "/home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/temp/testbox",
+			"primary": "physical",
+			"topLevel": "true",
+			"readOnly": "false"
 		}
 	},
-	"pw": "webweb" // webweb
+	"hspw": "a5b25fe58cbf6a5d78a94b12fe568de51642797cffdb2dd4e86f691530db4bb6" // webweb
 }
