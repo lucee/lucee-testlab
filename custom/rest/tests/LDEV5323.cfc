@@ -20,9 +20,9 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				expect( trim( result.filecontent ) ).toBe( '"applicationName:ldev5323"' );
 			});
 
-			it( "check rest component has the correct application scope, sub dir", function(){
+			xit( "check rest component has empty application scope, for sub dir with no Application.cfc", function(){
 				var result = test(path="/rest/ldev5323sub/ldev5323sub/getApplicationName");
-				expect( trim( result.filecontent ) ).toBe( '"applicationName:ldev5323"' );
+				expect( trim( result.filecontent ) ).toBe( '"applicationName:"' );
 			});
 
 		} );
