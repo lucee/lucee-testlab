@@ -1,4 +1,4 @@
-name: REST tests (ORTUS ORM)
+name: ORM tests (Ortus Ext)
 
 on:
   workflow_dispatch:
@@ -62,3 +62,14 @@ jobs:
       with:
         files: ${{ github.workspace }}/lucee/test/reports/junit-test-results.xml
         check_name: "Test Results"
+    - name: Debug logs
+      if: failure()
+      run: |
+        echo "------ deploy.log ----------"
+        cat /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/deploy.log
+        echo "------ rest.log ----------"
+        cat /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/rest.log
+        echo "------ application.log ----------"
+        cat /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/application.log
+        echo "------ exception.log ----------"
+        cat /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/exception.log
