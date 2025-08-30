@@ -49,6 +49,20 @@ jobs:
       with:
         repository: lucee/lucee
         path: lucee
+    - name: Set up MySQL (local)
+      run: |
+        sudo systemctl start mysql
+        mysql -e 'CREATE DATABASE lucee' -uroot -proot
+        mysql -e 'CREATE USER "lucee"@"localhost" IDENTIFIED WITH mysql_native_password BY "lucee";' -uroot -proot
+        mysql -e 'GRANT ALL PRIVILEGES ON lucee.* TO "lucee"@"localhost"' -uroot -proot
+    - name: Set up Postgres (local)
+      run: |
+        sudo /etc/init.d/postgresql start
+        sudo -u postgres psql -c 'create database lucee;'
+        sudo -u postgres psql -c "create user lucee with encrypted password 'lucee'";
+        sudo -u postgres psql -c 'grant all privileges on database lucee to lucee;'
+        sudo -u postgres psql -c 'grant all on schema public to lucee;' -d lucee
+    
     - name: Run Lucee Test Suite, testLabels="orm"
       uses: lucee/script-runner@main
       with:
@@ -60,9 +74,20 @@ jobs:
         postCleanup: false
       env:
         testLabels: orm
+        MYSQL_SERVER: localhost
+        MYSQL_USERNAME: lucee
+        MYSQL_PASSWORD: lucee
+        MYSQL_PORT: 3306
+        MYSQL_DATABASE: lucee
+        POSTGRES_SERVER: localhost
+        POSTGRES_USERNAME: lucee
+        POSTGRES_PASSWORD: lucee
+        POSTGRES_PORT: 5432
+        POSTGRES_DATABASE: lucee
     - name: Debug logs
       if: failure()
       run: |
+        s -lR /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/
         echo "------ deploy.log ----------"
         cat /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/logs/deploy.log
         echo "------ rest.log ----------"
