@@ -53,6 +53,7 @@ jobs:
         luceeVersion: ${{ env.luceeVersion }}
         luceeVersionQuery: ${{ env.luceeVersionQuery }}
         extensions: D062D72F-F8A2-46F0-8CBC91325B2F067B # ortus orm
+        postCleanup: false
       env:
         testLabels: orm
         testAdditional: ${{ github.workspace }}/tests
