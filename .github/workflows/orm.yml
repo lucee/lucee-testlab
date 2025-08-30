@@ -60,10 +60,10 @@ jobs:
         postCleanup: false
       env:
         testLabels: orm
-        testAdditional: ${{ github.workspace }}/tests
     - name: Debug logs
       if: failure()
       run: |
+        ls -lR /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/
         echo "------ deploy.log ----------"
         cat /home/runner/work/_actions/lucee/script-runner/main/temp/lucee/lucee-server/context/deploy.log
         echo "------ rest.log ----------"
