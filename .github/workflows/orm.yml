@@ -1,0 +1,64 @@
+name: REST tests (ORTUS ORM)
+
+on:
+  workflow_dispatch:
+    inputs:
+      lucee_versions:
+        required: false
+        description: Lucee Versions (json)
+        default: '[ "7.0/snapshot/jar", "6.2/snapshot/jar", "6.2/stable/jar" ]'
+        type: string
+  workflow_call:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # max-parallel: 1
+      matrix:
+        luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
+        javaVersion: [ 21 ]
+    env:
+        luceeVersionQuery: ${{ matrix.luceeVersion }}
+        compile: ${{ github.event.inputs.compile }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+    - name: Cache Maven packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2
+        key: maven-cache
+    - name: Cache Lucee files
+      uses: actions/cache@v4
+      if: always()
+      with:
+        path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
+        key: lucee-downloads
+    - name: Checkout Lucee
+      uses: actions/checkout@v4
+      with:
+        repository: lucee/lucee
+        path: lucee
+    - name: Run Lucee Test Suite, testLabels="orm"
+      uses: lucee/script-runner@main
+      with:
+        webroot: ${{ github.workspace }}/lucee/test
+        execute: /bootstrap-tests.cfm
+        luceeVersion: ${{ env.luceeVersion }}
+        luceeVersionQuery: ${{ env.luceeVersionQuery }}
+        extensions: D062D72F-F8A2-46F0-8CBC91325B2F067B # ortus orm
+      env:
+        testLabels: orm
+        testAdditional: ${{ github.workspace }}/tests
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      if: always()
+      with:
+        files: ${{ github.workspace }}/lucee/test/reports/junit-test-results.xml
+        check_name: "Test Results"
