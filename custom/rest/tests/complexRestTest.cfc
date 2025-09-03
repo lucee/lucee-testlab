@@ -27,7 +27,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		*/
 		systemOutput("---------remote express server---------", true);
 		// this performs the same config on the express server
-		http url="#localhost#/restTest/express-tests/complex/setupComplexRestTest.cfm" result="local.result";
+		http url="#localhost#/restTest/express-tests/complexRest/setupComplexRestTest.cfm" result="local.result";
 		systemOutput( "", true );
 		systemOutput( result.filecontent, true ); // returns the path
 		debug( result.filecontent );
