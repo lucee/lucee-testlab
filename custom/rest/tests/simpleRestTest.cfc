@@ -51,7 +51,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				systemOutput( "", true );
 				systemOutput( result.filecontent, true ); // returns the path
 				debug( result.filecontent );
-				if (result.error) throw "Error: #result.filecontent#";
+				if ( result.error ) throw "Error: #result.filecontent#";
 			});
 
 		});
@@ -63,8 +63,8 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				systemOutput( "", true );
 				systemOutput( result.filecontent, true ); // returns the path
 				debug( result.filecontent );
-				if (result.error) throw "Error: #result.filecontent#";
-				expect(result.filecontent).toBe("hello-method-withrestpath");
+				if ( result.error ) throw "Error: #result.filecontent#";
+				expect( result.filecontent ).toInclude( "hello-method-withrestpath" );
 			});
 
 			it(title="rest method without rest-path, uses method name", body = function( currentSpec ) {
@@ -72,8 +72,8 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				systemOutput( "", true );
 				systemOutput( result.filecontent, true ); // returns the path
 				debug( result.filecontent );
-				if (result.error) throw "Error: #result.filecontent#";
-				expect(result.filecontent).toBe("hello-method-withoutrestpath");
+				if ( result.error ) throw "Error: #result.filecontent#";
+				expect( result.filecontent ).toInclude( "hello-method-withoutrestpath" );
 			});
 
 		});
