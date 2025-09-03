@@ -55,6 +55,28 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 		});
+
+		describe( title="LDEV-5795 Lucee single rest method tests", body=function() {
+
+			it(title="rest method with rest-path", body = function( currentSpec ) {
+				http url="#localhost#/rest/simpleRest/function-with-rest-path/hello" result="local.result";
+				systemOutput( "", true );
+				systemOutput( result.filecontent, true ); // returns the path
+				debug( result.filecontent );
+				if (result.error) throw "Error: #result.filecontent#";
+				expect(result.filecontent).toBe("hello-method-withrestpath");
+			});
+
+			it(title="rest method without rest-path, uses method name", body = function( currentSpec ) {
+				http url="#localhost#/rest/simpleRest/function-without-rest-path/hello" result="local.result";
+				systemOutput( "", true );
+				systemOutput( result.filecontent, true ); // returns the path
+				debug( result.filecontent );
+				if (result.error) throw "Error: #result.filecontent#";
+				expect(result.filecontent).toBe("hello-method-withoutrestpath");
+			});
+
+		});
 	}
 
 }
