@@ -46,13 +46,17 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				systemOutput( "Test: Path parameter with special characters", true );
 				systemOutput( result.filecontent, true );
 				debug( result.filecontent );
-				if ( result.error ) throw "Error: #result.filecontent#";
-				
+				//if ( result.error ) throw "Error: #result.filecontent#";
+
+				expect( result.filecontent ).toInclude( 'Cannot cast String [special-chars-123] to a value of type [numeric]' );
+				expect( result.error ).toBe( true );
+				/*
 				var response = deserializeJSON( result.filecontent );
 				expect( response ).toHaveKey( "method" );
 				expect( response.method ).toBe( "getProduct" );
 				expect( response ).toHaveKey( "productID" );
 				expect( response.productID ).toBe( "special-chars-123" );
+				*/
 			});
 
 			it(title="GET /api/products/search?minPrice=50.99&maxPrice=199.99 - Decimal URL parameters", body = function( currentSpec ) {

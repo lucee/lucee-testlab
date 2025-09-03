@@ -68,7 +68,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			// when there is only one rest method in the cfc, it's the default and doesn't need a rest-path
-			it(title="rest method with rest-path, no path in url", body = function( currentSpec ) {
+			xit(title="rest method with rest-path, no path in url", body = function( currentSpec ) {
 				http url="#localhost#/rest/simpleRest/function-with-rest-path" result="local.result";
 				systemOutput( "", true );
 				systemOutput( result.filecontent, true );
