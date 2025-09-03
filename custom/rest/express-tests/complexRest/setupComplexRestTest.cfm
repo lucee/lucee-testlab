@@ -5,7 +5,7 @@
 	cfadmin(action="updateRestMapping",
 		type="server",
 		password="webweb",
-		virtual="simpleRest",
+		virtual="complexRest",
 		physical=restPath,
 		default="false"
 	);
