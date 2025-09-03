@@ -15,7 +15,7 @@ component restPath="/api/products" rest="true" {
 	}
 	
 	// Path parameter: GET /api/products/123
-	remote function getProduct(numeric productID restArgSource="Path") httpMethod="GET" restPath="/{productID}" 
+	remote function getProduct(numeric productID restArgSource="Path") httpMethod="GET" restPath="/{productID}" {
 		return {
 			"message": "Single product retrieved",
 			"productID": arguments.productID,
