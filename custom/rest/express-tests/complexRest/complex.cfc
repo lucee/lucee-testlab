@@ -77,11 +77,21 @@ component restPath="/api/products" rest="true" {
 	}
 	
 	// Path parameter: PUT /api/products/123/status
-	remote function updateProductStatus(string productID) httpMethod="PUT" restPath="/{productID}/status" restArgSource="Path" {
+	remote function updateProductStatusFunc(string productID) httpMethod="PUT" restPath="/{productID}/status" restArgSource="Path" {
 		return {
 			"message": "Product status updated",
 			"productID": arguments.productID,
-			"method": "updateProductStatus"
+			"method": "updateProductStatusFunc"
+		};
+	}
+
+	// Path parameter: PUT /api/products/123/productStatus
+	remote function updateProductStatusArg(string productID restArgSource="Path")
+			httpMethod="PUT" restPath="/{productID}/productStatus"  {
+		return {
+			"message": "Product status updated",
+			"productID": arguments.productID,
+			"method": "updateProductStatusArg"
 		};
 	}
 	

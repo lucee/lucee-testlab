@@ -48,7 +48,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /hello - rest method with rest-path", body = function( currentSpec ) {
-				http url="#localhost#/rest/#variables.restMapping#/function-with-rest-path/hello" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/hello" result="local.result";
 				systemOutput( "", true );
 				systemOutput( result.filecontent, true );
 				debug( result.filecontent );
@@ -167,7 +167,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				expect( response.filters.rating ).toBe( 4 );
 			});
 		
-			it(title="PUT /api/products/999/status - PUT method with path parameter", body = function( currentSpec ) {
+			it(title="PUT /api/products/999/status - PUT method with path parameter  - function restArgSource", body = function( currentSpec ) {
 				http url="#localhost#/rest/#variables.restMapping#/999/status" method="PUT" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Update product status with PUT method", true );
@@ -177,7 +177,23 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				
 				var response = deserializeJSON( result.filecontent );
 				expect( response ).toHaveKey( "method" );
-				expect( response.method ).toBe( "updateProductStatus" );
+				expect( response.method ).toBe( "updateProductStatusFunc" );
+				expect( response ).toHaveKey( "message" );
+				expect( response.message ).toBe( "Product status updated" );
+				expect( response.productID ).toBe( "999" );
+			});
+
+			it(title="PUT /api/products/999/productStatus - PUT method with path parameter - arg with restArgSource", body = function( currentSpec ) {
+				http url="#localhost#/rest/#variables.restMapping#/999/productStatus" method="PUT" result="local.result";
+				systemOutput( "", true );
+				systemOutput( "Test: Update product status with PUT method", true );
+				systemOutput( result.filecontent, true );
+				debug( result.filecontent );
+				if ( result.error ) throw "Error: #result.filecontent#";
+				
+				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "updateProductStatusArg" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product status updated" );
 				expect( response.productID ).toBe( "999" );
