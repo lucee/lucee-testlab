@@ -61,7 +61,17 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			it(title="rest method with rest-path", body = function( currentSpec ) {
 				http url="#localhost#/rest/simpleRest/function-with-rest-path/hello" result="local.result";
 				systemOutput( "", true );
-				systemOutput( result.filecontent, true ); // returns the path
+				systemOutput( result.filecontent, true );
+				debug( result.filecontent );
+				if ( result.error ) throw "Error: #result.filecontent#";
+				expect( result.filecontent ).toInclude( "hello-method-withrestpath" );
+			});
+
+			// when there is only one rest method in the cfc, it's the default and doesn't need a rest-path
+			it(title="rest method with rest-path, no path in url", body = function( currentSpec ) {
+				http url="#localhost#/rest/simpleRest/function-with-rest-path" result="local.result";
+				systemOutput( "", true );
+				systemOutput( result.filecontent, true );
 				debug( result.filecontent );
 				if ( result.error ) throw "Error: #result.filecontent#";
 				expect( result.filecontent ).toInclude( "hello-method-withrestpath" );
@@ -70,11 +80,22 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			it(title="rest method without rest-path, uses method name", body = function( currentSpec ) {
 				http url="#localhost#/rest/simpleRest/function-without-rest-path/hello" result="local.result";
 				systemOutput( "", true );
-				systemOutput( result.filecontent, true ); // returns the path
+				systemOutput( result.filecontent, true );
 				debug( result.filecontent );
 				if ( result.error ) throw "Error: #result.filecontent#";
 				expect( result.filecontent ).toInclude( "hello-method-withoutrestpath" );
 			});
+
+			// when there is only one rest method in the cfc, it's the default and doesn't need a rest-path
+			it(title="rest method without rest-path, uses method name, no path in url", body = function( currentSpec ) {
+				http url="#localhost#/rest/simpleRest/function-without-rest-path" result="local.result";
+				systemOutput( "", true );
+				systemOutput( result.filecontent, true );
+				debug( result.filecontent );
+				if ( result.error ) throw "Error: #result.filecontent#";
+				expect( result.filecontent ).toInclude( "hello-method-withoutrestpath" );
+			});
+
 
 		});
 	}
