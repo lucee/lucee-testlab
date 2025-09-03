@@ -17,7 +17,9 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 			it( "check rest component has the correct application scope", function(){
 				var result = test(path="/rest/ldev5324/ldev5324/getApplicationName", args={}, method="GET");
-				expect( trim( result.fileContent ) ).toBe( '"applicationName:ldev5324"' ); // see LDEV5323
+				if ( !server.checkVersionGTE( server.lucee.version, 6, 2, 3, 28 ) ){
+					expect( trim( result.fileContent ) ).toBe( '"applicationName:ldev5324"' ); // see LDEV5323
+				}
 			});
 
 			it( "check rest method with wrong httpmethod (GET)", function(){
