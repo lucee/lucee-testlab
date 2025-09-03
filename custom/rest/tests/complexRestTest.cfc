@@ -1,6 +1,7 @@
 component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 
 	variables.localhost="http://127.0.0.1:8888";
+	variables.restMapping = "complexRest/api/products";
 
 	function beforeAll(){
 
@@ -46,8 +47,17 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				expect( result.filecontent ).toInclude( "Available sevice mappings are:" );
 			});
 
+			it(title="GET /hello - rest method with rest-path", body = function( currentSpec ) {
+				http url="#localhost#/rest/#variables.restMapping#/function-with-rest-path/hello" result="local.result";
+				systemOutput( "", true );
+				systemOutput( result.filecontent, true );
+				debug( result.filecontent );
+				if ( result.error ) throw "Error: #result.filecontent#";
+				expect( result.filecontent ).toInclude( "hello-method-withrestpath" );
+			});
+
 			it(title="GET /api/products/getProducts - Simple GET method using function name", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/getProducts" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/getProducts" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: GET products using function name", true );
 				systemOutput( result.filecontent, true );
@@ -60,7 +70,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="POST /api/products - POST with empty restPath", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products" method="POST" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#" method="POST" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: POST product with empty restPath", true );
 				systemOutput( result.filecontent, true );
@@ -73,7 +83,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/123 - Path parameter test", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/123" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/123" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: GET single product with path parameter", true );
 				systemOutput( result.filecontent, true );
@@ -87,7 +97,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/search - URL parameters with defaults", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/search" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/search" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Search products with default URL parameters", true );
 				systemOutput( result.filecontent, true );
@@ -104,7 +114,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/search?category=electronics&minPrice=100&maxPrice=500 - URL parameters with values", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/search?category=electronics&minPrice=100&maxPrice=500&sortBy=price" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/search?category=electronics&minPrice=100&maxPrice=500&sortBy=price" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Search products with specific URL parameters", true );
 				systemOutput( result.filecontent, true );
@@ -121,7 +131,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/456/reviews - Path + URL parameters with defaults", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/456/reviews" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/456/reviews" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Get product reviews with path parameter and default URL parameters", true );
 				systemOutput( result.filecontent, true );
@@ -138,7 +148,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/789/reviews?page=2&limit=10&rating=4 - Path + URL parameters with values", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/789/reviews?page=2&limit=10&rating=4" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/789/reviews?page=2&limit=10&rating=4" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Get product reviews with path and URL parameters", true );
 				systemOutput( result.filecontent, true );
@@ -155,7 +165,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/getProductsByCategory?category=books - Function name with required URL parameter", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/getProductsByCategory?category=books" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/getProductsByCategory?category=books" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Get products by category with required parameter", true );
 				systemOutput( result.filecontent, true );
@@ -170,7 +180,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/getProductsByCategory?category=electronics&active=false - Function name with multiple URL parameters", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/getProductsByCategory?category=electronics&active=false" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/getProductsByCategory?category=electronics&active=false" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Get products by category with multiple parameters", true );
 				systemOutput( result.filecontent, true );
@@ -185,7 +195,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="PUT /api/products/999/status - PUT method with path parameter", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/999/status" method="PUT" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/999/status" method="PUT" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Update product status with PUT method", true );
 				systemOutput( result.filecontent, true );
@@ -199,7 +209,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/analytics - Analytics with minimal required parameters", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/analytics?startDate=2024-01-01&endDate=2024-12-31" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/analytics?startDate=2024-01-01&endDate=2024-12-31" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Get analytics with minimal parameters", true );
 				systemOutput( result.filecontent, true );
@@ -216,7 +226,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/analytics - Analytics with all parameters", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/analytics?startDate=2023-06-01&endDate=2023-12-31&format=xml&includeDeleted=true" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/analytics?startDate=2023-06-01&endDate=2023-12-31&format=xml&includeDeleted=true" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Get analytics with all parameters specified", true );
 				systemOutput( result.filecontent, true );
@@ -237,7 +247,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		describe( title="Complex REST Tests - Edge Cases and Error Scenarios", body=function() {
 
 			it(title="GET /api/products/special-chars-123 - Path parameter with special characters", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/special-chars-123" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/special-chars-123" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Path parameter with special characters", true );
 				systemOutput( result.filecontent, true );
@@ -250,7 +260,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/search?minPrice=50.99&maxPrice=199.99 - Decimal URL parameters", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/search?minPrice=50.99&maxPrice=199.99" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/search?minPrice=50.99&maxPrice=199.99" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Search with decimal price parameters", true );
 				systemOutput( result.filecontent, true );
@@ -264,7 +274,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/search?category=Gaming%20%26%20Electronics - URL-encoded parameters", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/search?category=Gaming%20%26%20Electronics" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/search?category=Gaming%20%26%20Electronics" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: URL-encoded category parameter", true );
 				systemOutput( result.filecontent, true );
@@ -277,7 +287,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/0/reviews - Zero as path parameter", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/0/reviews" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/0/reviews" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Zero as path parameter", true );
 				systemOutput( result.filecontent, true );
@@ -290,7 +300,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/search?minPrice=-10&maxPrice=0 - Negative and zero numeric parameters", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/search?minPrice=-10&maxPrice=0" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/search?minPrice=-10&maxPrice=0" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Negative and zero numeric parameters", true );
 				systemOutput( result.filecontent, true );
@@ -304,7 +314,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/getProductsByCategory?category= - Empty string parameter", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/getProductsByCategory?category=" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/getProductsByCategory?category=" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Empty string category parameter", true );
 				systemOutput( result.filecontent, true );
@@ -321,7 +331,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 		describe( title="Complex REST Tests - Parameter Type Validation", body=function() {
 
 			it(title="GET /api/products/abc123def/reviews?page=1&limit=5&rating=3 - Alphanumeric path parameter", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/abc123def/reviews?page=1&limit=5&rating=3" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/abc123def/reviews?page=1&limit=5&rating=3" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Alphanumeric path parameter with numeric URL parameters", true );
 				systemOutput( result.filecontent, true );
@@ -337,7 +347,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/search?sortBy=price&category=books - String parameters with various values", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/search?sortBy=price&category=books" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/search?sortBy=price&category=books" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: String parameters with different sort options", true );
 				systemOutput( result.filecontent, true );
@@ -351,7 +361,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/analytics?startDate=2024-01-01&endDate=2024-01-31&format=csv - Date format validation", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/analytics?startDate=2024-01-01&endDate=2024-01-31&format=csv" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/analytics?startDate=2024-01-01&endDate=2024-01-31&format=csv" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Date format parameters with CSV format", true );
 				systemOutput( result.filecontent, true );
@@ -366,7 +376,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/getProductsByCategory?category=Home%20%26%20Garden&active=1 - Boolean parameter as numeric", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/getProductsByCategory?category=Home%20%26%20Garden&active=1" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/getProductsByCategory?category=Home%20%26%20Garden&active=1" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Boolean parameter passed as numeric 1", true );
 				systemOutput( result.filecontent, true );
@@ -380,7 +390,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 			});
 
 			it(title="GET /api/products/getProductsByCategory?category=Sports&active=0 - Boolean parameter as numeric zero", body = function( currentSpec ) {
-				http url="#localhost#/rest/complexRest/api/products/getProductsByCategory?category=Sports&active=0" result="local.result";
+				http url="#localhost#/rest/#variables.restMapping#/getProductsByCategory?category=Sports&active=0" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Boolean parameter passed as numeric 0", true );
 				systemOutput( result.filecontent, true );

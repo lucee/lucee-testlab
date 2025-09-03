@@ -1,4 +1,8 @@
-component restPath="/api/products" {
+component restPath="/api/products" rest="true" {
+
+	remote String function hello() httpmethod="GET" restpath="hello" {
+		return "hello-method-withrestpath";
+	}
 	
 	// Uses function name: GET /api/products/getProducts
 	remote function getProducts() httpMethod="GET" {
