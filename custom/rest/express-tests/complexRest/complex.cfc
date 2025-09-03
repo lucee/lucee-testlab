@@ -15,7 +15,7 @@ component restPath="/api/products" rest="true" {
 	}
 	
 	// Path parameter: GET /api/products/123
-	remote function getProduct(string productID) httpMethod="GET" restPath="/{productID}" restArgSource="Path" {
+	remote function getProduct(numeric productID restArgSource="Path") httpMethod="GET" restPath="/{productID}" 
 		return {
 			"message": "Single product retrieved",
 			"productID": arguments.productID,
@@ -75,7 +75,9 @@ component restPath="/api/products" rest="true" {
 			"method": "getProductsByCategory"
 		};
 	}
-	
+
+	/* 
+	INVALID restArgSource is per argment, not per function https://luceeserver.atlassian.net/browse/LDEV-5797
 	// Path parameter: PUT /api/products/123/status
 	remote function updateProductStatusFunc(string productID) httpMethod="PUT" restPath="/{productID}/status" restArgSource="Path" {
 		return {
@@ -84,6 +86,7 @@ component restPath="/api/products" rest="true" {
 			"method": "updateProductStatusFunc"
 		};
 	}
+	*/
 
 	// Path parameter: PUT /api/products/123/productStatus
 	remote function updateProductStatusArg(string productID restArgSource="Path")

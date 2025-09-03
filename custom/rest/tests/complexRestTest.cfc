@@ -167,7 +167,9 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				expect( response.filters.rating ).toBe( 4 );
 			});
 		
-			it(title="PUT /api/products/999/status - PUT method with path parameter  - function restArgSource", body = function( currentSpec ) {
+			// INVALID restArgSource is per argment, not per function
+			// https://luceeserver.atlassian.net/browse/LDEV-5797
+			xit(title="PUT /api/products/999/status - PUT method with path parameter  - function restArgSource", body = function( currentSpec ) {
 				http url="#localhost#/rest/#variables.restMapping#/999/status" method="PUT" result="local.result";
 				systemOutput( "", true );
 				systemOutput( "Test: Update product status with PUT method", true );
