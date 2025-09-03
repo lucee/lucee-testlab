@@ -49,9 +49,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProduct" );
 				expect( response ).toHaveKey( "productID" );
 				expect( response.productID ).toBe( "special-chars-123" );
-				expect( response.method ).toBe( "getProduct" );
 			});
 
 			it(title="GET /api/products/search?minPrice=50.99&maxPrice=199.99 - Decimal URL parameters", body = function( currentSpec ) {
@@ -63,10 +64,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "searchProducts" );
 				expect( response ).toHaveKey( "filters" );
 				expect( response.filters.minPrice ).toBe( 50.99 );
 				expect( response.filters.maxPrice ).toBe( 199.99 );
-				expect( response.method ).toBe( "searchProducts" );
 			});
 
 			it(title="GET /api/products/search?category=Gaming%20%26%20Electronics - URL-encoded parameters", body = function( currentSpec ) {
@@ -78,9 +80,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "searchProducts" );
 				expect( response ).toHaveKey( "filters" );
 				expect( response.filters.category ).toBe( "Gaming & Electronics" );
-				expect( response.method ).toBe( "searchProducts" );
 			});
 
 			it(title="GET /api/products/0/reviews - Zero as path parameter", body = function( currentSpec ) {
@@ -92,9 +95,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductReviews" );
 				expect( response ).toHaveKey( "productID" );
 				expect( response.productID ).toBe( "0" );
-				expect( response.method ).toBe( "getProductReviews" );
 			});
 
 			it(title="GET /api/products/search?minPrice=-10&maxPrice=0 - Negative and zero numeric parameters", body = function( currentSpec ) {
@@ -106,10 +110,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "searchProducts" );
 				expect( response ).toHaveKey( "filters" );
 				expect( response.filters.minPrice ).toBe( -10 );
 				expect( response.filters.maxPrice ).toBe( 0 );
-				expect( response.method ).toBe( "searchProducts" );
 			});
 
 			it(title="GET /api/products/getProductsByCategory?category= - Empty string parameter", body = function( currentSpec ) {
@@ -121,9 +126,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductsByCategory" );
 				expect( response ).toHaveKey( "category" );
 				expect( response.category ).toBe( "" );
-				expect( response.method ).toBe( "getProductsByCategory" );
+				
 			});
 
 		});

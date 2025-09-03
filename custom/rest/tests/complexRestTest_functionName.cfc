@@ -48,9 +48,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProducts" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "All products retrieved" );
-				expect( response.method ).toBe( "getProducts" );
 			});
 
 
@@ -63,11 +64,12 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductsByCategory" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Products retrieved by category" );
 				expect( response.category ).toBe( "books" );
 				expect( response.activeOnly ).toBe( true );
-				expect( response.method ).toBe( "getProductsByCategory" );
 			});
 
 			it(title="GET /api/products/getProductsByCategory?category=electronics&active=false - Function name with multiple URL parameters", body = function( currentSpec ) {
@@ -79,11 +81,12 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductsByCategory" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Products retrieved by category" );
 				expect( response.category ).toBe( "electronics" );
 				expect( response.activeOnly ).toBe( false );
-				expect( response.method ).toBe( "getProductsByCategory" );
 			});
 		});
 	}

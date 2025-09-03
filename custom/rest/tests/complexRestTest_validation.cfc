@@ -49,11 +49,12 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductReviews" );
 				expect( response.productID ).toBe( "abc123def" );
 				expect( response.pagination.page ).toBe( 1 );
 				expect( response.pagination.limit ).toBe( 5 );
 				expect( response.filters.rating ).toBe( 3 );
-				expect( response.method ).toBe( "getProductReviews" );
 			});
 
 			it(title="GET /api/products/search?sortBy=price&category=books - String parameters with various values", body = function( currentSpec ) {
@@ -65,10 +66,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "searchProducts" );
 				expect( response ).toHaveKey( "filters" );
 				expect( response.filters.sortBy ).toBe( "price" );
 				expect( response.filters.category ).toBe( "books" );
-				expect( response.method ).toBe( "searchProducts" );
 			});
 
 			it(title="GET /api/products/analytics?startDate=2024-01-01&endDate=2024-01-31&format=csv - Date format validation", body = function( currentSpec ) {
@@ -80,11 +82,12 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductAnalytics" );
 				expect( response ).toHaveKey( "dateRange" );
 				expect( response.dateRange.start ).toBe( "2024-01-01" );
 				expect( response.dateRange.end ).toBe( "2024-01-31" );
 				expect( response.options.format ).toBe( "csv" );
-				expect( response.method ).toBe( "getProductAnalytics" );
 			});
 
 			it(title="GET /api/products/getProductsByCategory?category=Home%20%26%20Garden&active=1 - Boolean parameter as numeric", body = function( currentSpec ) {
@@ -96,10 +99,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductsByCategory" );
 				expect( response ).toHaveKey( "category" );
 				expect( response.category ).toBe( "Home & Garden" );
 				expect( response.activeOnly ).toBe( true );
-				expect( response.method ).toBe( "getProductsByCategory" );
 			});
 
 			it(title="GET /api/products/getProductsByCategory?category=Sports&active=0 - Boolean parameter as numeric zero", body = function( currentSpec ) {
@@ -111,10 +115,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductsByCategory" );
 				expect( response ).toHaveKey( "category" );
 				expect( response.category ).toBe( "Sports" );
 				expect( response.activeOnly ).toBe( false );
-				expect( response.method ).toBe( "getProductsByCategory" );
 			});
 
 		});

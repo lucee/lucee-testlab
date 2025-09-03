@@ -68,9 +68,10 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "addProduct" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product added" );
-				expect( response.method ).toBe( "addProduct" );
 			});
 
 			it(title="GET /api/products/123 - Path parameter test", body = function( currentSpec ) {
@@ -82,10 +83,12 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProduct" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Single product retrieved" );
 				expect( response.productID ).toBe( "123" );
-				expect( response.method ).toBe( "getProduct" );
+				
 			});
 
 			it(title="GET /api/products/search - URL parameters with defaults", body = function( currentSpec ) {
@@ -97,13 +100,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "searchProducts" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product search completed" );
 				expect( response.filters.category ).toBe( "" );
 				expect( response.filters.minPrice ).toBe( 0 );
 				expect( response.filters.maxPrice ).toBe( 999999 );
 				expect( response.filters.sortBy ).toBe( "name" );
-				expect( response.method ).toBe( "searchProducts" );
 			});
 
 			it(title="GET /api/products/search?category=electronics&minPrice=100&maxPrice=500 - URL parameters with values", body = function( currentSpec ) {
@@ -115,13 +119,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "searchProducts" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product search completed" );
 				expect( response.filters.category ).toBe( "electronics" );
 				expect( response.filters.minPrice ).toBe( 100 );
 				expect( response.filters.maxPrice ).toBe( 500 );
 				expect( response.filters.sortBy ).toBe( "price" );
-				expect( response.method ).toBe( "searchProducts" );
 			});
 
 			it(title="GET /api/products/456/reviews - Path + URL parameters with defaults", body = function( currentSpec ) {
@@ -133,13 +138,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductReviews" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product reviews retrieved" );
 				expect( response.productID ).toBe( "456" );
 				expect( response.pagination.page ).toBe( 1 );
 				expect( response.pagination.limit ).toBe( 20 );
 				expect( response.filters.rating ).toBe( 0 );
-				expect( response.method ).toBe( "getProductReviews" );
 			});
 
 			it(title="GET /api/products/789/reviews?page=2&limit=10&rating=4 - Path + URL parameters with values", body = function( currentSpec ) {
@@ -151,13 +157,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductReviews" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product reviews retrieved" );
 				expect( response.productID ).toBe( "789" );
 				expect( response.pagination.page ).toBe( 2 );
 				expect( response.pagination.limit ).toBe( 10 );
 				expect( response.filters.rating ).toBe( 4 );
-				expect( response.method ).toBe( "getProductReviews" );
 			});
 		
 			it(title="PUT /api/products/999/status - PUT method with path parameter", body = function( currentSpec ) {
@@ -169,10 +176,11 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "updateProductStatus" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product status updated" );
 				expect( response.productID ).toBe( "999" );
-				expect( response.method ).toBe( "updateProductStatus" );
 			});
 
 			it(title="GET /api/products/analytics - Analytics with minimal required parameters", body = function( currentSpec ) {
@@ -184,13 +192,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductAnalytics" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product analytics retrieved" );
 				expect( response.dateRange.start ).toBe( "2024-01-01" );
 				expect( response.dateRange.end ).toBe( "2024-12-31" );
 				expect( response.options.format ).toBe( "json" );
 				expect( response.options.includeDeleted ).toBe( false );
-				expect( response.method ).toBe( "getProductAnalytics" );
 			});
 
 			it(title="GET /api/products/analytics - Analytics with all parameters", body = function( currentSpec ) {
@@ -202,13 +211,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "method" );
+				expect( response.method ).toBe( "getProductAnalytics" );
 				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product analytics retrieved" );
 				expect( response.dateRange.start ).toBe( "2023-06-01" );
 				expect( response.dateRange.end ).toBe( "2023-12-31" );
 				expect( response.options.format ).toBe( "xml" );
 				expect( response.options.includeDeleted ).toBe( true );
-				expect( response.method ).toBe( "getProductAnalytics" );
 			});
 
 		});
