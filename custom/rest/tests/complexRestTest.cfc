@@ -38,6 +38,14 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 	function run( testResults , testBox ) {
 		describe( title="Complex REST Tests - Product API", body=function() {
 
+			it(title="test REST List services", body = function( currentSpec ) {
+				http url="#localhost#/rest/" result="local.result";
+				systemOutput( "", true );
+				systemOutput( result.filecontent, true );
+				debug( result.filecontent );
+				expect( result.filecontent ).toInclude( "Available sevice mappings are:" );
+			});
+
 			it(title="GET /api/products/getProducts - Simple GET method using function name", body = function( currentSpec ) {
 				http url="#localhost#/rest/complexRest/api/products/getProducts" result="local.result";
 				systemOutput( "", true );
