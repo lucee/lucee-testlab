@@ -14,15 +14,6 @@ component restPath="/api/products" rest="true" {
 		return {"message": "Product added", "method": "addProduct"};
 	}
 	
-	// Path parameter: GET /api/products/123
-	remote function getProduct(numeric productID restArgSource="Path") httpMethod="GET" restPath="/{productID}" {
-		return {
-			"message": "Single product retrieved",
-			"productID": arguments.productID,
-			"method": "getProduct"
-		};
-	}
-	
 	// URL parameters: GET /api/products/search?category=electronics&minPrice=100&maxPrice=500
 	remote function searchProducts(
 		string category = "" restArgSource="url",
@@ -116,6 +107,19 @@ component restPath="/api/products" rest="true" {
 				"includeDeleted": arguments.includeDeleted
 			},
 			"method": "getProductAnalytics"
+		};
+	}
+
+	/* 
+		NOTE: rest method matching go thru each function as they are defined
+		therefore, placing this last allows for more specific matches to take precedence
+	*/
+	// Path parameter: GET /api/products/123
+	remote function getProduct(numeric productID restArgSource="Path") httpMethod="GET" restPath="/{productID}" {
+		return {
+			"message": "Single product retrieved",
+			"productID": arguments.productID,
+			"method": "getProduct"
 		};
 	}
 }
