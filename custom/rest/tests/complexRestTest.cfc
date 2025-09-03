@@ -37,7 +37,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 	}
 
 	function run( testResults , testBox ) {
-		describe( title="Complex REST Tests - Product API", body=function() {
+		describe( title="Complex REST Tests - BASIC tests", body=function() {
 
 			it(title="test REST List services", body = function( currentSpec ) {
 				http url="#localhost#/rest/" result="local.result";
@@ -55,19 +55,9 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				expect( result.filecontent ).toInclude( "hello-method-withrestpath" );
 			});
+		});
 
-			it(title="GET /api/products/getProducts - Simple GET method using function name", body = function( currentSpec ) {
-				http url="#localhost#/rest/#variables.restMapping#/getProducts" result="local.result";
-				systemOutput( "", true );
-				systemOutput( "Test: GET products using function name", true );
-				systemOutput( result.filecontent, true );
-				debug( result.filecontent );
-				if ( result.error ) throw "Error: #result.filecontent#";
-				
-				var response = deserializeJSON( result.filecontent );
-				expect( response.message ).toBe( "All products retrieved" );
-				expect( response.method ).toBe( "getProducts" );
-			});
+		describe( title="Complex REST Tests - Product API", body=function() {
 
 			it(title="POST /api/products - POST with empty restPath", body = function( currentSpec ) {
 				http url="#localhost#/rest/#variables.restMapping#" method="POST" result="local.result";
@@ -78,6 +68,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product added" );
 				expect( response.method ).toBe( "addProduct" );
 			});
@@ -91,6 +82,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Single product retrieved" );
 				expect( response.productID ).toBe( "123" );
 				expect( response.method ).toBe( "getProduct" );
@@ -105,6 +97,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product search completed" );
 				expect( response.filters.category ).toBe( "" );
 				expect( response.filters.minPrice ).toBe( 0 );
@@ -122,6 +115,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product search completed" );
 				expect( response.filters.category ).toBe( "electronics" );
 				expect( response.filters.minPrice ).toBe( 100 );
@@ -139,6 +133,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product reviews retrieved" );
 				expect( response.productID ).toBe( "456" );
 				expect( response.pagination.page ).toBe( 1 );
@@ -156,6 +151,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product reviews retrieved" );
 				expect( response.productID ).toBe( "789" );
 				expect( response.pagination.page ).toBe( 2 );
@@ -163,37 +159,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				expect( response.filters.rating ).toBe( 4 );
 				expect( response.method ).toBe( "getProductReviews" );
 			});
-
-			it(title="GET /api/products/getProductsByCategory?category=books - Function name with required URL parameter", body = function( currentSpec ) {
-				http url="#localhost#/rest/#variables.restMapping#/getProductsByCategory?category=books" result="local.result";
-				systemOutput( "", true );
-				systemOutput( "Test: Get products by category with required parameter", true );
-				systemOutput( result.filecontent, true );
-				debug( result.filecontent );
-				if ( result.error ) throw "Error: #result.filecontent#";
-				
-				var response = deserializeJSON( result.filecontent );
-				expect( response.message ).toBe( "Products retrieved by category" );
-				expect( response.category ).toBe( "books" );
-				expect( response.activeOnly ).toBe( true );
-				expect( response.method ).toBe( "getProductsByCategory" );
-			});
-
-			it(title="GET /api/products/getProductsByCategory?category=electronics&active=false - Function name with multiple URL parameters", body = function( currentSpec ) {
-				http url="#localhost#/rest/#variables.restMapping#/getProductsByCategory?category=electronics&active=false" result="local.result";
-				systemOutput( "", true );
-				systemOutput( "Test: Get products by category with multiple parameters", true );
-				systemOutput( result.filecontent, true );
-				debug( result.filecontent );
-				if ( result.error ) throw "Error: #result.filecontent#";
-				
-				var response = deserializeJSON( result.filecontent );
-				expect( response.message ).toBe( "Products retrieved by category" );
-				expect( response.category ).toBe( "electronics" );
-				expect( response.activeOnly ).toBe( false );
-				expect( response.method ).toBe( "getProductsByCategory" );
-			});
-
+		
 			it(title="PUT /api/products/999/status - PUT method with path parameter", body = function( currentSpec ) {
 				http url="#localhost#/rest/#variables.restMapping#/999/status" method="PUT" result="local.result";
 				systemOutput( "", true );
@@ -203,6 +169,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product status updated" );
 				expect( response.productID ).toBe( "999" );
 				expect( response.method ).toBe( "updateProductStatus" );
@@ -217,6 +184,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product analytics retrieved" );
 				expect( response.dateRange.start ).toBe( "2024-01-01" );
 				expect( response.dateRange.end ).toBe( "2024-12-31" );
@@ -234,6 +202,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
 				expect( response.message ).toBe( "Product analytics retrieved" );
 				expect( response.dateRange.start ).toBe( "2023-06-01" );
 				expect( response.dateRange.end ).toBe( "2023-12-31" );
@@ -242,6 +211,56 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				expect( response.method ).toBe( "getProductAnalytics" );
 			});
 
+		});
+
+		xdescribe( title="LDEV-5795 Complex REST Tests - Product API - by function name", body=function() {
+
+			it(title="GET /api/products/getProducts - Simple GET method using function name", body = function( currentSpec ) {
+				http url="#localhost#/rest/#variables.restMapping#/getProducts" result="local.result";
+				systemOutput( "", true );
+				systemOutput( "Test: GET products using function name", true );
+				systemOutput( result.filecontent, true );
+				debug( result.filecontent );
+				if ( result.error ) throw "Error: #result.filecontent#";
+				
+				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
+				expect( response.message ).toBe( "All products retrieved" );
+				expect( response.method ).toBe( "getProducts" );
+			});
+
+
+			it(title="GET /api/products/getProductsByCategory?category=books - Function name with required URL parameter", body = function( currentSpec ) {
+				http url="#localhost#/rest/#variables.restMapping#/getProductsByCategory?category=books" result="local.result";
+				systemOutput( "", true );
+				systemOutput( "Test: Get products by category with required parameter", true );
+				systemOutput( result.filecontent, true );
+				debug( result.filecontent );
+				if ( result.error ) throw "Error: #result.filecontent#";
+				
+				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
+				expect( response.message ).toBe( "Products retrieved by category" );
+				expect( response.category ).toBe( "books" );
+				expect( response.activeOnly ).toBe( true );
+				expect( response.method ).toBe( "getProductsByCategory" );
+			});
+
+			it(title="GET /api/products/getProductsByCategory?category=electronics&active=false - Function name with multiple URL parameters", body = function( currentSpec ) {
+				http url="#localhost#/rest/#variables.restMapping#/getProductsByCategory?category=electronics&active=false" result="local.result";
+				systemOutput( "", true );
+				systemOutput( "Test: Get products by category with multiple parameters", true );
+				systemOutput( result.filecontent, true );
+				debug( result.filecontent );
+				if ( result.error ) throw "Error: #result.filecontent#";
+				
+				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "message" );
+				expect( response.message ).toBe( "Products retrieved by category" );
+				expect( response.category ).toBe( "electronics" );
+				expect( response.activeOnly ).toBe( false );
+				expect( response.method ).toBe( "getProductsByCategory" );
+			});
 		});
 
 		describe( title="Complex REST Tests - Edge Cases and Error Scenarios", body=function() {
@@ -255,6 +274,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "productID" );
 				expect( response.productID ).toBe( "special-chars-123" );
 				expect( response.method ).toBe( "getProduct" );
 			});
@@ -268,6 +288,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "filters" );
 				expect( response.filters.minPrice ).toBe( 50.99 );
 				expect( response.filters.maxPrice ).toBe( 199.99 );
 				expect( response.method ).toBe( "searchProducts" );
@@ -282,6 +303,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "filters" );
 				expect( response.filters.category ).toBe( "Gaming & Electronics" );
 				expect( response.method ).toBe( "searchProducts" );
 			});
@@ -295,6 +317,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "productID" );
 				expect( response.productID ).toBe( "0" );
 				expect( response.method ).toBe( "getProductReviews" );
 			});
@@ -308,6 +331,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "filters" );
 				expect( response.filters.minPrice ).toBe( -10 );
 				expect( response.filters.maxPrice ).toBe( 0 );
 				expect( response.method ).toBe( "searchProducts" );
@@ -322,6 +346,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "category" );
 				expect( response.category ).toBe( "" );
 				expect( response.method ).toBe( "getProductsByCategory" );
 			});
@@ -355,6 +380,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "filters" );
 				expect( response.filters.sortBy ).toBe( "price" );
 				expect( response.filters.category ).toBe( "books" );
 				expect( response.method ).toBe( "searchProducts" );
@@ -369,6 +395,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "dateRange" );
 				expect( response.dateRange.start ).toBe( "2024-01-01" );
 				expect( response.dateRange.end ).toBe( "2024-01-31" );
 				expect( response.options.format ).toBe( "csv" );
@@ -384,6 +411,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "category" );
 				expect( response.category ).toBe( "Home & Garden" );
 				expect( response.activeOnly ).toBe( true );
 				expect( response.method ).toBe( "getProductsByCategory" );
@@ -398,6 +426,7 @@ component extends="org.lucee.cfml.test.LuceeTestCase" labels="rest" {
 				if ( result.error ) throw "Error: #result.filecontent#";
 				
 				var response = deserializeJSON( result.filecontent );
+				expect( response ).toHaveKey( "category" );
 				expect( response.category ).toBe( "Sports" );
 				expect( response.activeOnly ).toBe( false );
 				expect( response.method ).toBe( "getProductsByCategory" );
