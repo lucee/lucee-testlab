@@ -12,6 +12,8 @@ component {
             , "set-cookie"
             , "query-manipulation"
             , "request"
+            , "cfc-empty"
+            , "cfc-5props"
             , "loops"
             , "primes"
             , "toString"
