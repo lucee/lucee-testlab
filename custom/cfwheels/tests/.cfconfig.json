@@ -1,15 +1,38 @@
 {
-	"datasources": {
+	"dataSources": {
 		"wheelstestdb": {
 			"class": "com.mysql.cj.jdbc.Driver",
-			"connectionString": "jdbc:mysql://localhost:3306/wheelstestdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
+			"dsn": "jdbc:mysql://{host}:{port}/{database}",
+			"host": "localhost",
+			"port": "3306",
+			"database": "wheelstestdb",
 			"username": "wheels",
 			"password": "wheels",
-			"blob": true,
-			"clob": true,
-			"connectionLimit": -1,
-			"liveTimeout": 15,
-			"validate": false
+			"connectionLimit": "-1",
+			"connectionTimeout": "1",
+			"liveTimeout": "15",
+			"blob": "true",
+			"clob": "true",
+			"validate": "false",
+			"allow": "511",
+			"dbdriver": "MySQL"
+		},
+		"wheelstestdb_mysql": {
+			"class": "com.mysql.cj.jdbc.Driver",
+			"dsn": "jdbc:mysql://{host}:{port}/{database}",
+			"host": "localhost",
+			"port": "3306",
+			"database": "wheelstestdb",
+			"username": "wheels",
+			"password": "wheels",
+			"connectionLimit": "-1",
+			"connectionTimeout": "1",
+			"liveTimeout": "15",
+			"blob": "true",
+			"clob": "true",
+			"validate": "false",
+			"allow": "511",
+			"dbdriver": "MySQL"
 		}
 	}
 }

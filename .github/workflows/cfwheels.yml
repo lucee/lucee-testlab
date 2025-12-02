@@ -32,7 +32,7 @@ jobs:
         path: _custom
     - name: Copy custom test runner tweaks
       run: |
-        cp -R _custom/custom/cfwheels/tests/* tests/
+        cp -R _custom/custom/cfwheels/tests/. tests/
         ls -la tests/
         rm -rf _custom
     - name: Set up JDK 11
@@ -49,9 +49,10 @@ jobs:
     - name: Update apt and install commandbox
       run: sudo apt-get update && sudo apt-get install apt-transport-https commandbox
 
-    - name: Install dependencies
+    - name: Install TestBox dependency
       run: |
-        box install verbose=true system=false
+        cd core/src/wheels && box install verbose=true system=false
+        ls -la testbox/
     - name: Upload webroot for matrix steps
       uses: actions/upload-artifact@v4
       with:

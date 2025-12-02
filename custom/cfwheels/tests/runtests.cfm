@@ -5,18 +5,61 @@
 	TAB = chr(9);
 	NL = chr(13);
 
-	// Load datasource config from .cfconfig.json
-	cfconfigPath = expandPath(".cfconfig.json");
+	// Determine the webroot (where this file lives is in tests/, so webroot is parent)
+	webroot = getDirectoryFromPath(getCurrentTemplatePath());
+	// Remove trailing tests/ to get project root
+	webroot = reReplace(webroot, "tests[/\\]?$", "");
+
+	systemOutput("Webroot: #webroot#", true);
+
+	// Load datasource config from .CFConfig.json
+	cfconfigPath = expandPath(".CFConfig.json");
 	if (fileExists(cfconfigPath)) {
 		systemOutput("Loading datasource config from #cfconfigPath#", true);
+
+		cfconfigData = deserializeJSON(fileRead(cfconfigPath));
+
+		// Add mappings dynamically based on webroot
+		cfconfigData["mappings"] = {
+			"/wheels": {
+				"physical": webroot & "core/src/wheels",
+				"primary": "physical",
+				"topLevel": "true",
+				"readOnly": "false"
+			},
+			"/vendor": {
+				"physical": webroot & "templates/base/src/vendor",
+				"primary": "physical",
+				"topLevel": "true",
+				"readOnly": "false"
+			},
+			"/testbox": {
+				"physical": webroot & "core/src/wheels/testbox",
+				"primary": "physical",
+				"topLevel": "true",
+				"readOnly": "false"
+			},
+			"/tests": {
+				"physical": webroot & "tests",
+				"primary": "physical",
+				"topLevel": "true",
+				"readOnly": "false"
+			}
+		};
+
 		configImport(
 			type: "server",
-			data: deserializeJSON(fileRead(cfconfigPath)),
+			data: cfconfigData,
 			password: "admin"
 		);
-		systemOutput("Datasource 'wheelstestdb' configured", true);
+		systemOutput("Datasources and mappings configured", true);
+
+		// Log the mappings for debugging
+		for (var mapping in cfconfigData.mappings) {
+			systemOutput("  Mapping #mapping# -> #cfconfigData.mappings[mapping].physical#", true);
+		}
 	} else {
-		systemOutput("WARNING: .cfconfig.json not found at #cfconfigPath#", true);
+		systemOutput("WARNING: .CFConfig.json not found at #cfconfigPath#", true);
 	}
 
 	// Verify datasource is available
