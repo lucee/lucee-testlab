@@ -1,11 +1,22 @@
 name: Run cfwheels test suite
 on:
     workflow_dispatch:
-        inputs:
-            compile:
-                required: false
-                default: false
-                type: boolean
+      inputs:
+        compile:
+          required: false
+          description: Compile CFML before running tests
+          default: false
+          type: boolean
+        java_versions:
+          required: false
+          description: Java Versions (json)
+          default: '[ 24, 21, 11 ]'
+          type: string
+        lucee_versions:
+          required: false
+          description: Lucee Versions (json)
+          default: '[ "7.0/snapshot/jar", "6.2/snapshot/jar", "5.4/snapshot/jar" ]'
+          type: string
     workflow_call:
 jobs:
   setup-cfwheels:
@@ -47,20 +58,24 @@ jobs:
         include-hidden-files: true
         path: ${{ github.workspace }}
 
-  run-tuffy-tests:
+  run-cfwheels-tests:
     name: cfwheels CI
     runs-on: ubuntu-latest 
     needs: [ setup-cfwheels ]
     strategy:
       fail-fast: false
       matrix:
-        luceeVersion: [ 5.4/snapshot/jar, 6.0/snapshot/jar, 6.1/snapshot/jar, 6.1.0/snapshot/jar, 6.2/snapshot/jar ]
-        javaVersion: [ 11, 21 ]
-        exclude: 
+        luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
+        javaVersion: ${{ fromJSON(github.event.inputs.java_versions) }}
+        exclude:
             - luceeVersion: 5.4/snapshot/jar
               javaVersion: 21
+            - luceeVersion: 5.4/snapshot/jar
+              javaVersion: 24
             - luceeVersion: 6.0/snapshot/jar
               javaVersion: 21
+            - luceeVersion: 6.0/snapshot/jar
+              javaVersion: 24
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
         compile: ${{ github.event.inputs.compile }}
