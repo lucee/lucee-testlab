@@ -82,13 +82,15 @@
 	request._start = getTickCount();
 
 	// Call the wheels test runner via internalRequest - same as Docker does
-	// Hit index.cfm with the route path, Application.cfc bootstraps wheels
-	systemOutput("Calling /index.cfm/wheels/core/tests via internalRequest()...", true);
+	// Hit index.cfm with path_info set for routing
+	systemOutput("Calling index.cfm with path_info=/wheels/core/tests via internalRequest()...", true);
 
 	response = internalRequest(
-		template: webroot & "templates/base/src/public/index.cfm/wheels/core/tests",
+		template: webroot & "templates/base/src/public/index.cfm",
 		method: "GET",
-		urls: { format: "json", cli: true, db: "mysql" }
+		urls: { format: "json", cli: true, db: "mysql" },
+		addToken: false,
+		cgi: { path_info: "/wheels/core/tests", script_name: "/index.cfm" }
 	);
 
 	systemOutput("Response status: #response.status#", true);
