@@ -82,10 +82,10 @@
 	request._start = getTickCount();
 
 	// Call the wheels test runner via internalRequest - this triggers Application.cfc
-	systemOutput("Calling /wheels/tests_testbox/runner.cfm via internalRequest()...", true);
+	systemOutput("Calling /core/src/wheels/tests_testbox/runner.cfm via internalRequest()...", true);
 
 	response = internalRequest(
-		template: "/wheels/tests_testbox/runner.cfm",
+		template: "/core/src/wheels/tests_testbox/runner.cfm",
 		method: "GET",
 		urls: { format: "json", cli: true }
 	);
