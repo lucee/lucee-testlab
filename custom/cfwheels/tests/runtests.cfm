@@ -86,7 +86,7 @@
 	systemOutput("Calling index.cfm with path_info=/wheels/core/tests via internalRequest()...", true);
 
 	response = internalRequest(
-		template: webroot & "templates/base/src/public/index.cfm",
+		template: "/templates/base/src/public/index.cfm",
 		method: "GET",
 		urls: { format: "json", cli: true, db: "mysql" },
 		addToken: false,
