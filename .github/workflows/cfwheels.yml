@@ -53,6 +53,10 @@ jobs:
       run: |
         cd core/src/wheels && box install verbose=true system=false
         ls -la testbox/
+    - name: Install WireBox and TestBox for vendor
+      run: |
+        cd templates/base/src && box install verbose=true system=false
+        ls -la vendor/
     - name: Upload webroot for matrix steps
       uses: actions/upload-artifact@v4
       with:
