@@ -57,10 +57,6 @@ jobs:
       run: |
         cd templates/base/src && box install verbose=true system=false
         ls -la vendor/
-    - name: Link wheels to vendor (like Docker mount)
-      run: |
-        ln -s ${{ github.workspace }}/core/src/wheels templates/base/src/vendor/wheels
-        ls -la templates/base/src/vendor/
     - name: Upload webroot for matrix steps
       uses: actions/upload-artifact@v4
       with:
