@@ -1,9 +1,9 @@
 <cfscript>
 	// CFWheels test runner wrapper for lucee/script-runner
-	// This loads the datasource config and then runs the wheels test suite
+	// Uses internalRequest() to call the wheels runner, triggering Application.cfc lifecycle
 
 	TAB = chr(9);
-	NL = chr(13);
+	NL = chr(10);
 
 	// Determine the webroot (where this file lives is in tests/, so webroot is parent)
 	webroot = getDirectoryFromPath(getCurrentTemplatePath());
@@ -81,139 +81,84 @@
 
 	request._start = getTickCount();
 
-	// Initialize TestBox with the wheels test directory
-	testBoxOptions = {
-		directory: {
-			mapping: "tests.specs",
-			recurse: true
-		}
-	};
+	// Call the wheels test runner via internalRequest - this triggers Application.cfc
+	systemOutput("Calling /wheels/tests_testbox/runner.cfm via internalRequest()...", true);
 
-	testBox = new testbox.system.TestBox(
-		directory: testBoxOptions.directory.mapping,
-		recurse: testBoxOptions.directory.recurse
+	response = internalRequest(
+		template: "/wheels/tests_testbox/runner.cfm",
+		method: "GET",
+		urls: { format: "json", cli: true }
 	);
 
-	// Run tests with callbacks for console output
-	failedTestCases = [];
+	systemOutput("Response status: #response.status#", true);
 
+	// Parse the JSON response
 	try {
-		silent {
-			result = testBox.run(
-				callbacks: {
-					onBundleStart: function(cfc, testResults) {
-						var meta = getComponentMetadata(cfc);
-						systemOutput(TAB & meta.name & " ", false);
-					},
-					onBundleEnd: function(cfc, testResults) {
-						var bundle = arrayLast(testResults.getBundleStats());
+		result = deserializeJSON(response.fileContent);
+	} catch (any e) {
+		systemOutput("ERROR: Failed to parse JSON response", true);
+		systemOutput("Response content: #left(response.fileContent, 2000)#", true);
+		throw(
+			message: "Failed to parse test runner response",
+			detail: e.message,
+			cause: e
+		);
+	}
 
-						if (bundle.totalPass eq 0 && (bundle.totalFail + bundle.totalError) eq 0) {
-							systemOutput(TAB & " (skipped)", true);
-						} else {
-							var summary = " (#bundle.totalPass# passed";
-							if (bundle.totalSkipped > 0) summary &= ", #bundle.totalSkipped# skipped";
-							if (bundle.totalFail > 0) summary &= ", #bundle.totalFail# FAILED";
-							if (bundle.totalError > 0) summary &= ", #bundle.totalError# ERRORED";
-							summary &= " in #NumberFormat(bundle.totalDuration)#ms)";
-							systemOutput(TAB & summary, true);
-						}
+	// Output summary
+	systemOutput("", true);
+	systemOutput("=============================================================", true);
+	systemOutput("Test Results Summary", true);
+	systemOutput("=============================================================", true);
+	systemOutput("Bundles/Suites/Specs: #result.totalBundles#/#result.totalSuites#/#result.totalSpecs#", true);
+	systemOutput("Passed:  #result.totalPass#", true);
+	systemOutput("Failed:  #result.totalFail#", true);
+	systemOutput("Errored: #result.totalError#", true);
+	systemOutput("Skipped: #result.totalSkipped#", true);
+	systemOutput("Duration: #NumberFormat((getTickCount() - request._start) / 1000)# seconds", true);
+	systemOutput("=============================================================", true);
 
-						// Output failures/errors immediately
-						if ((bundle.totalFail + bundle.totalError) > 0) {
-							if (!isNull(bundle.suiteStats)) {
-								for (var suiteStat in bundle.suiteStats) {
-									if (!isNull(suiteStat.specStats)) {
-										for (var specStat in suiteStat.specStats) {
-											if (!isNull(specStat.failMessage) && len(trim(specStat.failMessage))) {
-												arrayAppend(failedTestCases, {
-													type: "Failed",
-													bundle: bundle.name,
-													testCase: specStat.name,
-													message: specStat.failMessage
-												});
-												systemOutput(NL & TAB & "FAILED: " & specStat.name, true);
-												systemOutput(TAB & TAB & specStat.failMessage, true);
-											}
-											if (!isNull(specStat.error) && !isEmpty(specStat.error)) {
-												arrayAppend(failedTestCases, {
-													type: "Errored",
-													bundle: bundle.name,
-													testCase: specStat.name,
-													message: specStat.error.message ?: "Unknown error"
-												});
-												systemOutput(NL & TAB & "ERRORED: " & specStat.name, true);
-												systemOutput(TAB & TAB & (specStat.error.message ?: "Unknown error"), true);
-												if (structKeyExists(specStat.error, "detail") && len(specStat.error.detail)) {
-													systemOutput(TAB & TAB & specStat.error.detail, true);
-												}
-											}
-										}
-									}
+	// Output failures/errors
+	if (result.totalFail > 0 || result.totalError > 0) {
+		systemOutput("", true);
+		systemOutput("FAILURES AND ERRORS:", true);
+		for (bundle in result.bundleStats) {
+			if (bundle.totalFail > 0 || bundle.totalError > 0) {
+				systemOutput("", true);
+				systemOutput("Bundle: #bundle.name#", true);
+				for (suite in bundle.suiteStats) {
+					if (suite.totalFail > 0 || suite.totalError > 0) {
+						for (spec in suite.specStats) {
+							if (spec.status == "Failed" || spec.status == "Error") {
+								systemOutput(TAB & spec.status & ": #spec.name#", true);
+								if (len(spec.failMessage)) {
+									systemOutput(TAB & TAB & spec.failMessage, true);
 								}
-							}
-						}
-
-						// Handle global exceptions
-						if (!isSimpleValue(bundle.globalException)) {
-							systemOutput("Global Bundle Exception:", true);
-							systemOutput(TAB & bundle.globalException.type, true);
-							systemOutput(TAB & bundle.globalException.message, true);
-							if (len(bundle.globalException.detail)) {
-								systemOutput(TAB & bundle.globalException.detail, true);
 							}
 						}
 					}
 				}
-			);
-			result = testBox.getResult();
+			}
 		}
+	}
 
-		// Output summary
-		systemOutput("", true);
-		systemOutput("=============================================================", true);
-		systemOutput("Test Results Summary", true);
-		systemOutput("=============================================================", true);
-		systemOutput("Bundles/Suites/Specs: #result.getTotalBundles()#/#result.getTotalSuites()#/#result.getTotalSpecs()#", true);
-		systemOutput("Passed:  #result.getTotalPass()#", true);
-		systemOutput("Failed:  #result.getTotalFail()#", true);
-		systemOutput("Errored: #result.getTotalError()#", true);
-		systemOutput("Skipped: #result.getTotalSkipped()#", true);
-		systemOutput("Duration: #NumberFormat((getTickCount() - request._start) / 1000)# seconds", true);
-		systemOutput("=============================================================", true);
+	// Write results to artifact file
+	dir = getDirectoryFromPath(getCurrentTemplatePath()) & "artifacts/";
+	if (!directoryExists(dir)) {
+		directoryCreate(dir);
+	}
 
-		// Write results to artifact file
-		dir = getDirectoryFromPath(getCurrentTemplatePath()) & "artifacts/";
-		if (!directoryExists(dir)) {
-			directoryCreate(dir);
-		}
+	reportFile = dir & server.lucee.version & "-" & server.java.version & "-results.json";
+	systemOutput("Writing test results to #reportFile#", true);
 
-		reporter = testBox.buildReporter("json");
-		reportFile = dir & server.lucee.version & "-" & server.java.version & "-results.json";
-		systemOutput("Writing test results to #reportFile#", true);
+	result["javaVersion"] = server.java.version;
+	fileWrite(reportFile, serializeJSON(result));
 
-		report = reporter.runReport(results: result, testbox: testBox, justReturn: true);
-		report = deserializeJSON(report);
-		report["javaVersion"] = server.java.version;
-		fileWrite(reportFile, serializeJSON(report));
-
-		// Fail the build if there were failures or errors
-		fails = result.getTotalFail() + result.getTotalError();
-		if (fails > 0) {
-			throw "#fails# test(s) failed or errored";
-		} else if (result.getTotalPass() eq 0) {
-			throw "No tests passed - check if tests were found";
-		}
-
-	} catch (any e) {
-		systemOutput("", true);
-		systemOutput("=============================================================", true);
-		systemOutput("TEST RUN FAILED", true);
-		systemOutput(e.message, true);
-		if (len(e.detail)) {
-			systemOutput(e.detail, true);
-		}
-		systemOutput("=============================================================", true);
-		rethrow;
+	// Fail the build if there were failures or errors
+	fails = result.totalFail + result.totalError;
+	if (fails > 0) {
+		throw "#fails# test(s) failed or errored";
+	} else if (result.totalPass == 0) {
+		throw "No tests passed - check if tests were found";
 	}
 </cfscript>
