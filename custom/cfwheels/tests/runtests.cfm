@@ -55,7 +55,7 @@
 		systemOutput("Datasources and mappings configured", true);
 
 		// Log the mappings for debugging
-		for (var mapping in cfconfigData.mappings) {
+		for (mapping in cfconfigData.mappings) {
 			systemOutput("  Mapping #mapping# -> #cfconfigData.mappings[mapping].physical#", true);
 		}
 	} else {
