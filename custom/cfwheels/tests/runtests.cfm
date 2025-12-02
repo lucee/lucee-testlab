@@ -90,7 +90,7 @@
 		method: "GET",
 		urls: { format: "json", cli: true, db: "mysql" },
 		addToken: false,
-		cgi: { path_info: "/wheels/core/tests", script_name: "/index.cfm" }
+		headers: { "xajp-path-info": "/wheels/core/tests", "xajp-script-name": "/index.cfm" }
 	);
 
 	systemOutput("Response status: #response.status#", true);
