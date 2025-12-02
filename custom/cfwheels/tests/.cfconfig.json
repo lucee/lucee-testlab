@@ -1,0 +1,15 @@
+{
+	"datasources": {
+		"wheelstestdb": {
+			"class": "com.mysql.cj.jdbc.Driver",
+			"connectionString": "jdbc:mysql://localhost:3306/wheelstestdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
+			"username": "wheels",
+			"password": "wheels",
+			"blob": true,
+			"clob": true,
+			"connectionLimit": -1,
+			"liveTimeout": 15,
+			"validate": false
+		}
+	}
+}
