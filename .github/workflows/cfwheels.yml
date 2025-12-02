@@ -53,10 +53,19 @@ jobs:
       run: |
         cd core/src/wheels && box install verbose=true system=false
         ls -la testbox/
-    - name: Install WireBox and TestBox for vendor
+    - name: Install WireBox and TestBox for vendor (skip wheels-core - we use source)
       run: |
-        cd templates/base/src && box install verbose=true system=false
+        cd templates/base/src
+        # Only install wirebox and testbox, NOT wheels-core (we want to test the source code)
+        box install wirebox --save=false verbose=true system=false
+        box install testbox --save=false verbose=true system=false
         ls -la vendor/
+    - name: Copy wheels source to vendor/wheels
+      run: |
+        # Match Docker's volume mount: core/src/wheels -> vendor/wheels
+        # Copy instead of symlink - it's a throwaway checkout anyway
+        cp -R core/src/wheels templates/base/src/vendor/wheels
+        ls -la templates/base/src/vendor/
     - name: Upload webroot for matrix steps
       uses: actions/upload-artifact@v4
       with:
