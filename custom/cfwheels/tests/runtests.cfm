@@ -81,15 +81,14 @@
 
 	request._start = getTickCount();
 
-	// Call the wheels test runner via internalRequest - this triggers Application.cfc
-	// The webroot is templates/base/src/public which has the main Application.cfc
-	systemOutput("Calling /wheels/core/tests via internalRequest()...", true);
+	// Call the wheels test runner via internalRequest - same as Docker does
+	// Hit index.cfm with the route path, Application.cfc bootstraps wheels
+	systemOutput("Calling /index.cfm/wheels/core/tests via internalRequest()...", true);
 
 	response = internalRequest(
-		template: "/wheels/core/tests",
+		template: webroot & "templates/base/src/public/index.cfm/wheels/core/tests",
 		method: "GET",
-		urls: { format: "json", cli: true, db: "mysql" },
-		webroot: webroot & "templates/base/src/public"
+		urls: { format: "json", cli: true, db: "mysql" }
 	);
 
 	systemOutput("Response status: #response.status#", true);
