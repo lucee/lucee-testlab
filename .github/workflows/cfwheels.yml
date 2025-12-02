@@ -57,8 +57,8 @@ jobs:
       run: |
         cd templates/base/src
         # Only install wirebox and testbox, NOT wheels-core (we want to test the source code)
-        box install wirebox --save=false verbose=true system=false
-        box install testbox --save=false verbose=true system=false
+        box install id=wirebox save=false verbose=true system=false
+        box install id=testbox save=false verbose=true system=false
         ls -la vendor/
     - name: Copy wheels source to vendor/wheels
       run: |
