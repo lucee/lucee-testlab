@@ -122,22 +122,22 @@ jobs:
       matrix:
         include:
           # Download from CDN - immediate (should fail - bug exists)
-          - name: "7.0-stable-immediate"
+          - name: "7.0-snapshot-immediate"
             source: "download"
-            luceeVersion: "7.0/stable/jar"
+            luceeVersion: "7.0/snapshot/jar"
             delay: 0
-          - name: "6.2-stable-immediate"
+          - name: "6.2-snapshot-immediate"
             source: "download"
-            luceeVersion: "6.2/stable/jar"
+            luceeVersion: "6.2/snapshot/jar"
             delay: 0
           # Download from CDN - delayed (should pass - proves extension works)
-          - name: "7.0-stable-delayed"
+          - name: "7.0-snapshot-delayed"
             source: "download"
-            luceeVersion: "7.0/stable/jar"
+            luceeVersion: "7.0/snapshot/jar"
             delay: 10
-          - name: "6.2-stable-delayed"
+          - name: "6.2-snapshot-delayed"
             source: "download"
-            luceeVersion: "6.2/stable/jar"
+            luceeVersion: "6.2/snapshot/jar"
             delay: 10
           # Build from source - immediate
           - name: "7.1-native-immediate"

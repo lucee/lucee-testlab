@@ -71,7 +71,7 @@ startup-hook: [{"class": "org.lucee.test.slowstartup.SlowStartupHook", "bundle-n
 				<attribute name="Bundle-Name" value="${label}"/>
 				<attribute name="Bundle-ManifestVersion" value="2"/>
 				<attribute name="Export-Package" value="org.lucee.test.slowstartup;version=&quot;${bundleversion}&quot;"/>
-				<attribute name="Import-Package" value="lucee.runtime,lucee.runtime.config,lucee.runtime.exp,lucee.runtime.ext.function"/>
+				<attribute name="DynamicImport-Package" value="*"/>
 			</manifest>
 		</jar>
 
