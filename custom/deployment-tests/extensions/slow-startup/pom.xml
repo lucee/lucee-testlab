@@ -14,7 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<id>SLOW-STARTUP-TEST-0000-0000-000000000001</id>
+		<id>494BBF83-C4B2-4D5B-8B355D181525BC16</id>
 		<bundlename>slow.startup.extension</bundlename>
 		<luceeCoreVersion>6.0.0.0</luceeCoreVersion>
 		<label>Slow Startup Test Extension</label>

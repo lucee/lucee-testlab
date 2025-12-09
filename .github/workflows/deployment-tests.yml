@@ -134,11 +134,11 @@ jobs:
           - name: "7.0-stable-delayed"
             source: "download"
             luceeVersion: "7.0/stable/jar"
-            delay: 30
+            delay: 10
           - name: "6.2-stable-delayed"
             source: "download"
             luceeVersion: "6.2/stable/jar"
-            delay: 30
+            delay: 10
           # Build from source - immediate
           - name: "7.1-native-immediate"
             source: "build"
@@ -148,7 +148,7 @@ jobs:
           - name: "7.1-native-delayed"
             source: "build"
             artifactName: "7.1-native"
-            delay: 30
+            delay: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
