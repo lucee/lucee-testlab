@@ -149,6 +149,22 @@ jobs:
             source: "build"
             artifactName: "7.1-native"
             delay: 10
+          # Stress tests - hit multiple endpoints in parallel immediately
+          - name: "7.0-snapshot-stress"
+            source: "download"
+            luceeVersion: "7.0/snapshot/jar"
+            delay: 0
+            testMode: "stress"
+          - name: "6.2-snapshot-stress"
+            source: "download"
+            luceeVersion: "6.2/snapshot/jar"
+            delay: 0
+            testMode: "stress"
+          - name: "7.1-native-stress"
+            source: "build"
+            artifactName: "7.1-native"
+            delay: 0
+            testMode: "stress"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -240,7 +256,80 @@ jobs:
             echo "Making immediate request (no delay)..."
           fi
 
-          # Try up to 60 times with 1 second between attempts
+          # Stress test mode - hit multiple endpoints in parallel
+          if [ "${{ matrix.testMode }}" = "stress" ]; then
+            echo "=== STRESS TEST MODE ==="
+            echo "Waiting for Tomcat to accept connections..."
+            for i in {1..60}; do
+              if curl -s -o /dev/null http://127.0.0.1:8888/ 2>/dev/null; then
+                echo "Tomcat responding after $i seconds"
+                break
+              fi
+              sleep 1
+            done
+
+            echo "Firing parallel requests to all endpoints..."
+            # Hit all endpoints in parallel
+            curl -s -o /tmp/ext.txt -w "%{http_code}" http://127.0.0.1:8888/test-slow-startup.cfm > /tmp/ext_code.txt 2>&1 &
+            PID1=$!
+            curl -s -o /tmp/admin.txt -w "%{http_code}" http://127.0.0.1:8888/lucee/admin/index.cfm > /tmp/admin_code.txt 2>&1 &
+            PID2=$!
+            curl -s -o /tmp/res.txt -w "%{http_code}" http://127.0.0.1:8888/lucee/res/js/admin.js.cfm > /tmp/res_code.txt 2>&1 &
+            PID3=$!
+            wait $PID1 $PID2 $PID3
+
+            EXT_CODE=$(cat /tmp/ext_code.txt)
+            ADMIN_CODE=$(cat /tmp/admin_code.txt)
+            RES_CODE=$(cat /tmp/res_code.txt)
+
+            echo "Extension endpoint: $EXT_CODE"
+            echo "Admin endpoint: $ADMIN_CODE"
+            echo "Resource endpoint: $RES_CODE"
+
+            FAILED=0
+            echo "### Stress Test Results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            if [ "$EXT_CODE" = "200" ]; then
+              echo "✅ Extension: PASSED" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ Extension: FAILED ($EXT_CODE)" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              cat /tmp/ext.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "(no response)"  >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              FAILED=1
+            fi
+
+            if [ "$ADMIN_CODE" = "200" ]; then
+              echo "✅ Admin: PASSED" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ Admin: FAILED ($ADMIN_CODE)" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              cat /tmp/admin.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "(no response)" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              FAILED=1
+            fi
+
+            if [ "$RES_CODE" = "200" ]; then
+              echo "✅ Resource: PASSED" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ Resource: FAILED ($RES_CODE)" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              cat /tmp/res.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "(no response)" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              FAILED=1
+            fi
+
+            if [ "$FAILED" = "1" ]; then
+              echo "STRESS TEST FAILED"
+              exit 1
+            else
+              echo "STRESS TEST PASSED - all endpoints responded 200"
+              exit 0
+            fi
+          fi
+
+          # Normal test mode - single endpoint
           for i in {1..60}; do
             echo "Attempt $i..."
             HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" http://127.0.0.1:8888/test-slow-startup.cfm 2>/dev/null) || HTTP_CODE="000"
