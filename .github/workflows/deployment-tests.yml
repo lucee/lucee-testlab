@@ -121,16 +121,34 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Download from CDN
-          - name: "7.0-stable"
+          # Download from CDN - immediate (should fail - bug exists)
+          - name: "7.0-stable-immediate"
             source: "download"
             luceeVersion: "7.0/stable/jar"
-          - name: "6.2-stable"
+            delay: 0
+          - name: "6.2-stable-immediate"
             source: "download"
             luceeVersion: "6.2/stable/jar"
-          # Build from source
-          - name: "7.1-native"
+            delay: 0
+          # Download from CDN - delayed (should pass - proves extension works)
+          - name: "7.0-stable-delayed"
+            source: "download"
+            luceeVersion: "7.0/stable/jar"
+            delay: 30
+          - name: "6.2-stable-delayed"
+            source: "download"
+            luceeVersion: "6.2/stable/jar"
+            delay: 30
+          # Build from source - immediate
+          - name: "7.1-native-immediate"
             source: "build"
+            artifactName: "7.1-native"
+            delay: 0
+          # Build from source - delayed
+          - name: "7.1-native-delayed"
+            source: "build"
+            artifactName: "7.1-native"
+            delay: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -173,7 +191,7 @@ jobs:
         if: matrix.source == 'build'
         uses: actions/download-artifact@v4
         with:
-          name: lucee-${{ matrix.name }}
+          name: lucee-${{ matrix.artifactName }}
           path: lucee-jar/
 
       - name: Install built Lucee JAR
@@ -205,7 +223,7 @@ jobs:
           # Configure Tomcat port
           sed -i 's/port="8080"/port="8888"/g' express/conf/server.xml
 
-      - name: Start Lucee and test IMMEDIATELY (no sleep!)
+      - name: Start Lucee and test
         id: test
         run: |
           cd express
@@ -214,7 +232,13 @@ jobs:
           ./bin/catalina.sh start
           echo "Lucee started"
 
-          echo "Making immediate request (no delay)..."
+          # Apply delay if configured (0 = immediate, 30 = delayed)
+          if [ "${{ matrix.delay }}" -gt 0 ]; then
+            echo "Waiting ${{ matrix.delay }} seconds before first request..."
+            sleep ${{ matrix.delay }}
+          else
+            echo "Making immediate request (no delay)..."
+          fi
 
           # Try up to 60 times with 1 second between attempts
           for i in {1..60}; do
