@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="clean" basedir="." name="lazy-deploy-extension">
+	<description>Build Lazy Deploy Test Extension</description>
+
+	<property name="src" location="source/java/src"/>
+	<property name="srcFld" location="source/fld"/>
+	<property name="temp" location="temp"/>
+	<property name="build" location="build"/>
+	<property name="dist" location="target"/>
+
+	<!-- These get passed in from pom.xml -->
+	<property name="bundleversion" value="1.0.0"/>
+	<property name="bundlename" value="lazy.deploy.extension"/>
+	<property name="id" value="LAZY-DEPLOY-TEST-0000-0000-000000000001"/>
+	<property name="label" value="Lazy Deploy Test Extension"/>
+	<property name="description" value="Test extension demonstrating lazy deployment race condition"/>
+	<property name="luceeCoreVersion" value="6.0.0.0"/>
+
+	<target name="init">
+		<tstamp/>
+		<delete dir="${temp}"/>
+		<delete dir="${dist}"/>
+		<mkdir dir="${temp}"/>
+		<mkdir dir="${build}"/>
+		<mkdir dir="${dist}/extension/jars"/>
+		<mkdir dir="${dist}/extension/flds"/>
+		<mkdir dir="${dist}/extension/META-INF"/>
+	</target>
+
+	<target name="copy" depends="init">
+		<copy todir="${temp}">
+			<fileset dir="${src}">
+				<include name="**/*.java"/>
+			</fileset>
+		</copy>
+
+		<tstamp>
+			<format property="NOW" pattern="yyyy-MM-dd HH:mm:ss"/>
+		</tstamp>
+
+		<!-- NO startup-hook - this is the key difference from slow-startup extension -->
+		<echo file="${dist}/extension/META-INF/MANIFEST.MF">Manifest-Version: 1.0
+Built-Date: ${NOW}
+version: "${bundleversion}"
+id: "${id}"
+name: "${label}"
+description: "${description}"
+lucee-core-version: "${luceeCoreVersion}"
+start-bundles: true
+</echo>
+	</target>
+
+	<target name="compile" depends="copy">
+		<javac srcdir="${temp}" source="11" target="11" destdir="${build}" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
+			<classpath>
+				<fileset dir="${basedir}">
+					<include name="libs/*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="dist" depends="compile">
+		<!-- Create the bundle JAR -->
+		<jar jarfile="${dist}/extension/jars/${bundlename}-${bundleversion}.jar" basedir="${build}">
+			<manifest>
+				<attribute name="Bundle-Version" value="${bundleversion}"/>
+				<attribute name="Built-Date" value="${NOW}"/>
+				<attribute name="Bundle-SymbolicName" value="${bundlename}"/>
+				<attribute name="Bundle-Name" value="${label}"/>
+				<attribute name="Bundle-ManifestVersion" value="2"/>
+				<attribute name="Export-Package" value="org.lucee.test.lazydeploy;version=&quot;${bundleversion}&quot;"/>
+				<attribute name="DynamicImport-Package" value="*"/>
+			</manifest>
+		</jar>
+
+		<!-- Copy FLD -->
+		<copy file="${srcFld}/lazy-deploy.fld" tofile="${dist}/extension/flds/lazy-deploy.fld"/>
+		<replaceregexp file="${dist}/extension/flds/lazy-deploy.fld" match="\{bundle-name\}" replace="${bundlename}" byline="true"/>
+		<replaceregexp file="${dist}/extension/flds/lazy-deploy.fld" match="\{bundle-version\}" replace="${bundleversion}" byline="true"/>
+
+		<!-- Create the .lex file -->
+		<zip destfile="${dist}/lazy-deploy-extension-${bundleversion}.lex">
+			<zipfileset dir="${dist}/extension"/>
+		</zip>
+	</target>
+
+	<target name="clean" depends="dist">
+		<delete dir="${build}"/>
+		<delete dir="${temp}"/>
+	</target>
+</project>

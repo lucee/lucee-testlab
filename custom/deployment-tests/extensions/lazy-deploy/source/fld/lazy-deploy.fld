@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE func-lib PUBLIC "-//Lucee//DTD CFML Function Library 1.0//EN" "dtd/web-cfmfunctionlibrary_1_0.dtd">
+<func-lib>
+	<flib-version>1.0</flib-version>
+	<short-name>lazy-deploy</short-name>
+	<uri>http://lucee.org/test/lazy-deploy</uri>
+	<display-name>Lazy Deploy Test Extension</display-name>
+	<description>Test extension demonstrating ESAPI-style lazy deployment race condition (LDEV-5960)</description>
+
+	<function>
+		<name>GetLazyConfig</name>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.test.lazydeploy.GetLazyConfig</class>
+		<description>Returns config value - will fail if called before LazyDeployer runs</description>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+</func-lib>

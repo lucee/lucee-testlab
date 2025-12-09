@@ -43,11 +43,26 @@ jobs:
           echo "Extension built:"
           unzip -l target/*.lex
 
+      - name: Build lazy-deploy extension
+        run: |
+          cd custom/deployment-tests/extensions/lazy-deploy
+          mvn package -q
+          ls -la target/
+          echo "Extension built:"
+          unzip -l target/*.lex
+
       - name: Upload slow-startup extension
         uses: actions/upload-artifact@v4
         with:
           name: slow-startup-extension
           path: custom/deployment-tests/extensions/slow-startup/target/*.lex
+          retention-days: 1
+
+      - name: Upload lazy-deploy extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: lazy-deploy-extension
+          path: custom/deployment-tests/extensions/lazy-deploy/target/*.lex
           retention-days: 1
 
   # Build Lucee from source (for build-from-source entries)
@@ -165,6 +180,25 @@ jobs:
             artifactName: "7.1-native"
             delay: 0
             testMode: "stress"
+          # Lazy deploy tests - NO startup hook, should expose LDEV-5960
+          - name: "7.0-lazy-immediate"
+            source: "download"
+            luceeVersion: "7.0/snapshot/jar"
+            delay: 0
+            extension: "lazy-deploy"
+            testPage: "test-lazy-deploy.cfm"
+          - name: "7.0-lazy-delayed"
+            source: "download"
+            luceeVersion: "7.0/snapshot/jar"
+            delay: 10
+            extension: "lazy-deploy"
+            testPage: "test-lazy-deploy.cfm"
+          - name: "6.2-lazy-immediate"
+            source: "download"
+            luceeVersion: "6.2/snapshot/jar"
+            delay: 0
+            extension: "lazy-deploy"
+            testPage: "test-lazy-deploy.cfm"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -176,9 +210,17 @@ jobs:
           distribution: temurin
 
       - name: Download slow-startup extension
+        if: matrix.extension != 'lazy-deploy'
         uses: actions/download-artifact@v4
         with:
           name: slow-startup-extension
+          path: extensions/
+
+      - name: Download lazy-deploy extension
+        if: matrix.extension == 'lazy-deploy'
+        uses: actions/download-artifact@v4
+        with:
+          name: lazy-deploy-extension
           path: extensions/
 
       - name: Download Lucee Express template
@@ -224,7 +266,12 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
 
           # Copy test script to webroot
-          cp custom/deployment-tests/test-slow-startup.cfm express/webapps/ROOT/
+          TEST_PAGE="${{ matrix.testPage }}"
+          if [ -z "$TEST_PAGE" ]; then
+            TEST_PAGE="test-slow-startup.cfm"
+          fi
+          cp "custom/deployment-tests/$TEST_PAGE" express/webapps/ROOT/
+          echo "Test page: $TEST_PAGE"
 
           # Copy extension to deploy folder BEFORE starting Lucee
           mkdir -p express/lucee-server/deploy/
@@ -330,9 +377,13 @@ jobs:
           fi
 
           # Normal test mode - single endpoint
+          TEST_PAGE="${{ matrix.testPage }}"
+          if [ -z "$TEST_PAGE" ]; then
+            TEST_PAGE="test-slow-startup.cfm"
+          fi
           for i in {1..60}; do
             echo "Attempt $i..."
-            HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" http://127.0.0.1:8888/test-slow-startup.cfm 2>/dev/null) || HTTP_CODE="000"
+            HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" "http://127.0.0.1:8888/$TEST_PAGE" 2>/dev/null) || HTTP_CODE="000"
             echo "HTTP Code: $HTTP_CODE"
             if [ "$HTTP_CODE" != "000" ] && [ -f /tmp/response.txt ]; then
               echo "=== Response ==="
