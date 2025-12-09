@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>org.lucee</groupId>
 			<artifactId>lucee</artifactId>
-			<version>[5.0,)</version>
+			<version>6.2.0.321</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -38,22 +38,14 @@
 				<version>3.6.0</version>
 				<executions>
 					<execution>
-						<id>copy-lucee</id>
+						<id>copy-dependencies</id>
 						<phase>initialize</phase>
 						<goals>
-							<goal>copy</goal>
+							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>org.lucee</groupId>
-									<artifactId>lucee</artifactId>
-									<version>6.2.0.321-SNAPSHOT</version>
-									<type>jar</type>
-									<destFileName>lucee.jar</destFileName>
-								</artifactItem>
-							</artifactItems>
 							<outputDirectory>${project.basedir}/libs</outputDirectory>
+							<includeScope>provided</includeScope>
 						</configuration>
 					</execution>
 				</executions>
