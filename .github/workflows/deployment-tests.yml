@@ -137,10 +137,10 @@ jobs:
           # If LDEV-5478 exists, this will fail because onStart() hasn't completed
           echo "Making immediate request (no delay)..."
 
-          # Try up to 30 times with 1 second between attempts
+          # Try up to 60 times with 1 second between attempts
           # The first few will fail due to Tomcat not being ready yet
           # But once Tomcat IS ready, if the extension isn't, that's the bug!
-          for i in {1..30}; do
+          for i in {1..60}; do
             echo "Attempt $i..."
             HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" http://127.0.0.1:8888/test-slow-startup.cfm 2>/dev/null || echo "000")
             echo "HTTP Code: $HTTP_CODE"
