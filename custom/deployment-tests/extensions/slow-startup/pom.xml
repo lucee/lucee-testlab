@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.lucee.test</groupId>
+	<artifactId>slow-startup-extension</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+	<name>Slow Startup Test Extension</name>
+	<description>Test extension with slow startup hook for deployment timing tests (LDEV-5478)</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<id>SLOW-STARTUP-TEST-0000-0000-000000000001</id>
+		<bundlename>slow.startup.extension</bundlename>
+		<luceeCoreVersion>6.0.0.0</luceeCoreVersion>
+		<label>Slow Startup Test Extension</label>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.lucee</groupId>
+			<artifactId>lucee</artifactId>
+			<version>6.2.0.321</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Download dependencies to libs folder for Ant -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.6.0</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/libs</outputDirectory>
+							<includeScope>provided</includeScope>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Run Ant build -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<ant antfile="build.xml" target="clean">
+									<property name="bundleversion" value="${project.version}"/>
+									<property name="bundlename" value="${bundlename}"/>
+									<property name="id" value="${id}"/>
+									<property name="luceeCoreVersion" value="${luceeCoreVersion}"/>
+									<property name="label" value="${label}"/>
+									<property name="description" value="${project.description}"/>
+								</ant>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo1.maven.org/maven2</url>
+		</repository>
+	</repositories>
+</project>

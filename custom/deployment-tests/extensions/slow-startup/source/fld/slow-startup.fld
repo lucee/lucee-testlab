@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE func-lib PUBLIC "-//Lucee//DTD CFML Function Library 1.0//EN" "dtd/web-cfmfunctionlibrary_1_0.dtd">
+<func-lib>
+	<flib-version>1.0</flib-version>
+	<short-name>slow-startup</short-name>
+	<uri>http://lucee.org/test/slow-startup</uri>
+	<display-name>Slow Startup Test Extension</display-name>
+	<description>Test extension with slow startup hook for deployment timing tests</description>
+
+	<function>
+		<name>IsSlowStartupReady</name>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.test.slowstartup.IsSlowStartupReady</class>
+		<description>Returns true if the slow startup extension has completed initialization</description>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+
+	<function>
+		<name>GetSlowStartupTimestamp</name>
+		<class bundle-name="{bundle-name}" bundle-version="{bundle-version}">org.lucee.test.slowstartup.GetSlowStartupTimestamp</class>
+		<description>Returns the timestamp when the slow startup extension completed initialization (0 if not ready)</description>
+		<return>
+			<type>numeric</type>
+		</return>
+	</function>
+
+</func-lib>

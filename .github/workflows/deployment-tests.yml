@@ -1,0 +1,189 @@
+name: Deployment Timing Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      lucee_versions:
+        required: false
+        description: Lucee Versions (json array)
+        default: '["7.0/stable/jar", "6.2/stable/jar"]'
+        type: string
+  push:
+    branches:
+      - deployment-tests
+    paths:
+      - 'custom/deployment-tests/**'
+      - '.github/workflows/deployment-tests.yml'
+
+jobs:
+  # First job: Build the test extensions
+  build-extensions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: 11
+          distribution: temurin
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: maven-cache-extensions
+
+      - name: Build slow-startup extension
+        run: |
+          cd custom/deployment-tests/extensions/slow-startup
+          mvn package -q
+          ls -la target/
+          echo "Extension built:"
+          unzip -l target/*.lex
+
+      - name: Upload slow-startup extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: slow-startup-extension
+          path: custom/deployment-tests/extensions/slow-startup/target/*.lex
+          retention-days: 1
+
+  # Second job: Test deployment timing with various Lucee versions
+  test-deploy-timing:
+    needs: build-extensions
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions || '["7.0/stable/jar", "6.2/stable/jar"]') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+
+      - name: Cache Lucee Express
+        uses: actions/cache@v4
+        with:
+          path: lucee-express-cache/
+          key: lucee-express-${{ matrix.luceeVersion }}
+
+      - name: Cache Lucee downloads
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
+          key: lucee-downloads
+
+      - name: Download slow-startup extension
+        uses: actions/download-artifact@v4
+        with:
+          name: slow-startup-extension
+          path: extensions/
+
+      - name: Download Lucee Express
+        uses: lucee/script-runner@main
+        with:
+          webroot: ${{ github.workspace }}/custom/deployment-tests
+          execute: /fetch-express.cfm
+          luceeVersionQuery: ${{ matrix.luceeVersion }}
+        env:
+          fetch: ${{ matrix.luceeVersion }}
+
+      - name: Prepare test environment
+        run: |
+          echo "## Test: ${{ matrix.luceeVersion }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Create test script in webroot
+          cp custom/deployment-tests/test-slow-startup.cfm express/webapps/ROOT/
+
+          # Copy extension to deploy folder BEFORE starting Lucee
+          mkdir -p express/lucee-server/deploy/
+          cp extensions/*.lex express/lucee-server/deploy/
+          echo "Extension in deploy folder:"
+          ls -la express/lucee-server/deploy/
+
+      - name: Start Lucee and test IMMEDIATELY (no sleep!)
+        id: test
+        run: |
+          # Start Lucee in background
+          ./express/bin/startup.sh
+
+          # Make request IMMEDIATELY - this is the key test!
+          # If LDEV-5478 exists, this will fail because onStart() hasn't completed
+          echo "Making immediate request (no delay)..."
+
+          # Try up to 10 times with 1 second between attempts
+          # The first few might fail due to Tomcat not being ready yet
+          # But once Tomcat IS ready, if the extension isn't, that's the bug!
+          for i in {1..10}; do
+            echo "Attempt $i..."
+            HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" http://127.0.0.1:8888/test-slow-startup.cfm 2>/dev/null || echo "000")
+            echo "HTTP Code: $HTTP_CODE"
+            if [ "$HTTP_CODE" != "000" ]; then
+              # Got a response from Tomcat
+              cat /tmp/response.txt
+              echo ""
+              if [ "$HTTP_CODE" = "200" ]; then
+                echo "TEST PASSED: Extension ready on first request"
+                echo "### Result: PASSED" >> $GITHUB_STEP_SUMMARY
+                cat /tmp/response.txt >> $GITHUB_STEP_SUMMARY
+                exit 0
+              else
+                echo "TEST FAILED: Extension NOT ready - LDEV-5478 reproduced!"
+                echo "### Result: FAILED (LDEV-5478 reproduced)" >> $GITHUB_STEP_SUMMARY
+                cat /tmp/response.txt >> $GITHUB_STEP_SUMMARY
+                exit 1
+              fi
+            fi
+            sleep 1
+          done
+
+          echo "TEST INCONCLUSIVE: Tomcat never responded"
+          echo "### Result: INCONCLUSIVE (Tomcat timeout)" >> $GITHUB_STEP_SUMMARY
+          exit 1
+
+      - name: Stop Lucee
+        if: always()
+        run: |
+          ./express/bin/shutdown.sh || true
+
+      - name: Show Lucee logs
+        if: always()
+        run: |
+          echo "## Logs" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### catalina.out" >> $GITHUB_STEP_SUMMARY
+          if [ -f express/logs/catalina.out ]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -100 express/logs/catalina.out >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "### deploy.log" >> $GITHUB_STEP_SUMMARY
+          if [ -f express/lucee-server/context/logs/deploy.log ]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat express/lucee-server/context/logs/deploy.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "### exception.log" >> $GITHUB_STEP_SUMMARY
+          if [ -f express/lucee-server/context/logs/exception.log ]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat express/lucee-server/context/logs/exception.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "### out.log" >> $GITHUB_STEP_SUMMARY
+          if [ -f express/lucee-server/context/logs/out.log ]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat express/lucee-server/context/logs/out.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
