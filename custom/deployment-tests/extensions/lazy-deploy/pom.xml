@@ -15,7 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<id>5A5YDEP10-7E57-4A24-B960-000000000001</id>
+		<id>5A5YDEP1-0E57-4A24-B960000000000001</id>
 		<bundlename>lazy.deploy.extension</bundlename>
 		<luceeCoreVersion>6.0.0.0</luceeCoreVersion>
 		<label>Lazy Deploy Test Extension</label>

@@ -11,7 +11,7 @@
 	<!-- These get passed in from pom.xml -->
 	<property name="bundleversion" value="1.0.0"/>
 	<property name="bundlename" value="lazy.deploy.extension"/>
-	<property name="id" value="5A5YDEP10-7E57-4A24-B960-000000000001"/>
+	<property name="id" value="5A5YDEP1-0E57-4A24-B960000000000001"/>
 	<property name="label" value="Lazy Deploy Test Extension"/>
 	<property name="description" value="Test extension demonstrating lazy deployment race condition"/>
 	<property name="luceeCoreVersion" value="6.0.0.0"/>
