@@ -189,7 +189,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: lucee-logs-${{ matrix.luceeVersion }}
+          name: lucee-logs-${{ contains(matrix.luceeVersion, '7.0') && 'v7' || 'v6' }}
           path: |
             express/logs/
             express/lucee-server/context/logs/
