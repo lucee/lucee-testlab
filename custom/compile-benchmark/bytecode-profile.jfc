@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration version="2.0" label="Bytecode Generation Profiling" description="High-frequency sampling for bytecode generation analysis" provider="Custom">
+
+  <!-- CPU profiling - max frequency -->
+  <event name="jdk.ExecutionSample">
+    <setting name="enabled">true</setting>
+    <setting name="period">10 ms</setting>
+  </event>
+
+  <!-- Native method samples -->
+  <event name="jdk.NativeMethodSample">
+    <setting name="enabled">true</setting>
+    <setting name="period">10 ms</setting>
+  </event>
+
+  <!-- Method profiling -->
+  <event name="jdk.MethodSample">
+    <setting name="enabled">true</setting>
+    <setting name="period">10 ms</setting>
+  </event>
+
+  <!-- Object allocation -->
+  <event name="jdk.ObjectAllocationInNewTLAB">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+  </event>
+
+  <event name="jdk.ObjectAllocationOutsideTLAB">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+  </event>
+
+  <!-- Thread activity -->
+  <event name="jdk.ThreadStart">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+  </event>
+
+  <event name="jdk.ThreadEnd">
+    <setting name="enabled">true</setting>
+  </event>
+
+  <event name="jdk.ThreadSleep">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">1 ms</setting>
+  </event>
+
+  <!-- Class loading - important for compiler analysis -->
+  <event name="jdk.ClassLoad">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">0 ms</setting>
+  </event>
+
+  <event name="jdk.ClassDefine">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+  </event>
+
+  <!-- JIT compilation events -->
+  <event name="jdk.Compilation">
+    <setting name="enabled">true</setting>
+    <setting name="threshold">100 ms</setting>
+  </event>
+
+  <event name="jdk.CompilerInlining">
+    <setting name="enabled">true</setting>
+  </event>
+
+  <!-- GC events -->
+  <event name="jdk.GCHeapSummary">
+    <setting name="enabled">true</setting>
+  </event>
+
+  <event name="jdk.GarbageCollection">
+    <setting name="enabled">true</setting>
+    <setting name="threshold">0 ms</setting>
+  </event>
+
+  <event name="jdk.YoungGarbageCollection">
+    <setting name="enabled">true</setting>
+    <setting name="threshold">0 ms</setting>
+  </event>
+
+  <event name="jdk.OldGarbageCollection">
+    <setting name="enabled">true</setting>
+    <setting name="threshold">0 ms</setting>
+  </event>
+
+  <!-- File I/O -->
+  <event name="jdk.FileRead">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">1 ms</setting>
+  </event>
+
+  <event name="jdk.FileWrite">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">1 ms</setting>
+  </event>
+
+  <!-- Monitor contention -->
+  <event name="jdk.JavaMonitorEnter">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">1 ms</setting>
+  </event>
+
+  <event name="jdk.JavaMonitorWait">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">1 ms</setting>
+  </event>
+
+  <!-- Thread parking -->
+  <event name="jdk.ThreadPark">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">1 ms</setting>
+  </event>
+
+</configuration>
