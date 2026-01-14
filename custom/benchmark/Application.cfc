@@ -7,6 +7,8 @@ component {
             , "json"
             , "db"
             , "qoq-hsqldb"
+            , "qoq-native"
+            , "qoq-mixed"
             , "json-date"
             , "date-format"
             , "set-cookie"
