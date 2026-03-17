@@ -6,7 +6,7 @@ on:
       lucee_versions:
         required: false
         description: Lucee Versions (json)
-        default: '[ "7.1/snapshot/light", "7.0/stable/light", "7.0/snapshot/light", "6.2/snapshot/light", "6.2/stable/light", "5.4/stable/light" ]'
+        default: '[ "7.1/snapshot/light", "7.0/stable/light", "7.0/snapshot/light", "6.2/snapshot/light", "6.2/stable/light" ]'
         type: string
   workflow_call:
 
