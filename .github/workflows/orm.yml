@@ -6,7 +6,7 @@ on:
       lucee_versions:
         required: false
         description: Lucee Versions (json)
-        default: '[ "7.0/snapshot/light", "6.2/snapshot/light", "6.2/stable/light", "5.4/stable/light" ]'
+        default: '[ "7.1/snapshot/light", "7.0/stable/light", "7.0/snapshot/light", "6.2/snapshot/light", "6.2/stable/light", "5.4/stable/light" ]'
         type: string
   workflow_call:
 
@@ -66,8 +66,8 @@ jobs:
     - name: Run Lucee Test Suite, testLabels="orm"
       uses: lucee/script-runner@main
       with:
-        webroot: ${{ github.workspace }}/lucee/test
-        execute: /bootstrap-tests.cfm
+        webroot: ${{ github.workspace }}/lucee/
+        execute: /test/bootstrap-tests.cfm
         luceeVersion: ${{ env.luceeVersion }}
         luceeVersionQuery: ${{ env.luceeVersionQuery }}
         extensions: D062D72F-F8A2-46F0-8CBC91325B2F067B # ortus orm
