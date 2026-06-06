@@ -1,7 +1,7 @@
 <cfscript>
 	benchmarkUtils = new benchmarkUtils();
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts";
-	files = directoryList( dir );
+	files = directoryList( dir, false, "path", "*-results.json" );
 
 	q = queryNew( "version,java,type,time,runs,inspect,memory,testMemory,gccount,throughput,"
 		& "_min,_max,_avg,_med,error,raw,_perc,exeLog,totalDuration" );
