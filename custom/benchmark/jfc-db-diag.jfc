@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration version="2.0" label="DB Diagnostic Profiling" description="High-frequency profiling plus IO/monitor-wait events at 10ms threshold for diagnosing socket / file / lock stalls (e.g. MySQL connection stalls)" provider="Zac">
+
+  <!-- Execution sampling at 1ms (vs 10ms default) -->
+  <event name="jdk.ExecutionSample">
+    <setting name="enabled">true</setting>
+    <setting name="period">1 ms</setting>
+  </event>
+
+  <!-- Native method sampling at 1ms -->
+  <event name="jdk.NativeMethodSample">
+    <setting name="enabled">true</setting>
+    <setting name="period">1 ms</setting>
+  </event>
+
+  <!-- All object allocations (not just sampled) -->
+  <event name="jdk.ObjectAllocationInNewTLAB">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+  </event>
+
+  <event name="jdk.ObjectAllocationOutsideTLAB">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+  </event>
+
+  <!-- Sampled allocation events with stack traces (JDK 16+) -->
+  <event name="jdk.ObjectAllocationSample">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="throttle">512/s</setting>
+  </event>
+
+  <!-- Monitor contention with threshold -->
+  <event name="jdk.JavaMonitorEnter">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">1 ms</setting>
+  </event>
+
+  <!-- Object.wait() blocking — needed to catch threads parked waiting on a notify
+       (e.g. inside HikariCP / DBCP waiting for a connection to come back to the pool) -->
+  <event name="jdk.JavaMonitorWait">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">10 ms</setting>
+  </event>
+
+  <!-- Thread events -->
+  <event name="jdk.ThreadPark">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">1 ms</setting>
+  </event>
+
+  <!-- Socket IO — primary signal for "is the slow thread blocked on the MySQL socket?" -->
+  <event name="jdk.SocketRead">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">10 ms</setting>
+  </event>
+
+  <event name="jdk.SocketWrite">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">10 ms</setting>
+  </event>
+
+  <!-- File IO — catches stalls in log appenders, deploys, classloader resource reads -->
+  <event name="jdk.FileRead">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">10 ms</setting>
+  </event>
+
+  <event name="jdk.FileWrite">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">10 ms</setting>
+  </event>
+
+  <!-- Class loading -->
+  <event name="jdk.ClassLoad">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+  </event>
+
+  <!-- Compilation events -->
+  <event name="jdk.Compilation">
+    <setting name="enabled">true</setting>
+    <setting name="threshold">10 ms</setting>
+  </event>
+
+  <event name="jdk.CompilerInlining">
+    <setting name="enabled">true</setting>
+  </event>
+
+  <event name="jdk.CompilerPhase">
+    <setting name="enabled">true</setting>
+    <setting name="threshold">0 ms</setting>
+  </event>
+
+  <!-- GC events -->
+  <event name="jdk.GarbageCollection">
+    <setting name="enabled">true</setting>
+    <setting name="threshold">0 ms</setting>
+  </event>
+
+  <event name="jdk.GCPhasePause">
+    <setting name="enabled">true</setting>
+    <setting name="threshold">0 ms</setting>
+  </event>
+
+  <!-- CPU load monitoring -->
+  <event name="jdk.CPULoad">
+    <setting name="enabled">true</setting>
+    <setting name="period">1000 ms</setting>
+  </event>
+
+  <!-- Exception tracking -->
+  <event name="jdk.JavaExceptionThrow">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+    <setting name="threshold">0 ms</setting>
+  </event>
+
+  <!-- Deoptimization events -->
+  <event name="jdk.Deoptimization">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+  </event>
+
+  <!-- Safepoint events -->
+  <event name="jdk.SafepointBegin">
+    <setting name="enabled">true</setting>
+    <setting name="threshold">0 ms</setting>
+  </event>
+
+</configuration>

@@ -107,6 +107,8 @@ jobs:
           mysql -e 'CREATE DATABASE lucee_fallback' -uroot -proot
           mysql -e 'CREATE USER "lucee_fallback"@"localhost" IDENTIFIED WITH mysql_native_password BY "lucee_fallback";' -uroot -proot
           mysql -e 'GRANT ALL PRIVILEGES ON lucee_fallback.* TO "lucee_fallback"@"localhost"' -uroot -proot
+      - name: Prepare artifacts dir
+        run: mkdir -p ${{ github.workspace }}/custom/benchmark/artifacts
       - name: Run Microbenches
         uses: lucee/script-runner@main
         with:
@@ -114,6 +116,10 @@ jobs:
           execute: /index.cfm
           extensions: 7E673D15-D87C-41A6-8B5F1956528C605F #mysql
           luceeVersionQuery: ${{ matrix.luceeVersion }}
+          antFlags: >-
+            -DFlightRecording=true
+            -DFlightRecordingFilename=${{ github.workspace }}/custom/benchmark/artifacts/bench.jfr
+            -DFlightRecordingSettings=${{ github.workspace }}/custom/benchmark/jfc-db-diag.jfc
         env:
           BENCHMARK_CYCLES: ${{ github.event.inputs.never_rounds }}
           BENCHMARK_ONCE_CYCLES: ${{ github.event.inputs.once_rounds }}
@@ -121,6 +127,46 @@ jobs:
           EXELOG: ${{ github.event.inputs.exeLog }}
           LUCEE_DEBUGGING_MAXPAGEPARTS: 0
           LUCEE_CACHE_VARIABLEKEYS: ${{ github.event.inputs.variable_keys }}
+      - name: Dump MySQL diagnostic state
+        if: always()
+        run: |
+          OUT=${{ github.workspace }}/custom/benchmark/artifacts/mysql-state.txt
+          {
+            echo "=== generated: $(date -Iseconds) ==="
+            echo
+            echo "=== SHOW ENGINE INNODB STATUS ==="
+            mysql -uroot -proot -e 'SHOW ENGINE INNODB STATUS\G'
+            echo
+            echo "=== SHOW PROCESSLIST ==="
+            mysql -uroot -proot -e 'SHOW FULL PROCESSLIST'
+            echo
+            echo "=== information_schema.INNODB_TRX ==="
+            mysql -uroot -proot -e 'SELECT * FROM information_schema.INNODB_TRX\G'
+            echo
+            echo "=== SHOW STATUS LIKE Innodb% ==="
+            mysql -uroot -proot -e "SHOW GLOBAL STATUS LIKE 'Innodb%'"
+            echo
+            echo "=== SHOW STATUS LIKE Threads% / Connections / Aborted% ==="
+            mysql -uroot -proot -e "SHOW GLOBAL STATUS WHERE Variable_name IN ('Threads_connected','Threads_running','Connections','Aborted_clients','Aborted_connects','Slow_queries','Uptime')"
+            echo
+            echo "=== SHOW VARIABLES LIKE innodb% ==="
+            mysql -uroot -proot -e "SHOW GLOBAL VARIABLES LIKE 'innodb%'"
+            echo
+            echo "=== SHOW VARIABLES LIKE max% / wait% ==="
+            mysql -uroot -proot -e "SHOW GLOBAL VARIABLES WHERE Variable_name IN ('max_connections','max_allowed_packet','wait_timeout','interactive_timeout','net_read_timeout','net_write_timeout')"
+            echo
+            echo "=== lucee.benchmark table state ==="
+            mysql -uroot -proot lucee -e 'SHOW CREATE TABLE benchmark\G' 2>&1 || echo '(no benchmark table)'
+            mysql -uroot -proot lucee -e 'SHOW TABLE STATUS LIKE "benchmark"\G' 2>&1 || true
+            mysql -uroot -proot lucee -e 'SELECT COUNT(*) AS row_count, MIN(id) AS min_id, MAX(id) AS max_id FROM benchmark' 2>&1 || true
+            echo
+            echo "=== dmesg tail (last 100 lines, may need sudo) ==="
+            sudo dmesg | tail -n 100 2>&1 || true
+            echo
+            echo "=== mysql error log tail ==="
+            sudo tail -n 200 /var/log/mysql/error.log 2>&1 || true
+          } > "$OUT" 2>&1
+          echo "wrote $(wc -l < "$OUT") lines to $OUT"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

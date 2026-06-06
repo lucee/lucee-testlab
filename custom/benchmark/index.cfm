@@ -132,6 +132,8 @@
 						runAborted = true;
 						 var mess = "[#suiteName#] was waaay too slow [#elapsed/1000#], aborting";
 						 _logger( mess );
+						 _logger( "--- system metrics at stall ---" );
+						 _logger( serializeJson( var=getSystemMetrics(), compact=false ) );
 						 throw mess;
 					}
 				}, true);
