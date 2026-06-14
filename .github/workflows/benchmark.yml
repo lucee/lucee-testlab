@@ -16,12 +16,12 @@ on:
       java_versions:
         required: false
         description: Java Versions (json)
-        default: '[ 24, 21, 11 ]'
+        default: '[ 25, 21 ]'
         type: string
       lucee_versions:
         required: false
         description: Lucee Versions (json)
-        default: '[ "7.0/snapshot/zero", "7.0.0/snapshot/zero", "6.2/snapshot/zero", "5.4/stable/light" ]'
+        default: '[ "7.1/snapshot/jar", "7.0/snapshot/jar", "6.2/snapshot/jar"]'
         type: string
       java_distribution:
         required: false
@@ -59,22 +59,24 @@ jobs:
         luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
         javaVersion: ${{ fromJSON(github.event.inputs.java_versions) }}
         exclude:
-            - luceeVersion: 5.4/stable/light
+            - luceeVersion: 5.4/stable/jar
               javaVersion: 21
-            - luceeVersion: 5.4/stable/light
+            - luceeVersion: 5.4/stable/jar
               javaVersion: 24
-            - luceeVersion: 5.4/stable/light
+            - luceeVersion: 5.4/stable/jar
               javaVersion: 24
-            - luceeVersion: 6.0/stable/zero
+            - luceeVersion: 6.0/stable/jar
               javaVersion: 21
-            - luceeVersion: 6.0/stable/zero
+            - luceeVersion: 6.0/stable/jar
               javaVersion: 24
-            - luceeVersion: 6.0/stable/zero
+            - luceeVersion: 6.0/stable/jar
               javaVersion: 24
-            - luceeVersion: 6.1/stable/zero
+            - luceeVersion: 6.1/stable/jar
               javaVersion: 24
-            - luceeVersion: 6.1/stable/zero
+            - luceeVersion: 6.1/stable/jar
               javaVersion: 24
+            - luceeVersion: 6.2/stable/jar
+              javaVersion: 25  
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
         compile: ${{ github.event.inputs.compile }}
