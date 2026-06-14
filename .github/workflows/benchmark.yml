@@ -140,6 +140,7 @@ jobs:
           EXELOG: ${{ github.event.inputs.exeLog }}
           LUCEE_DEBUGGING_MAXPAGEPARTS: 0
           LUCEE_CACHE_VARIABLEKEYS: ${{ github.event.inputs.variable_keys }}
+          LUCEE_ALLOW_VIRTUAL_THREADS: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
