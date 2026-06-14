@@ -109,6 +109,26 @@ jobs:
           mysql -e 'CREATE DATABASE lucee_fallback' -uroot -proot
           mysql -e 'CREATE USER "lucee_fallback"@"localhost" IDENTIFIED WITH mysql_native_password BY "lucee_fallback";' -uroot -proot
           mysql -e 'GRANT ALL PRIVILEGES ON lucee_fallback.* TO "lucee_fallback"@"localhost"' -uroot -proot
+      - name: Configure MySQL for benchmarking
+        # Benchmark-only settings - trade durability for throughput.
+        # NEVER use these in production: on power failure you can lose
+        # up to ~1s of committed transactions. CI data is throwaway.
+        # Without these, db MAX latency hits ~560ms; with them, ~80ms.
+        run: |
+          sudo tee /etc/mysql/conf.d/benchmark-tuning.cnf >/dev/null <<'EOF'
+          [mysqld]
+          # Skip per-commit fsync on the redo log (fsync once/sec instead)
+          innodb_flush_log_at_trx_commit = 2
+          # Disable binlog entirely (no replication needed for CI)
+          skip-log-bin
+          # Skip the double-write buffer (halves write IO)
+          innodb_doublewrite = OFF
+          # Default 128MB pool is undersized; CI runners have 16GB RAM
+          innodb_buffer_pool_size = 2G
+          # Default 100MB redo log fills fast under sustained writes
+          innodb_redo_log_capacity = 2G
+          EOF
+
       - name: Run Microbenches
         uses: lucee/script-runner@main
         with:
