@@ -110,15 +110,13 @@ jobs:
           [mysqld]
           # Skip per-commit fsync on the redo log (fsync once/sec instead)
           innodb_flush_log_at_trx_commit = 2
-          # Disable binlog entirely (no replication needed for CI)
-          skip-log-bin
+          # Skip per-commit fsync on the binlog
+          sync_binlog = 0
           # Skip the double-write buffer (halves write IO)
           innodb_doublewrite = OFF
           # Default 128MB pool is undersized; CI runners have 16GB RAM
           innodb_buffer_pool_size = 2G
-          # Default 100MB redo log fills fast under sustained writes
-          innodb_redo_log_capacity = 2G
-          EOF          
+          EOF
       - name: Set up MySQL (local)
         run: |
           sudo systemctl start mysql
