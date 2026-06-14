@@ -111,7 +111,7 @@
 				s = getTickCount(units);
 
 				runAborted = false;
-				maxElapsedThreshold = 1 * 1000 * 1000; // in micro seconds, see units!
+				maxElapsedThreshold = 5 * 1000 * 1000; // in micro seconds, see units!
 
 				if (exeLog eq "debug") {
 					exeLogger.purgeExecutionLog();
