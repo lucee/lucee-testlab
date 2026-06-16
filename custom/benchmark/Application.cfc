@@ -29,8 +29,8 @@ component {
             , "directoryList"
             , "qrcode-createObject-emptyInit"
             , "properties"
-            , "replaceNoCase",
-            ,"zzz-hello-world" // runs last to see the final jit performance
+            , "replaceNoCase"
+            , "zzz-hello-world" // runs last to see the final jit performance
         ];
     }
 
