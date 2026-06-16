@@ -131,6 +131,8 @@
 	_logger("");
 	benchmarkVersion = useHttp ? remoteVersion : server.lucee.version;
 	_logger( "Starting benchmarking #benchmarkVersion# at #dateTimeFormat(now(), "long")#" );
+	_logger( message="" );
+	_logger( message="```" );
 
 	run_startTime = getTickCount();
 	_getGcStats();
@@ -183,7 +185,7 @@
 						 var mess = "[#suiteName#] was waaay too slow [#elapsed/1000#], aborting";
 						 _logger( mess );
 						 _logger( "--- pool snapshot at stall ---" );
-						 _logger( serializeJson(var=GetSystemMetrics(), compact=false) );
+						// _logger( serializeJson(var=GetSystemMetrics(), compact=false) );
 						 throw mess;
 					}
 				}, true, max_threads);
@@ -195,9 +197,7 @@
 				//systemOutput(SerializeJson(var=GetSystemMetrics(), compact=false), true);
 				echo(_e); // for running in browser
 				systemOutput( e, true );
-				_logger( message="`" & "``", console=false );
 				_logger( message=e.stacktrace, console=false );
-				_logger( message="`" & "``", console=false );
 				runError = e.message;
 				errorCount++;
 			}
@@ -252,7 +252,7 @@
 	}
 
 	results.run.totalDuration = getTickCount() - run_startTime;
-
+	_logger( message="```" );
 	_logger( message="" );
 	_logger( message="-------test run complete------" );
 
