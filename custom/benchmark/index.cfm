@@ -349,8 +349,13 @@
 			destination=dumpfile;
 			live=true; // TODO avoid // in URL
 	}
-
+	_logger( message="" );
+	_logger( message="```" );	
 	_logger(SerializeJson(var=GetSystemMetrics(), compact=false));
+	_logger( message="```" );
+	_logger( message="" );
+	
+	
 
 	private function getPoolStats() {
 		return createObject( "java", "lucee.commons.net.http.httpclient.HTTPEngine4Impl" )
