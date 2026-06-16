@@ -14,7 +14,8 @@
 		json = deserializeJson( fileRead( f ) );
 
 		json.run.java = listFirst( json.run.java, "." );
-		json.run.memory = benchmarkUtils.getTotalMemoryUsage( json.memory.usage );
+		// memory key is absent when index.cfm ran with disableMemoryReporting=true
+		json.run.memory = structKeyExists( json, "memory" ) ? benchmarkUtils.getTotalMemoryUsage( json.memory.usage ) : 0;
 		
 		for ( r in json.data ){
 			StructAppend( r, json.run );
