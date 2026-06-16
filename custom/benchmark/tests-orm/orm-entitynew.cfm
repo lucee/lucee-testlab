@@ -1,0 +1,3 @@
+<cfscript>
+	EntityNew( "BasicEntity" );
+</cfscript>

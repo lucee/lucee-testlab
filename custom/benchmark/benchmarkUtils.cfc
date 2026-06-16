@@ -1,20 +1,67 @@
 component  {
 
-	function getTests( string filter="" ){
-		if ( len( trim( filter ) ) ){
-			systemOutput("Filtering tests by [#filter#]", true);
-			var testDir = GetDirectoryFromPath( GetCurrentTemplatePath() ) & "/tests";
-			var availableSuites = DirectoryList( testDir, true, "path" )
+	function getTests( string filter="", string testDir="tests" ){
+		var includes = [];
+		var excludes = [];
+
+		if ( len( trim( filter ) ) ) {
+			loop list="#filter#" item="local.f" {
+				f = trim( f );
+				if ( left( f, 1 ) == "-" )
+					arrayAppend( excludes, mid( f, 2 ) );
+				else
+					arrayAppend( includes, f );
+			}
+		}
+
+		// if we have include filters (or "*"), scan the test directory
+		// if we only have excludes, start from the default suite
+		if ( arrayLen( includes ) ) {
+			systemOutput( "Filtering tests, include: [#arrayToList( includes )#]"
+				& ( arrayLen( excludes ) ? ", exclude: [#arrayToList( excludes )#]" : "" ), true );
+			var testDir = GetDirectoryFromPath( GetCurrentTemplatePath() ) & "/#arguments.testDir#";
+			var availableSuites = DirectoryList( testDir, true, "path" );
 			var suites = [];
-			for ( var suite in availableSuites ){
-				if ( suite contains filter && listLast( suite, "." ) eq "cfm" )
-					arrayAppend( suites, listFirst( listLast( suite, "/\" ), "." ) );
+			for ( var suite in availableSuites ) {
+				if ( listLast( suite, "." ) != "cfm" ) continue;
+				var _suiteName = listFirst( listLast( suite, "/\" ), "." );
+				var matched = false;
+				for ( var inc in includes ) {
+					if ( inc == "*" || _suiteName contains inc ) {
+						matched = true;
+						break;
+					}
+				}
+				if ( !matched ) continue;
+				var excluded = false;
+				for ( var exc in excludes ) {
+					if ( _suiteName contains exc ) {
+						excluded = true;
+						break;
+					}
+				}
+				if ( !excluded )
+					arrayAppend( suites, _suiteName );
+			}
+		} else if ( arrayLen( excludes ) ) {
+			systemOutput( "Filtering default suite, exclude: [#arrayToList( excludes )#]", true );
+			var suites = [];
+			for ( var _suiteName in application.testSuite ) {
+				var excluded = false;
+				for ( var exc in excludes ) {
+					if ( _suiteName contains exc ) {
+						excluded = true;
+						break;
+					}
+				}
+				if ( !excluded )
+					arrayAppend( suites, _suiteName );
 			}
 		} else {
 			var suites = application.testSuite;
 		}
-		
-		var longestName =  [];
+
+		var longestName = [];
 		arrayEach( suites, function( item ){
 			arrayAppend( longestName, len( item ) );
 		});
@@ -36,7 +83,7 @@ component  {
 				arrayAppend( hdr, "%" );
 			else 
 				arrayAppend( hdr, replace( col, "_", "") );
-			if ( col eq "memory" or col eq "time" or col eq "throughput" or left( col, 1 ) eq "_" )
+			if ( col eq "memory" or col eq "time" or col eq "throughput" or col eq "gcms" or left( col, 1 ) eq "_" )
 				arrayAppend( div, "---:" );
 			else
 				arrayAppend( div, "---" );
@@ -58,7 +105,7 @@ component  {
 					querySetCell( q, "_perc", "-#abs(q._perc)#", q.currentRow ) ;
 			}
 			loop list=q.columnlist item="local.col" {
-				if ( col eq "memory" or col eq "time" or col eq "throughput" or col eq "gc" )
+				if ( col eq "memory" or col eq "time" or col eq "throughput" or col eq "gc" or col eq "gcms" )
 					arrayAppend( row, numberFormat( q [ col ] ) );
 				else if ( col eq "_perc" )
 					arrayAppend( row, numberFormat( q [ col ] ) & "%");
@@ -160,14 +207,20 @@ component  {
 		return false;
 	}
 
-	function getGcCount(){
+	function getGcStats(){
 		var javaManagementFactory = createObject( "java", "java.lang.management.ManagementFactory" );
-		var gcBeans =javaManagementFactory.getGarbageCollectorMXBeans();
-		var n = 0 ;
-		for (var gc in gcBeans){
-			var n = n + gc.getCollectionCount();
+		var gcBeans = javaManagementFactory.getGarbageCollectorMXBeans();
+		var count = 0;
+		var timeMs = 0;
+		for ( var gc in gcBeans ){
+			count += gc.getCollectionCount();
+			timeMs += gc.getCollectionTime();
 		}
-		return n;
+		return { count: count, timeMs: timeMs };
+	}
+
+	function getGcCount(){
+		return getGcStats().count;
 	}
 
 	function reportRuns( srcRuns, java="" ) localmode=true {
@@ -182,8 +235,8 @@ component  {
 			}
 		); // fastest to slowest
 
-		var hdr = [ "Version", "Java", "Time", "Memory", "GCs" ];
-		var div = [ "---", "---", "---:", "---:", "---:" ];
+		var hdr = [ "Version", "Java", "Time", "Memory", "GCs", "GC ms" ];
+		var div = [ "---", "---", "---:", "---:", "---:", "---:" ];
 		_logger( "" );
 		_logger( "|" & arrayToList( hdr, "|" ) & "|" );
 		_logger( "|" & arrayToList( div, "|" ) & "|" );
@@ -196,6 +249,7 @@ component  {
 				arrayAppend( row, numberFormat( run.totalDuration ) );
 				arrayAppend( row, numberFormat( run.memory ) );
 				arrayAppend( row, numberFormat( run.gcCount ) );
+				arrayAppend( row, numberFormat( run.gcTimeMs ?: 0 ) );
 				_logger( "|" & arrayToList( row, "|" ) & "|" );
 				row = [];
 			}

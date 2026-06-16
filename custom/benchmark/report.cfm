@@ -3,7 +3,7 @@
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts";
 	files = directoryList( dir );
 
-	q = queryNew( "version,java,type,time,runs,inspect,memory,testMemory,gccount,throughput,"
+	q = queryNew( "version,java,type,time,runs,inspect,memory,testMemory,gccount,gctimems,throughput,"
 		& "_min,_max,_avg,_med,error,raw,_perc,exeLog,totalDuration" );
 
 	tests = structNew('ordered');
@@ -37,14 +37,16 @@
 			"version": json.run.version,
 			"totalDuration": json.run.totalDuration,
 			"memory": json.run.memory,
-			"gcCount": json.gcCount
+			"gcCount": json.gcCount,
+			"gcTimeMs": json.totalGCTimeMs ?: 0
 		});
 	}
 
 	
 	_logger= benchmarkUtils._logger;
 
-	filter = benchmarkUtils.getTests( server.system.environment.BENCHMARK_FILTER ?: "");
+	testDir = server.system.environment.BENCHMARK_TEST_DIR ?: "tests";
+	filter = benchmarkUtils.getTests( filter=server.system.environment.BENCHMARK_FILTER ?: "", testDir=testDir );
 	longestSuiteName = filter.longestSuiteName;
 	suites = filter.suites;
 
@@ -116,7 +118,7 @@
 			```
 			<cfquery name="q_rpt" dbtype="query">
 				select	version, java, time,
-						throughput, _perc, _min, _avg, _med, _max, error, testMemory as memory, gccount as gc
+						throughput, _perc, _min, _avg, _med, _max, error, testMemory as memory, gccount as gc, gctimems as gcms
 				from	q
 				where	type = <cfqueryparam value="#type#">
 						and inspect = <cfqueryparam value="#inspect#">

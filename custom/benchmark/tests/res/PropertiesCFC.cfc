@@ -1,8 +1,7 @@
 component {
-	property name="property1" type="string";
-	property name="property2" type="numeric";
-	property name="property3" type="boolean";
-	property name="property4" type="array";
-	property name="property5" type="struct";
-
+	property name="name" type="string" default="";
+	property name="value" type="numeric" default="0";
+	property name="active" type="boolean" default="false";
+	property name="dateCreated" type="date" default="now()";
+	property name="description" type="string" default="";
 }

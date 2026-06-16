@@ -5,10 +5,9 @@ component {
         application.testSuite = [
             "hello-world"
             , "json"
-            , "db"
+            , "db-insert-select"
             , "qoq-hsqldb"
             , "qoq-native"
-            , "qoq-mixed"
             , "json-date"
             , "date-format"
             , "set-cookie"
@@ -23,14 +22,25 @@ component {
             , "member-java"
             , "member-cfml" 
             , "qrcode"
-            , "qrcode-createObject" 
+            , "qrcode-createObject"
             , "resource"
-            , "resource-util"
+            //, "resource-util"
             , "directoryList"
+            , "fileReadBinary"
             , "qrcode-createObject-emptyInit"
             , "properties"
             , "replaceNoCase"
-            , "zzz-hello-world" // runs last to see the final jit performance
+            , "column-cfoutput-5x100"
+            , "math-functions"
+            //, "db-insert"          // duplicate of db
+            //, "db-inzert"          // duplicate of db
+            , "db-mulitple-insert"
+            //, "db-multiple-insert-no-result" // same as db-mulitple-insert minus result
+            //, "dba"                // duplicate of db
+            //, "dbz-select-named"   // similar to dbz-select
+            , "dbz-select"
+            , "zzz-hello-world"
+            //, "dbz"               // duplicate of db
         ];
     }
 

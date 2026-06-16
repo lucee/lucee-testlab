@@ -1,13 +1,49 @@
 <cfscript>
 	never_runs = int( ( server.system.environment.BENCHMARK_CYCLES ?: 25) * 1000);
 	once_runs = int( ( server.system.environment.BENCHMARK_ONCE_CYCLES ?: 0.5) * 1000)
-	warmup_runs = 1000; // ensure level 4 compilation
+	warmup_runs = int( server.system.environment.BENCHMARK_WARMUP_CYCLES ?: 1000); // ensure level 4 compilation
 	setting requesttimeout=never_runs+once_runs;
 	warmup = [];
+
+	systemOutput("LUCEE_THREADS_MAXDEFAULT: "
+		 & getSystemPropOrEnvVar("LUCEE.THREADS.MAXDEFAULT"), true);
 
 	benchmarkUtils = new benchmarkUtils();
 	_logger= benchmarkUtils._logger;
 	reportMem = benchmarkUtils.reportMem;
+
+	httpEndpoint = server.system.environment.LUCEE_TESTLAB_HTTP_ENDPOINT ?: "";
+	useHttp = len( trim( httpEndpoint ) ) > 0;
+	disableMemoryReporting = true;// useHttp; // disable memory reporting when using HTTP mode
+
+	// Get remote version when using HTTP endpoint
+	if ( useHttp ) {
+		cfhttp( url=httpEndpoint & "/tests/httpMemStat/version.cfm", method="GET", result="versionResult", throwonerror=true );
+		remoteVersion = trim( versionResult.fileContent );
+		systemOutput( "Remote server version: #remoteVersion#", true );
+	}
+
+	// Wrapper function to handle internal or HTTP requests
+	function _request( required string template ) {
+		if ( useHttp ) {
+			// Use HTTP request to external endpoint
+			cfhttp( url=httpEndpoint & arguments.template, method="GET", result="local.httpResult", throwonerror=true );
+			return httpResult;
+		} else {
+			// Use internal request
+			return _internalRequest( template=arguments.template );
+		}
+	}
+
+	// Wrapper function to get GC stats (count + pause time)
+	function _getGcStats() {
+		if ( useHttp ) {
+			cfhttp( url=httpEndpoint & "/tests/httpMemStat/index.cfm?gc=true", method="GET", result="local.httpResult", throwonerror=true );
+			return { count: val( httpResult.fileContent ), timeMs: 0 };
+		} else {
+			return benchmarkUtils.getGcStats();
+		}
+	}
 
 	exeLog = server.system.environment.EXELOG ?: "";
 	if (exeLog eq "console") {
@@ -50,37 +86,54 @@
 		}
 		
 	}
+	if (false){
+		configImport( {
+			"loggers": {
+				"datasource": {
+				"appender": "resource",
+				"appenderArguments": {
+					"path": "{lucee-config}/logs/datasource.log"
+				},
+				"level": "debug",
+				"layout": "classic"
+				}
+			}
+		}, "server", "admin");
+	}
 
-	filter = benchmarkUtils.getTests( server.system.environment.BENCHMARK_FILTER ?: "");
+	testDir = server.system.environment.BENCHMARK_TEST_DIR ?: "tests";
+	filter = benchmarkUtils.getTests( filter=server.system.environment.BENCHMARK_FILTER ?: "", testDir=testDir );
 	longestSuiteName = filter.longestSuiteName;
 	suites = filter.suites;
 
 	results = {
 		data = [],
 		run = {
-			version: server.lucee.version,
+			version: useHttp ? remoteVersion : server.lucee.version,
 			java: server.java.version
 		}
 	};
 
 	ArraySet( warmup, 1, warmup_runs, 0 );
 
-	_memBefore = reportMem( "", {}, "before", "HEAP" );
+	_memBefore = disableMemoryReporting ? {} : reportMem( "", {}, "before", "HEAP" );
 	errorCount = 0;
 	units = "micro";
 
 	appSettings = getApplicationSettings();
 	systemOutput("Precise Math: " & (appSettings.preciseMath ?: "not supported"), true);
 	// max_threads = 0; // use lucee default
-	// max_threads = int(createObject("java", "java.lang.Runtime").getRuntime().availableProcessors() * 2);
-	// systemOutput("Using [#max_threads#] parallel threads", true);
+	max_threads = int(createObject("java", "java.lang.Runtime").getRuntime().availableProcessors() );
+	systemOutput("Using [#max_threads#] parallel threads", true);
 	systemOutput("Sleeping for 5s, allow server to startup and settle", true);
 	systemOutput( getCpuUsage() );
 	sleep( 5000 ); // initial time to settle
-
-	_logger( server.lucee.version );
+	_logger("");
+	benchmarkVersion = useHttp ? remoteVersion : server.lucee.version;
+	_logger( "Starting benchmarking #benchmarkVersion# at #dateTimeFormat(now(), "long")#" );
 
 	run_startTime = getTickCount();
+	_getGcStats();
 	loop list="once,never" item="inspect" {
 		_logger( "" );
 		configImport( {"inspectTemplate": inspect }, "server", "admin" );
@@ -90,7 +143,7 @@
 			runs = once_runs;
 
 		loop list="#suites#" item="type" {
-			template = "/tests/#type#.cfm";
+			template = "/#testDir#/#type#.cfm";
 			suiteName = LJustify( type, longestSuiteName ); // lines up output
 			runError = "";
 			arr = [];
@@ -99,15 +152,14 @@
 			try {
 				systemOutput( "Warmup #suiteName#, inspect: [#inspect#]", true );
 				ArrayEach( warmup, function( item ){
-					_internalRequest(
-						template: template
-					);
-				}, true);
+					_request( template=template );
+				}, true, max_threads);
 				//systemOutput( "Sleeping 2s first, after warmup", true );
 				//sleep( 2000 ); // time to settle
 				
 				// duplicate output here, but it's useful when a test regresses to see where it's hanging
-				systemOutput( "Running #suiteName# [#numberFormat( runs/1000 )#k-#inspect#]", true );
+				runsDisplay = runs < 1000 ? runs : numberFormat( runs/1000 ) & "k";
+				systemOutput( "Running #suiteName# [#runsDisplay#-#inspect#]", true );
 				s = getTickCount(units);
 
 				runAborted = false;
@@ -117,29 +169,30 @@
 					exeLogger.purgeExecutionLog();
 				}
 				createObject( "java", "java.lang.System" ).gc();
-				testMemStatStart = reportMem( "", {}, "before", "HEAP" );
-				testGCStart = benchmarkUtils.getGcCount();
+				testMemStatStart = disableMemoryReporting ? {} : reportMem( "", {}, "before", "HEAP" );
+				testGCStart = _getGcStats();
 			
 				ArrayEach( arr, function( item, idx, _arr ){
 					if (runAborted) return;
 					var start = getTickCount(units);
-					_internalRequest(
-						template: template
-					);
+					_request( template=template );
 					var elapsed = getTickCount(units) - start;
 					arguments._arr[ arguments.idx ] = elapsed;
 					if (!runAborted && elapsed > maxElapsedThreshold){
 						runAborted = true;
 						 var mess = "[#suiteName#] was waaay too slow [#elapsed/1000#], aborting";
 						 _logger( mess );
+						 _logger( "--- pool snapshot at stall ---" );
+						 _logger( serializeJson(var=GetSystemMetrics(), compact=false) );
 						 throw mess;
 					}
-				}, true);
+				}, true, max_threads);
 
 			} catch ( _e ){
 				e = benchmarkUtils.cleanException(_e);
-				lastOkRound = arrayFind(arr, function(item) { return item != 0; });
+				lastOkRound = arrayFind(arr, function(item) { return item == 0; });
 				_logger( "------- Exception occurred around round [#lastOkRound#]" );
+				//systemOutput(SerializeJson(var=GetSystemMetrics(), compact=false), true);
 				echo(_e); // for running in browser
 				systemOutput( e, true );
 				_logger( message="`" & "``", console=false );
@@ -149,14 +202,22 @@
 				errorCount++;
 			}
 			// note this is without doing a GC
-			testMemStatEnd = reportMem( "", testMemStatStart.usage, "before", "HEAP" );
-			testMemoryUsage =  benchmarkUtils.getTotalMemoryUsage( testMemStatEnd.usage );
-			testGCCount = benchmarkUtils.getGcCount() - testGCStart;
+			testMemStatEnd = disableMemoryReporting ? {} : reportMem( "", testMemStatStart.usage, "before", "HEAP" );
+			testMemoryUsage = disableMemoryReporting ? 0 : benchmarkUtils.getTotalMemoryUsage( testMemStatEnd.usage );
+			testGCEnd = _getGcStats();
+			testGCCount = testGCEnd.count - testGCStart.count - ( useHttp ? 1 : 0 );
+			testGCTimeMs = testGCEnd.timeMs - testGCStart.timeMs;
 			time = getTickCount( units ) - s;
 
-			_logger( "Finished #suiteName# [#numberFormat( runs/1000 )#k-#inspect#] took #numberFormat( time/1000 )# ms, "
-				& "or #numberFormat(runs/(time/1000/1000))# per second, "
-				& "using #numberFormat(testMemoryUsage)# Mb"
+			completedRuns = arrayLen( arrayFilter( arr, function( item ) { return item != 0; } ) );
+			targetRuns = arrayLen( arr );
+
+			runsDisplay = runs < 1000 ? runs : numberFormat( runs/1000 ) & "k";
+			_logger( "#( completedRuns eq targetRuns ? 'Finished' : 'Errored' )# #suiteName# [#runsDisplay#-#inspect#] took #numberFormat( time/1000 )# ms, "
+				& "#numberFormat( completedRuns/(time/1000/1000) )# per second"
+				& ( completedRuns neq targetRuns ? " (#completedRuns# of #targetRuns# completed)" : "" )
+				& ( disableMemoryReporting ? "" : ", final memory #numberFormat(testMemoryUsage)# Mb" )
+				& ", with GCs: #testGCCount# (#testGCTimeMs#ms)"
 			);
 			result = {
 				time: time / 1000,
@@ -164,17 +225,19 @@
 				type: type,
 				testMemory: testMemoryUsage,
 				gcCount: testGCCount,
+				gcTimeMs: testGCTimeMs,
 				_min: decimalFormat( arrayMin( arr ) / 1000 ),
 				_max: decimalFormat( arrayMax( arr ) / 1000 ),
 				_avg: decimalFormat( arrayAvg( arr ) / 1000 ),
 				_med: decimalFormat( arrayMedian( arr ) / 1000 ),
 				error: runError,
-				runs: arrayLen( arr ),
+				runs: completedRuns,
+				targetRuns: targetRuns,
 				raw: arr
 			}
 			if (exeLog eq "debug" && inspect eq "never") {
 				pp = getTickCount();
-				q_exeLog = exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/tests/" );
+				q_exeLog = exeLogger.getDebugLogsCombined( getDirectoryFromPath( getCurrentTemplatePath() ) & "/#testDir#/" );
 				systemOutput( "getDebugLogsCombined took #numberFormat(getTickCount()-pp)#ms", true );
 				if ( q_exeLog.recordCount > 0 ){
 					result.exeLog = QueryToStruct( q_exeLog, "key" );
@@ -192,25 +255,35 @@
 
 	_logger( message="" );
 	_logger( message="-------test run complete------" );
-	
-	_memStat = reportMem( "", _memBefore.usage, "before", "HEAP" );
 
-	for ( r in _memStat.report )
-		_logger( r );
-	_logger( message="-------trigger GC------" );
-	createObject( "java", "java.lang.System" ).gc();
-	_memStatGC = reportMem( "", _memBefore.usage, "before", "HEAP" );
-	for ( r in _memStatGC.report )
-		_logger( r );
-	_logger( "" );
+	if ( !disableMemoryReporting ) {
+		_memStat = reportMem( "", _memBefore.usage, "before", "HEAP" );
 
-	results.gcCount = benchmarkUtils.getGcCount();
-	results.memory=_memStat;
+		for ( r in _memStat.report )
+			_logger( r );
+		_logger( message="-------trigger GC------" );
+		createObject( "java", "java.lang.System" ).gc();
+		_memStatGC = reportMem( "", _memBefore.usage, "before", "HEAP" );
+		for ( r in _memStatGC.report )
+			_logger( r );
+		_logger( "" );
+	}
+
+	results.gcStats = _getGcStats();
+	totalGCCount = results.data.reduce( function( acc, item ) { return acc + item.gcCount; }, 0 );
+	totalGCTimeMs = results.data.reduce( function( acc, item ) { return acc + item.gcTimeMs; }, 0 );
+	_logger( "Total GC count across all tests: #totalGCCount# (#totalGCTimeMs#ms pause)" );
+	results.totalGCCount = totalGCCount;
+	results.totalGCTimeMs = totalGCTimeMs;
+	if ( !disableMemoryReporting )
+		results.memory=_memStat;
 	dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "artifacts/";
 	if (!directoryExists( dir ))
 		directoryCreate( dir );
-	reportFile = dir & server.lucee.version & "-" & server.java.version & "-results.json";
-	_logger( message="Writing report to #reportFile#" );
+
+	reportVersion = useHttp ? remoteVersion : server.lucee.version;
+	reportFile = GetTempFile( dir=dir, prefix=(reportVersion & "-" & server.java.version), extension="json" );
+	_logger( message="Writing report to [#reportFile#]" );
 	
 	fileWrite( reportFile, results.toJson() );
 
@@ -247,20 +320,21 @@
 
 		application name="bench";
 		applicationStop();
-		
+
 		admin
 			action="purgeExpiredSessions"
 			type="server"
 			password="admin";
-	
+
 		_logger( message="-------trigger GC------" );
 		createObject( "java", "java.lang.System" ).gc();
-		_memStatGC = reportMem( "", _memBefore.usage, "before", "HEAP" );
-		for ( r in _memStatGC.report )
-			_logger( r );
-		_logger( "" );
+		if ( structKeyExists( _memBefore, "usage" ) ) {
+			_memStatGC = reportMem( "", _memBefore.usage, "before", "HEAP" );
+			for ( r in _memStatGC.report )
+				_logger( r );
+			_logger( "" );
+		}
 
-		
 		dir = getDirectoryFromPath( getCurrentTemplatePath() ) & "heapdumps/";
 		if ( !directoryExists( dir ) )
 			directoryCreate( dir );
@@ -275,6 +349,20 @@
 			destination=dumpfile;
 			live=true; // TODO avoid // in URL
 	}
+
+	_logger(SerializeJson(var=GetSystemMetrics(), compact=false));
+
+	private function getPoolStats() {
+		return createObject( "java", "lucee.commons.net.http.httpclient.HTTPEngine4Impl" )
+			.getConnectionPoolStats();
+	}
+
+	try {
+		_logger(SerializeJson(var=getPoolStats(), compact=false));
+	} catch (e) {
+		//ignore
+	}
+
 
 	if ( errorCount > 0 )
 		_logger( message="#errorCount# benchmark(s) failed", throw=true );

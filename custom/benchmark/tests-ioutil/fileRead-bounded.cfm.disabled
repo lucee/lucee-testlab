@@ -1,0 +1,12 @@
+<cfscript>
+	// Spec #3 (offset-length-copy-pooling): size-bounded fileRead, 5 calls per cycle.
+	// fileRead(path, charset, size) routes through FileRead.java:81 ->
+	// IOUtil.copy(is, baos, 0, size) -> 5-arg int/int/int variant at
+	// IOUtil.java:269-315, which allocates `new byte[block]` per iteration.
+	// For size=1MB and DEFAULT_BLOCK_SIZE=65535, ~16 buffer allocs per call.
+	// Future hoist-allocation-out-of-loop fix should drop alloc to 1 per call
+	// (pooled when block == DEFAULT_BLOCK_SIZE).
+	for ( i = 1; i <= 5; i++ ) {
+		fileRead( application.ioutilBigBinary, "utf-8", 1048576 );
+	}
+</cfscript>
