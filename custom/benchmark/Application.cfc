@@ -23,7 +23,7 @@ component {
             , "member-cfml" 
             , "qrcode"
             , "qrcode-createObject"
-            , "resource"
+            //, "resource" also very slow
             //, "resource-util"
             , "directoryList"
             , "fileReadBinary"
