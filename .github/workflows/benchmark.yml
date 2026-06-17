@@ -58,49 +58,46 @@ jobs:
       matrix:
         luceeVersion: ${{ fromJSON(github.event.inputs.lucee_versions) }}
         javaVersion: ${{ fromJSON(github.event.inputs.java_versions) }}
-        exclude:
-            - luceeVersion: 5.4/stable/jar
-              javaVersion: 21
-            - luceeVersion: 5.4/stable/jar
-              javaVersion: 24
-            - luceeVersion: 5.4/stable/jar
-              javaVersion: 24
-            - luceeVersion: 6.0/stable/jar
-              javaVersion: 21
-            - luceeVersion: 6.0/stable/jar
-              javaVersion: 24
-            - luceeVersion: 6.0/stable/jar
-              javaVersion: 24
-            - luceeVersion: 6.1/stable/jar
-              javaVersion: 24
-            - luceeVersion: 6.1/stable/jar
-              javaVersion: 24
-            - luceeVersion: 6.2/stable/jar
-              javaVersion: 25  
     env:
         luceeVersionQuery: ${{ matrix.luceeVersion }}
         compile: ${{ github.event.inputs.compile }}
     steps:
+      - name: Check Lucee/Java compatibility
+        # Lucee 5.x supports up to Java 21; Lucee 6.x supports up to Java 24; 7.x requires Java > 11.
+        id: compat
+        run: |
+          LV="${{ matrix.luceeVersion }}"
+          JV="${{ matrix.javaVersion }}"
+          major="${LV%%.*}"
+          skip=false
+          if [ "$major" = "5" ] && [ "$JV" -gt 21 ]; then skip=true; fi
+          if [ "$major" = "6" ] && [ "$JV" -gt 24 ]; then skip=true; fi
+          if [ "$major" -ge 7 ] && [ "$JV" -le 11 ]; then skip=true; fi
+          echo "skip=$skip" >> "$GITHUB_OUTPUT"
+          echo "Lucee $LV + Java $JV -> skip=$skip"
       - name: Checkout
+        if: steps.compat.outputs.skip != 'true'
         uses: actions/checkout@v4
       - name: Set up JDK ${{matrix.javaVersion}}
+        if: steps.compat.outputs.skip != 'true'
         uses: actions/setup-java@v4
         with:
           java-version: ${{matrix.javaVersion}}
           distribution: ${{ github.event.inputs.java_distribution }}
       - name: Cache Maven packages
-        if: always()
+        if: steps.compat.outputs.skip != 'true'
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: maven-cache
       - name: Cache Lucee files
         uses: actions/cache@v4
-        if: always()
+        if: steps.compat.outputs.skip != 'true'
         with:
           path: /home/runner/work/_actions/lucee/script-runner/main/lucee-download-cache
           key: lucee-downloads
       - name: Configure MySQL for benchmarking
+        if: steps.compat.outputs.skip != 'true'
         # Benchmark-only settings - trade durability for throughput.
         # NEVER use these in production: on power failure you can lose
         # up to ~1s of committed transactions. CI data is throwaway.
@@ -118,6 +115,7 @@ jobs:
           innodb_buffer_pool_size = 2G
           EOF
       - name: Set up MySQL (local)
+        if: steps.compat.outputs.skip != 'true'
         run: |
           sudo systemctl start mysql
           mysql -e 'CREATE DATABASE lucee' -uroot -proot
@@ -127,6 +125,7 @@ jobs:
           mysql -e 'CREATE USER "lucee_fallback"@"localhost" IDENTIFIED WITH mysql_native_password BY "lucee_fallback";' -uroot -proot
           mysql -e 'GRANT ALL PRIVILEGES ON lucee_fallback.* TO "lucee_fallback"@"localhost"' -uroot -proot
       - name: Run Microbenches
+        if: steps.compat.outputs.skip != 'true'
         uses: lucee/script-runner@main
         with:
           webroot: ${{ github.workspace }}/custom/benchmark
@@ -141,7 +140,7 @@ jobs:
           LUCEE_DEBUGGING_MAXPAGEPARTS: 0
           LUCEE_CACHE_VARIABLEKEYS: ${{ github.event.inputs.variable_keys }}
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.compat.outputs.skip != 'true'
         with:
           name: results-${{ strategy.job-index }}
           path: ${{ github.workspace }}/custom/benchmark/artifacts
