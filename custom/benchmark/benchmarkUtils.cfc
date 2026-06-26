@@ -81,7 +81,11 @@ component  {
 		loop list=q.columnlist item="local.col" {
 			if ( col eq "_perc" )
 				arrayAppend( hdr, "%" );
-			else 
+			else if ( col eq "_delta" )
+				arrayAppend( hdr, "Δms" );
+			else if ( col eq "throughput" )
+				arrayAppend( hdr, "REQ/S" );
+			else
 				arrayAppend( hdr, replace( col, "_", "") );
 			if ( col eq "memory" or col eq "time" or col eq "throughput" or col eq "gcms" or left( col, 1 ) eq "_" )
 				arrayAppend( div, "---:" );
@@ -104,17 +108,22 @@ component  {
 				if ( q._perc neq 0 )
 					querySetCell( q, "_perc", "-#abs(q._perc)#", q.currentRow ) ;
 			}
+			if ( QueryColumnExists(q, "_delta") ){
+				querySetCell( q, "_delta", q.time[ q.currentRow ] - q.time[ 1 ], q.currentRow ) ;
+			}
 			loop list=q.columnlist item="local.col" {
 				if ( col eq "memory" or col eq "time" or col eq "throughput" or col eq "gc" or col eq "gcms" )
 					arrayAppend( row, numberFormat( q [ col ] ) );
 				else if ( col eq "_perc" )
 					arrayAppend( row, numberFormat( q [ col ] ) & "%");
+				else if ( col eq "_delta" )
+					arrayAppend( row, q [ col ] gt 0 ? "+" & numberFormat( q[ col ] ) : "" );
 				else if ( col eq "error" or col eq "snippet" )
 					arrayAppend( row, markdownEscape( q [ col ] ) );  // newlines and pipes are not allowed in markdown tables
 				else if ( left( col, 1 ) eq "_" ) {
 					arrayAppend( row, numFormat( q [ col ] ) );
 				}
-				else 
+				else
 					arrayAppend( row, q [ col ] );
 			}
 			_logger( message="|" & arrayToList( row, "|" ) & "|", console=arguments.console );

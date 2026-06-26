@@ -4,7 +4,7 @@
 	files = directoryList( dir );
 
 	q = queryNew( "version,java,type,time,runs,targetRuns,inspect,memory,testMemory,gccount,gctimems,throughput,"
-		& "_min,_max,_avg,_med,error,raw,_perc,exeLog,totalDuration" );
+		& "_min,_max,_avg,_med,error,raw,_perc,_delta,exeLog,totalDuration" );
 
 	tests = structNew('ordered');
 	runs = [];
@@ -119,7 +119,7 @@
 			```
 			<cfquery name="q_rpt" dbtype="query">
 				select	version, java, time,
-						throughput, _perc, _min, _avg, _med, _max, error, testMemory as memory, gccount as gc, gctimems as gcms
+						throughput, _perc, _delta, _min, _avg, _med, _max, error, gccount as gc, gctimems as gcms
 				from	q
 				where	type = <cfqueryparam value="#type#">
 						and inspect = <cfqueryparam value="#inspect#">
