@@ -118,8 +118,8 @@
 		loop list="#filter.suites#" item="type" {
 			```
 			<cfquery name="q_rpt" dbtype="query">
-				select	version, java, time,
-						throughput, _perc, _delta, _min, _avg, _med, _max, error, gccount as gc, gctimems as gcms
+				select	version, java, throughput, _perc, time, _delta,
+						_min, _avg, _med, _max, error, gccount as gc, gctimems as gcms
 				from	q
 				where	type = <cfqueryparam value="#type#">
 						and inspect = <cfqueryparam value="#inspect#">
