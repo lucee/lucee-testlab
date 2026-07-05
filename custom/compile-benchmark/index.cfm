@@ -9,10 +9,12 @@ projects = [
 	{ name: "Preside-CMS", path: "D:\work\Preside-CMS" },
 	{ name: "TestBox", path: "D:\work\TestBox" },
 	{ name: "wheels", path: "D:\work\wheels" },
-	{ name: "lucee-context", path: "D:\work\lucee7\core\src\main\cfml\context" },
+	{ name: "lucee-context", path: "D:\work\lucee8\core\src\main\cfml\context" },
 	{ name: "lucee-spreadsheet", path: "D:\work\lucee-spreadsheet" },
 	{ name: "lucee-docs", path: "D:\work\lucee-docs" },
-	{ name: "lucee-data-provider", path: "D:\work\lucee-data-provider" }
+	{ name: "lucee-data-provider", path: "D:\work\lucee-data-provider" },
+	{ name: "lucee-test", path: "D:\work\lucee8\test" },
+	{ name: "lucee-ast-samples", path: "D:\work\lucee-ast-to-cfml\samples" }
 ];
 
 // Filter by env var if set
@@ -38,8 +40,13 @@ for ( project in projects ) {
 		systemOutput( "SKIP: #project.name# - path not found: #project.path#", true );
 		continue;
 	}
-	project.files = directoryList( project.path, true, "path", "*.cfc|*.cfm" );
+	project.cfmFiles = directoryList( project.path, true, "path", "*.cfm" );
+	project.cfcFiles = directoryList( project.path, true, "path", "*.cfc" );
+	project.files = duplicate( project.cfmFiles );
+	arrayAppend( project.files, project.cfcFiles, true );
 	project.fileCount = arrayLen( project.files );
+	project.cfmCount = arrayLen( project.cfmFiles );
+	project.cfcCount = arrayLen( project.cfcFiles );
 	project.mappingName = "/" & lCase( project.name );
 	arrayAppend( validProjects, project );
 }
@@ -71,6 +78,31 @@ function getGCCount() {
 	}
 	return total;
 }
+
+// Pre-warm OS page cache so compile-loop reads hit RAM, not disk.
+// Removes cold-cache run-to-run variance from the measurement. Opt-out via
+// COMPILE_WARMUP_CACHE=0 when you specifically want to measure cold-start.
+warmupEnabled = ( server.system.environment.COMPILE_WARMUP_CACHE ?: "1" ) != "0";
+if ( warmupEnabled ) {
+	warmStart = getTickCount();
+	warmFiles = 0;
+	for ( project in validProjects ) {
+		arrayEach( project.files, function( f ) {
+			fileReadBinary( f );
+		}, true );
+		warmFiles += arrayLen( project.files );
+	}
+	systemOutput( "--- page cache warmed: #numberFormat( warmFiles )# files across #arrayLen( validProjects )# projects in #getTickCount() - warmStart# ms ---", true );
+} else {
+	systemOutput( "--- page cache pre-warm SKIPPED (COMPILE_WARMUP_CACHE=0) ---", true );
+}
+
+// Pause to isolate JVM/Lucee startup from compilation in JFR profiles.
+// Everything above (OSGi, class loading, mapping init) lands in the startup window.
+// The compile loop below is the signal we want to profile cleanly.
+systemOutput( "--- startup complete, sleeping 3s before compile loop ---", true );
+sleep( 3000 );
+systemOutput( "--- compile loop start: #dateTimeFormat( now(), "iso" )# ---", true );
 
 for ( project in validProjects ) {
 	// GC before each codebase
@@ -109,6 +141,8 @@ for ( project in validProjects ) {
 	result = {
 		name: project.name,
 		files: project.fileCount,
+		cfmFiles: project.cfmCount,
+		cfcFiles: project.cfcCount,
 		duration: duration,
 		filesPerSec: duration > 0 ? int( project.fileCount / ( duration / 1000 ) ) : 0,
 		gcCount: gcCount,
@@ -116,25 +150,30 @@ for ( project in validProjects ) {
 	};
 	arrayAppend( results, result );
 
-	systemOutput( "  Completed in #numberFormat( duration )# ms (#result.filesPerSec# files/sec, #gcCount# GCs)#len( errorMsg ) ? ' - ' & errorMsg : ''#", true );
+	systemOutput( "  Completed in #numberFormat( duration )# ms (#result.filesPerSec# files/sec, #gcCount# GCs) [cfm: #project.cfmCount#, cfc: #project.cfcCount#]#len( errorMsg ) ? ' - ' & errorMsg : ''#", true );
 }
 
+systemOutput( "--- compile loop end: #dateTimeFormat( now(), "iso" )# ---", true );
 systemOutput( "", true );
 systemOutput( "=".repeat( 80 ), true );
 systemOutput( "SUMMARY", true );
 systemOutput( "=".repeat( 80 ), true );
 
 totalFiles = 0;
+totalCfm = 0;
+totalCfc = 0;
 totalDuration = 0;
 
 for ( result in results ) {
 	totalFiles += result.files;
+	totalCfm += result.cfmFiles;
+	totalCfc += result.cfcFiles;
 	totalDuration += result.duration;
-	systemOutput( "#lJustify( result.name, 20 )#: #rJustify( numberFormat( result.duration ), 8 )# ms | #rJustify( numberFormat( result.files ), 6 )# files | #rJustify( numberFormat( result.filesPerSec ), 5 )# files/sec", true );
+	systemOutput( "#lJustify( result.name, 20 )#: #rJustify( numberFormat( result.duration ), 8 )# ms | #rJustify( numberFormat( result.files ), 6 )# files (cfm: #rJustify( result.cfmFiles, 4 )#, cfc: #rJustify( result.cfcFiles, 4 )#) | #rJustify( numberFormat( result.filesPerSec ), 5 )# files/sec", true );
 }
 
-systemOutput( "-".repeat( 60 ), true );
-systemOutput( "#lJustify( 'TOTAL', 20 )#: #rJustify( numberFormat( totalDuration ), 8 )# ms | #rJustify( numberFormat( totalFiles ), 6 )# files | #rJustify( numberFormat( int( totalFiles / ( totalDuration / 1000 ) ) ), 5 )# files/sec", true );
+systemOutput( "-".repeat( 80 ), true );
+systemOutput( "#lJustify( 'TOTAL', 20 )#: #rJustify( numberFormat( totalDuration ), 8 )# ms | #rJustify( numberFormat( totalFiles ), 6 )# files (cfm: #rJustify( totalCfm, 4 )#, cfc: #rJustify( totalCfc, 4 )#) | #rJustify( numberFormat( int( totalFiles / ( totalDuration / 1000 ) ) ), 5 )# files/sec", true );
 systemOutput( "", true );
 
 // Write results to JSON

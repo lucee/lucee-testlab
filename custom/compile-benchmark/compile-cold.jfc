@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration version="2.0" label="Compile Benchmark — Cold Start"
+	description="Single-threaded cold-start compile profiling. 1ms CPU samples to catch sub-ms parser methods. Heavy on JIT signal; IO and threading stripped."
+	provider="Zac">
+
+	<!-- ============================================================
+	     CPU SAMPLING — 1ms to accumulate stack presence for tiny methods
+	     (impOp/eqvOp/notOp etc. each complete in microseconds; 10ms
+	     misses them entirely. 1ms gives ~1000 samples/sec, enough to
+	     attribute time across a parse-heavy burst.)
+	     ============================================================ -->
+
+	<event name="jdk.ExecutionSample">
+		<setting name="enabled">true</setting>
+		<setting name="period">1 ms</setting>
+	</event>
+
+	<!-- ============================================================
+	     JIT — threshold 0ms to catch every compilation during cold start.
+	     At 100ms you're blind to the first 50+ methods getting compiled.
+	     CompilerInlining answers: are impOp/eqvOp/xorOp getting inlined?
+	     ============================================================ -->
+
+	<event name="jdk.Compilation">
+		<setting name="enabled">true</setting>
+		<setting name="threshold">0 ms</setting>
+	</event>
+
+	<event name="jdk.CompilerInlining">
+		<setting name="enabled">true</setting>
+	</event>
+
+	<event name="jdk.CompilerPhase">
+		<setting name="enabled">true</setting>
+		<setting name="threshold">0 ms</setting>
+	</event>
+
+	<event name="jdk.JitRestart">
+		<setting name="enabled">true</setting>
+	</event>
+
+	<!-- Cold start = lots of deopt aftershock. Tells you which methods
+	     get deoptimised and fall back to interpretation. -->
+	<event name="jdk.Deoptimization">
+		<setting name="enabled">true</setting>
+		<setting name="stackTrace">true</setting>
+	</event>
+
+	<!-- ============================================================
+	     ALLOCATION — the expression transformer chain allocates heavily;
+	     every sub-expression node is a heap object.
+	     ============================================================ -->
+
+	<event name="jdk.ObjectAllocationInNewTLAB">
+		<setting name="enabled">true</setting>
+		<setting name="stackTrace">true</setting>
+	</event>
+
+	<event name="jdk.ObjectAllocationOutsideTLAB">
+		<setting name="enabled">true</setting>
+		<setting name="stackTrace">true</setting>
+	</event>
+
+	<event name="jdk.ObjectAllocationSample">
+		<setting name="enabled">true</setting>
+		<setting name="throttle">150/s</setting>
+	</event>
+
+	<!-- ============================================================
+	     CLASS LOADING — see Lucee defining compiled template classes.
+	     ClassLoad stacks off (volume); ClassDefine stacks on (attribution).
+	     ============================================================ -->
+
+	<event name="jdk.ClassLoad">
+		<setting name="enabled">true</setting>
+		<setting name="stackTrace">false</setting>
+		<setting name="threshold">0 ms</setting>
+	</event>
+
+	<event name="jdk.ClassDefine">
+		<setting name="enabled">true</setting>
+		<setting name="stackTrace">true</setting>
+	</event>
+
+	<event name="jdk.ClassUnload">
+		<setting name="enabled">true</setting>
+	</event>
+
+	<!-- ============================================================
+	     GC — parse bursts trigger GC; 0ms threshold catches all.
+	     ============================================================ -->
+
+	<event name="jdk.GarbageCollection">
+		<setting name="enabled">true</setting>
+		<setting name="threshold">0 ms</setting>
+	</event>
+
+	<event name="jdk.GCHeapSummary">
+		<setting name="enabled">true</setting>
+	</event>
+
+	<event name="jdk.GCPhasePause">
+		<setting name="enabled">true</setting>
+		<setting name="threshold">0 ms</setting>
+	</event>
+
+	<event name="jdk.G1HeapSummary">
+		<setting name="enabled">true</setting>
+	</event>
+
+	<!-- ============================================================
+	     SAFEPOINTS — JIT compilation triggers safepoints; during cold
+	     start these can serialise the parse thread. 0ms catches all.
+	     ============================================================ -->
+
+	<event name="jdk.SafepointBegin">
+		<setting name="enabled">true</setting>
+		<setting name="threshold">0 ms</setting>
+	</event>
+
+	<!-- ============================================================
+	     BOOKKEEPING — metadata for jfrBlaster + JVM identification
+	     ============================================================ -->
+
+	<event name="jdk.JVMInformation">
+		<setting name="enabled">true</setting>
+		<setting name="period">beginChunk</setting>
+	</event>
+
+	<event name="jdk.CPULoad">
+		<setting name="enabled">true</setting>
+		<setting name="period">1 s</setting>
+	</event>
+
+	<event name="jdk.GCConfiguration">
+		<setting name="enabled">true</setting>
+		<setting name="period">beginChunk</setting>
+	</event>
+
+	<event name="jdk.GCHeapConfiguration">
+		<setting name="enabled">true</setting>
+		<setting name="period">beginChunk</setting>
+	</event>
+
+	<event name="jdk.ActiveSetting">
+		<setting name="enabled">true</setting>
+		<setting name="period">beginChunk</setting>
+	</event>
+
+	<!-- ============================================================
+	     EXPLICITLY OFF
+	     ============================================================ -->
+
+	<!-- IO — don't care for this benchmark -->
+	<event name="jdk.FileRead">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.FileWrite">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.SocketRead">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.SocketWrite">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.SocketConnect">
+		<setting name="enabled">false</setting>
+	</event>
+
+	<!-- Threading — single-threaded benchmark, all noise -->
+	<event name="jdk.ThreadStart">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.ThreadEnd">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.ThreadSleep">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.ThreadPark">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.JavaMonitorEnter">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.JavaMonitorWait">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.JavaMonitorInflate">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.NativeMethodSample">
+		<setting name="enabled">false</setting>
+	</event>
+
+	<!-- VT / safepoint-latency — irrelevant for single-threaded compile -->
+	<event name="jdk.VirtualThreadPinned">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.VirtualThreadSubmitFailed">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.SafepointLatency">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.SafepointStateSynchronization">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.ContinuationFreezeSlow">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.ContinuationThawSlow">
+		<setting name="enabled">false</setting>
+	</event>
+
+	<!-- Too noisy / not useful for short cold-start captures -->
+	<event name="jdk.ExecuteVMOperation">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.MetaspaceSummary">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.OldObjectSample">
+		<setting name="enabled">false</setting>
+	</event>
+	<event name="jdk.SystemProcess">
+		<setting name="enabled">false</setting>
+	</event>
+
+</configuration>
