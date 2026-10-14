@@ -100,10 +100,13 @@ for label_dir in "$DIR"/*/; do
 	if [ "$sources" != " cfconfig" ] && [ -n "$sources" ]; then
 		stable+="| good proxy via |"; for i in "${active[@]}"; do stable+=" ${SHORT[$i]} |"; done; stable+=$'\n'
 		stable+="| --- |"; for i in "${active[@]}"; do stable+=" --- |"; done; stable+=$'\n'
+		[[ " $sources " == *" app "* ]] && notes+="➖ app: extension installs are server level, at startup with no application, so \`this.proxy\` doesn't apply"$'\n\n'
 		for src in $sources; do
 			stable+="| $src |"
 			for i in "${active[@]}"; do
 				if [ -f "${label_dir}$src/good/unsupported.txt" ]; then
+					cell="➖"
+				elif [ "$src" = app ] && [ "${CHECKS[$i]}" = "extension from config" ]; then
 					cell="➖"
 				else
 					cell="$(verdict "${label_dir}$src/good" good "$i")" || { [ "$src" = cfconfig ] || bad=$(( bad + 1 )); }
