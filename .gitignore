@@ -4,3 +4,6 @@
 /custom/spreadsheet-cfml/test/artifacts-preside
 /custom/benchmark/heapdumps
 /test-output
+/custom/compile-benchmark/results
+/.claude/settings.local.json
+/.vscode
