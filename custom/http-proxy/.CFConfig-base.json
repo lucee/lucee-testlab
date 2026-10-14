@@ -1,0 +1,22 @@
+{
+  "extensions": [
+    {
+      "id": "6E2CB28F-98FB-4B51-B6BE6C64ADF35473",
+      "version": "1.0.0.8"
+    }
+  ],
+  "loggers": {
+    "maven": {
+      "appender": "console",
+      "level": "info"
+    },
+    "application": {
+      "appender": "console",
+      "level": "info"
+    },
+    "deploy": {
+      "appender": "console",
+      "level": "info"
+    }
+  }
+}
