@@ -64,6 +64,17 @@ CONTEXT="$WORK/lucee/lucee-server/context"
 rm -rf "$OUT"
 mkdir -p "$OUT/home" "$CONTEXT"
 
+# combinations the version doesn't support: recorded for summary.sh (➖), not run
+unsupported=""
+case "$SOURCE" in
+	env|env-vs-cfconfig) [ "${LUCEE_MAJOR_MINOR%%.*}" -ge 8 ] || unsupported="no LUCEE_PROXY_* env vars before 8.0" ;;
+esac
+if [ -n "$unsupported" ]; then
+	echo "$unsupported" > "$OUT/unsupported.txt"
+	echo "== $LABEL / $SOURCE / $SCENARIO: skipped, $unsupported"
+	exit 0
+fi
+
 PROXY_HOST=""
 PROXY_PORT=""
 PROXY_USER=""

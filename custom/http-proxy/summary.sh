@@ -40,7 +40,8 @@ verdict() {
 	local run="$1" scenario="$2" i="$3"
 	local ok
 	ok="$(field "$run/results.json" "${CHECKS[$i]}" ok)"
-	[ -n "$ok" ] || { echo ""; return 0; }
+	# not run: unsupported on this version, or no proxy attrs to pass
+	[ -n "$ok" ] || { echo "➖"; return 0; }
 	case "$scenario" in
 		none)
 			[ "$ok" = true ] && { echo "✅"; return 0; }
@@ -66,39 +67,52 @@ for label_dir in "$DIR"/*/; do
 	for s in $SCENARIOS; do
 		[ -f "${label_dir}cfconfig/$s/results.json" ] && present="$present $s"
 	done
+	# checks this version ran, a check it never runs (mavenLoad latest before 8.0) gets no row or column
+	active=()
 	if [ -n "$present" ]; then
 		table+="| |"; for s in $present; do table+=" $s |"; done; table+=$'\n'
 		table+="| --- |"; for s in $present; do table+=" --- |"; done; table+=$'\n'
 		for i in "${!CHECKS[@]}"; do
 			row="| ${SHORT[$i]} |"
-			any=""
+			ran=""
 			for s in $present; do
 				cell="$(verdict "${label_dir}cfconfig/$s" "$s" "$i")" || bad=$(( bad + 1 ))
-				any+="$cell"
+				[ "$cell" = "➖" ] || ran=1
 				row+=" $cell |"
 			done
-			[ -n "$any" ] && table+="$row"$'\n'
+			[ -n "$ran" ] && { table+="$row"$'\n'; active+=( "$i" ); }
 		done
 	fi
 
 	# config sources, all with the good proxy
 	sources=""
+	notes=""
 	for src in $SOURCES; do
-		[ -f "${label_dir}$src/good/results.json" ] && sources="$sources $src"
+		if [ -f "${label_dir}$src/good/results.json" ]; then
+			sources="$sources $src"
+		elif [ -f "${label_dir}$src/good/unsupported.txt" ]; then
+			sources="$sources $src"
+			notes+="➖ $src: $(tr -d '\r' < "${label_dir}$src/good/unsupported.txt")"$'\n\n'
+		fi
 	done
 	stable=""
 	# cfconfig is only there to compare against
 	if [ "$sources" != " cfconfig" ] && [ -n "$sources" ]; then
-		stable+="| good proxy via |"; for i in "${!CHECKS[@]}"; do stable+=" ${SHORT[$i]} |"; done; stable+=$'\n'
-		stable+="| --- |"; for i in "${!CHECKS[@]}"; do stable+=" --- |"; done; stable+=$'\n'
+		stable+="| good proxy via |"; for i in "${active[@]}"; do stable+=" ${SHORT[$i]} |"; done; stable+=$'\n'
+		stable+="| --- |"; for i in "${active[@]}"; do stable+=" --- |"; done; stable+=$'\n'
 		for src in $sources; do
 			stable+="| $src |"
-			for i in "${!CHECKS[@]}"; do
-				cell="$(verdict "${label_dir}$src/good" good "$i")" || { [ "$src" = cfconfig ] || bad=$(( bad + 1 )); }
+			for i in "${active[@]}"; do
+				if [ -f "${label_dir}$src/good/unsupported.txt" ]; then
+					cell="➖"
+				else
+					cell="$(verdict "${label_dir}$src/good" good "$i")" || { [ "$src" = cfconfig ] || bad=$(( bad + 1 )); }
+				fi
 				stable+=" $cell |"
 			done
 			stable+=$'\n'
 		done
+		stable+=$'\n'"$notes"
 	fi
 
 	# errors and diagnostics, collapsed
@@ -125,5 +139,5 @@ for label_dir in "$DIR"/*/; do
 	echo
 done
 
-echo "✅ worked as expected: direct with no proxy, through a working proxy, failing with a broken one. ❌ fail: failed with no proxy or a working one. ❌ bypass: didn't use the proxy."
+echo "✅ worked as expected: direct with no proxy, through a working proxy, failing with a broken one. ❌ fail: failed with no proxy or a working one. ❌ bypass: didn't use the proxy. ➖ not run."
 exit $failed
