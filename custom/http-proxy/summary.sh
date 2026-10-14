@@ -131,7 +131,11 @@ for label_dir in "$DIR"/*/; do
 		done
 	done
 
-	if [ "$bad" -gt 0 ]; then echo "## $label ❌ $bad"; failed=1; else echo "## $label ✅"; fi
+	# the actual Lucee version, from the banner index.cfm prints
+	version="$(cat "$label_dir"*/*/run.txt 2>/dev/null | grep -oE '=== http-proxy \[[^]]*\] Lucee [^ ]+' | head -1 | sed 's/.* Lucee //')"
+	heading="${version:-$label}"
+	[ -n "$version" ] && heading+=" ($label)"
+	if [ "$bad" -gt 0 ]; then echo "## $heading ❌ $bad"; failed=1; else echo "## $heading ✅"; fi
 	echo
 	echo "$table"
 	[ -n "$stable" ] && { echo "$stable"; }
