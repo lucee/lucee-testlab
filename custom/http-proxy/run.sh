@@ -145,7 +145,12 @@ ensure_container() {
 
 docker network inspect $NETWORK >/dev/null 2>&1 || docker network create $NETWORK >/dev/null
 
-ensure_container testlab-httpbin docker run -d --name testlab-httpbin --network $NETWORK -p $HTTPBIN_PORT:80 kennethreitz/httpbin >/dev/null
+# images from Lucee's GHCR mirror (mirror-docker-images.yml in lucee/lucee), no Docker Hub rate limits
+HTTPBIN_IMAGE=ghcr.io/lucee/httpbin:test-mirror
+SQUID_IMAGE=ghcr.io/lucee/squid:test-mirror
+NGINX_IMAGE=ghcr.io/lucee/nginx:test-mirror
+
+ensure_container testlab-httpbin docker run -d --name testlab-httpbin --network $NETWORK -p $HTTPBIN_PORT:80 $HTTPBIN_IMAGE >/dev/null
 
 # ipv6 off in the containers that go out to the internet: on Docker Desktop names can resolve to
 # unreachable v6 addresses first, and squid doesn't fall back to v4 (503)
@@ -158,7 +163,7 @@ start_maven() {
 		cache="$(winpath "$MAVEN_CACHE_DIR")"
 	fi
 	docker create --name testlab-maven --network $NETWORK --sysctl net.ipv6.conf.all.disable_ipv6=1 -p $MAVEN_PORT:80 \
-		-v "$cache:/var/cache/nginx/maven" nginx:alpine >/dev/null
+		-v "$cache:/var/cache/nginx/maven" $NGINX_IMAGE >/dev/null
 	docker cp "$(winpath "$HERE/maven/nginx.conf")" testlab-maven:/etc/nginx/conf.d/default.conf
 	docker start testlab-maven >/dev/null
 }
@@ -166,7 +171,7 @@ ensure_container testlab-maven start_maven
 
 start_squid() {
 	local name="$1" port="$2" conf="$3"
-	docker create --name "$name" --network $NETWORK --sysctl net.ipv6.conf.all.disable_ipv6=1 -p "$port":3128 ubuntu/squid >/dev/null
+	docker create --name "$name" --network $NETWORK --sysctl net.ipv6.conf.all.disable_ipv6=1 -p "$port":3128 $SQUID_IMAGE >/dev/null
 	docker cp "$(winpath "$HERE/squid/$conf")" "$name":/etc/squid/squid.conf
 	docker cp "$(winpath "$HERE/squid/passwd")" "$name":/etc/squid/passwd
 	docker start "$name" >/dev/null
