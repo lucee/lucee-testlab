@@ -2,7 +2,7 @@
 
 Does Lucee's HTTP traffic go through the configured proxy? Covers the internal downloaders (extensions, Maven / javasettings, update checks), `cfhttp` and javasettings, against real squid proxies and an httpbin target.
 
-Report-only for now: each check records ok / error / elapsed, nothing asserts.
+Each check records ok / error / elapsed; `summary.sh` judges them per scenario (worked, went through the proxy, failed with a broken proxy) and exits 1 on any miss, so CI goes red until Lucee honours the proxy everywhere.
 
 ## Running
 

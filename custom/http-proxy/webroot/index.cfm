@@ -1,5 +1,5 @@
 <cfscript>
-	// report-only: every check records ok / error / ms, nothing asserts
+	// every check records ok / error / ms, summary.sh judges them per scenario
 	env = server.system.environment;
 	results = [];
 

@@ -1,6 +1,6 @@
 name: HTTP Proxy
 
-# report-only: does Lucee's HTTP traffic go through the configured proxy, see custom/http-proxy/README.md
+# does Lucee's HTTP traffic go through the configured proxy, see custom/http-proxy/README.md
 
 on:
   push:
@@ -69,11 +69,14 @@ jobs:
             SOURCE=$source ./run.sh ${{ matrix.luceeVersion }} good
           done
 
+      # fails the job when any check misbehaved
       - name: Summary
         if: always()
         run: |
-          echo "## ${{ matrix.luceeVersion }}" >> $GITHUB_STEP_SUMMARY
-          ./custom/http-proxy/summary.sh >> $GITHUB_STEP_SUMMARY
+          rc=0
+          ./custom/http-proxy/summary.sh > summary.md || rc=$?
+          cat summary.md >> $GITHUB_STEP_SUMMARY
+          exit $rc
 
       # nginx writes its cache as its own user, readable only by it
       - name: Make the mirror cache readable
