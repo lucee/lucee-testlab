@@ -119,6 +119,17 @@ To check: `RepoReader` (snapshot metadata) and which HTTP client the update / pr
 
 ## Results
 
+### CI, snapshots
+
+2026-10-14, every scenario through `.CFConfig.json`:
+
+| | extension | mavenLoad | mavenLoad latest | cfhttp |
+| --- | --- | --- | --- | --- |
+| 6.2, 7.0, 7.1 | bypass, every proxy scenario | bypass, every proxy scenario | n/a | ✅ |
+| 8.0 | fails with good / auth | fails with good / auth | fails with good / auth | ✅ |
+
+Every config source gives the same result for the downloads. Before 8.0, `env` and `env-vs-cfconfig` also fail cfhttp: there are no `LUCEE_PROXY_*` env vars, so there's no proxy.
+
 ### Working copy, `HTTPEngine` proxy fallback
 
 8.0 working copy (`8.0.0.0-SNAPSHOT`), `SOURCE=cfconfig`, 2026-10-14. The local change:

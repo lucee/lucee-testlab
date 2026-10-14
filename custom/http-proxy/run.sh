@@ -160,6 +160,8 @@ start_maven() {
 	local cache=testlab-maven-cache
 	if [ -n "${MAVEN_CACHE_DIR:-}" ]; then
 		mkdir -p "$MAVEN_CACHE_DIR"
+		# restored by the CI cache as the runner user, nginx runs as its own and needs to add dirs
+		chmod -R a+rwX "$MAVEN_CACHE_DIR"
 		cache="$(winpath "$MAVEN_CACHE_DIR")"
 	fi
 	docker create --name testlab-maven --network $NETWORK --sysctl net.ipv6.conf.all.disable_ipv6=1 -p $MAVEN_PORT:80 \
